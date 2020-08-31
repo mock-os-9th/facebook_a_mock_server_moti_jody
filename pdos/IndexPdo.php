@@ -1,5 +1,47 @@
 <?php
 
+function createUser($email, $phoneNum, $pwd, $secondName, $firstName, $bday, $gender)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "INSERT INTO User (email, phoneNum, pwd, secondName, firstName, bday, gender) VALUES (?, ?, ?, ?, ?, ?, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$email, $phoneNum, $pwd, $secondName, $firstName, $bday, $gender]);
+
+    $st = null;
+    $pdo = null;
+
+    return "회원가입 성공";
+}
+
+function isEmailDuplicated($email){
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM User WHERE email = ?) AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$email]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st=null;$pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+function isPhoneNumDuplicate($phoneNum){
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM User WHERE phoneNum = ?) AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$phoneNum]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st=null;$pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+
 //READ
 function test()
 {
@@ -53,9 +95,14 @@ function testPost($name)
 
 function isValidUser($id, $pw){
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS(SELECT * FROM User WHERE userId= ? AND userPw = ?) AS exist;";
 
-
+    if(isValidPhoneNum($id)){
+        $query = "SELECT EXISTS(SELECT * FROM User WHERE phoneNum= ? AND pwd = ?) AS exist;";
+    }else if(isValidEmail($id)){
+        $query = "SELECT EXISTS(SELECT * FROM User WHERE email= ? AND pwd = ?) AS exist;";
+    }else{
+        return false;
+    }
     $st = $pdo->prepare($query);
     //    $st->execute([$param,$param]);
     $st->execute([$id, $pw]);

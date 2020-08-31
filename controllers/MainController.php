@@ -46,18 +46,17 @@ try {
 
             if(!isValidUser($req->id, $req->pw)){
                 $res->isSuccess = FALSE;
-                $res->code = 100;
-                $res->message = "유효하지 않은 아이디 입니다";
+                $res->code = 400;
+                $res->message = "로그인 실패";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 return;
             }
 
-            //페이로드에 맞게 다시 설정 요함
             $jwt = getJWToken($req->id, $req->pw, JWT_SECRET_KEY);
             $res->result->jwt = $jwt;
             $res->isSuccess = TRUE;
-            $res->code = 100;
-            $res->message = "테스트 성공";
+            $res->code = 200;
+            $res->message = "jwt발급 완료";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 

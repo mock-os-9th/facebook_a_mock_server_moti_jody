@@ -173,3 +173,48 @@ function getLogs($path)
 //        fpassthru($fp);
     fclose($fp);
 }
+
+function isString($data) {
+    if(is_string($data)) {
+        return 1;
+    }
+    return 0;
+}
+function isInteger($data) {
+    if(is_integer($data)) {
+        return 1;
+    }
+    return 0;
+}
+function isNull($data) {
+    if($data == null) {
+        return 1;
+    }
+    return 0;
+}
+
+function isValidPwd($pwd) {
+    if(preg_match("/^[0-9a-zA-Z!@#$%^&*?_~-]{6,}+$/", $pwd)) {
+        return 1;
+    }
+    return 0;
+}
+
+function isValidPhoneNum($phoneNum) {
+    if(preg_match("/^[0-9]{11,11}+$/", $phoneNum)) {
+        return 1;
+    }
+    return 0;
+}
+function isValidEmail($email) {
+    if(preg_match("/^[_\.0-9a-zA-Z-]+@([0-9a-zA-Z][0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}$/i", $email)) {
+        return 1;
+    }
+    return 0;
+}
+function isValidDate($bday) {
+    if(preg_match("/^(19|20)\d{2}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[0-1])$/", $bday)) {
+        return 1;
+    }
+    return 0;
+}
