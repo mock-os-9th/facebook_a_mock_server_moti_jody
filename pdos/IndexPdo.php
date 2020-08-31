@@ -42,22 +42,19 @@ function isPhoneNumDuplicate($phoneNum){
     return intval($res[0]["exist"]);
 }
 
-//READ
-function test()
+function deleteUser($id)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT * FROM User;";
+
+    $query = "INSERT INTO User (email, phoneNum, pwd, secondName, firstName, bday, gender) VALUES (?, ?, ?, ?, ?, ?, ?);";
 
     $st = $pdo->prepare($query);
-    //    $st->execute([$param,$param]);
-    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
+    $st->execute([$id]);
 
     $st = null;
     $pdo = null;
 
-    return $res;
+    return "회원탈퇴 성공";
 }
 
 //READ

@@ -190,16 +190,16 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
         /*
-         * API No. 0
-         * API Name : 테스트 Path Variable API
-         * 마지막 수정 날짜 : 19.04.29
+         * API No. 2
+         * API Name : 회원탈퇴 API
+         * 마지막 수정 날짜 : 20.08.31
          */
-        case "testDetail":
+        case "deleteUser":
             http_response_code(200);
-            $res->result = testDetail($vars["testNo"]);
+            $res->result = deleteUser($vars["testNo"]);
             $res->isSuccess = TRUE;
-            $res->code = 100;
-            $res->message = "테스트 성공";
+            $res->code = 200;
+            $res->message = "회원탈퇴 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
         /*
