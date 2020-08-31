@@ -46,7 +46,7 @@ function deleteUser($id)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "INSERT INTO User (email, phoneNum, pwd, secondName, firstName, bday, gender) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    $query = "UPDATE User SET isDeleted = 'Y' WHERE email = ? AND pwd = ?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$id]);

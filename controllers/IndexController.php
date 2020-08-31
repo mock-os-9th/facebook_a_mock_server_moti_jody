@@ -195,7 +195,20 @@ try {
          * 마지막 수정 날짜 : 20.08.31
          */
         case "deleteUser":
+
             http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 201;
+                $res->message = "유효하지 않은 토큰입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
             $res->result = deleteUser($vars["testNo"]);
             $res->isSuccess = TRUE;
             $res->code = 200;
@@ -203,7 +216,7 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
         /*
-         * API No. 0
+         * API No. 3
          * API Name : 테스트 Body & Insert API
          * 마지막 수정 날짜 : 19.04.29
          */
