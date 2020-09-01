@@ -46,15 +46,22 @@ function deleteUser($id)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "UPDATE User SET isDeleted = 'Y' WHERE email = ? AND pwd = ?;";
-
+    if(isValidPhoneNum($id)){
+        $query = "UPDATE User SET isDeleted = 'Y' WHERE phoneNum = ? AND pwd = ?;";
+    }else if(isValidEmail($id)){
+        $query = "UPDATE User SET isDeleted = 'Y' WHERE email = ? AND pwd = ?;";
+    }else{
+        return false;
+    }
     $st = $pdo->prepare($query);
+    //    $st->execute([$param,$param]);
     $st->execute([$id]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
 
-    $st = null;
-    $pdo = null;
+    $st=null;$pdo = null;
 
-    return "회원탈퇴 성공";
+    return intval($res[0]["exist"]);
 }
 
 //READ
