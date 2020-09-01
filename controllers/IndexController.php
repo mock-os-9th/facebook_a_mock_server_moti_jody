@@ -190,7 +190,7 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
         /*
-         * API No. 2
+         * API No. 4
          * API Name : 회원탈퇴 API
          * 마지막 수정 날짜 : 20.08.31
          */
@@ -199,33 +199,179 @@ try {
             http_response_code(200);
 
             $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
-
             if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
                 $res->isSuccess = FALSE;
-                $res->code = 201;
-                $res->message = "유효하지 않은 토큰입니다";
+                $res->code = 400;
+                $res->message = "회원탈퇴 실패";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
 
-            $res->result = deleteUser($vars["testNo"]);
+//            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+//
+//            $id = $data->id;
+//            $pw = $data->pw;
+//
+//            if(!isValidUser($id, $pw)) {
+//                $res->isSuccess = FALSE;
+//                $res->code = 400;
+//                $res->message = "존재하지 않는 회원이거나 이미 탈퇴한 회원입니다";
+//                echo json_encode($res, JSON_NUMERIC_CHECK);
+//                addErrorLogs($errorLogs, $res, $req);
+//                return;
+//            }
+
+            $res->result = deleteUser($id);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "회원탈퇴 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
         /*
-         * API No. 3
-         * API Name : 테스트 Body & Insert API
+         * API No. 5
+         * API Name : 프로필 정보 가져오기 API
          * 마지막 수정 날짜 : 19.04.29
          */
-        case "testPost":
+        case "getProfileInfo":
             http_response_code(200);
-            $res->result = testPost($req->name);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 400;
+                $res->message = "회원탈퇴 실패";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $res->result = getProfileInfo($req->name);
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        case "commentLikePush":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+
+            $userIdx = getUserIdxFromJwt($jwt,JWT_SECRET_KEY);
+
+
+            if($userIdx == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $commentIdx = intval($vars["idx"]);
+            $isLike = $req->isLike;
+            $likeIdx = $req->likeIdx;
+
+            if(gettype($commentIdx) != 'integer'){
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "댓글 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(gettype($isLike) != 'string'){
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "댓글 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(gettype($likeIdx) != 'integer'){
+                $res->isSuccess = FALSE;
+                $res->code = 412;
+                $res->message = "댓글 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(strlen($isLike) != 1){
+                $res->isSuccess = FALSE;
+                $res->code = 420;
+                $res->message = "좋아요 여부 길이 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if($isLike != 'N' && $isLike != 'Y'){
+                $res->isSuccess = FALSE;
+                $res->code = 430;
+                $res->message = "좋아요 여부 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(is_null($commentIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "댓글 인덱스가 null입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(is_null($isLike)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "좋아요 여부가 null입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(is_null($likeIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "좋아요 인덱스가 null입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!isValidCommentIdx($commentIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 댓글입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(isUserLikedComment($userIdx,$commentIdx)){
+                modifyCommentLike($commentIdx,$userIdx,$likeIdx,$isLike);
+            }else{
+                makeCommentLike($commentIdx,$userIdx,$likeIdx);
+            }
+
+            $res->isSuccess = true;
+            $res->code = 200;
+            $res->message = "좋아요 변경 완료";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            return;
+
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
     }

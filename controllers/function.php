@@ -28,6 +28,16 @@ function isValidHeader($jwt, $key)
     }
 }
 
+function getUserIdxFromJwt($jwt,$key){
+    try {
+        $data = getDataByJWToken($jwt, $key);
+        //로그인 함수 직접 구현 요함
+        return getUserIdxFromId($data->id);
+    } catch (\Exception $e) {
+        return false;
+    }
+}
+
 function sendFcm($fcmToken, $data, $key, $deviceType)
 {
     $url = 'https://fcm.googleapis.com/fcm/send';

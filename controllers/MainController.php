@@ -53,6 +53,7 @@ try {
             }
 
             $jwt = getJWToken($req->id, $req->pw, JWT_SECRET_KEY);
+
             $res->result->jwt = $jwt;
             $res->isSuccess = TRUE;
             $res->code = 200;

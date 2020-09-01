@@ -18,8 +18,13 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/', ['IndexController', 'index']);
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']);
     $r->addRoute('DELETE', '/user', ['IndexController', 'deleteUser']);
+
+    $r->addRoute('GET', '/profile/info', ['IndexController', 'getProfileInfo']);
+
     $r->addRoute('GET', '/jwt', ['MainController', 'validateJwt']);
     $r->addRoute('POST', '/login', ['MainController', 'createJwt']);
+
+    $r->addRoute('PATCH','/comment/{idx}/like',['IndexController','commentLikePush']);
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
