@@ -19,7 +19,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']);
     $r->addRoute('DELETE', '/user', ['IndexController', 'deleteUser']);
 
-    $r->addRoute('GET', '/profile/info', ['IndexController', 'getProfileInfo']);
+    $r->addRoute('GET', '/profile/info', ['IndexController', 'getUserInfo']);
+    $r->addRoute('GET', '/user/{idx}/career', ['IndexController', 'getUserCareer']);
 
     $r->addRoute('GET', '/jwt', ['MainController', 'validateJwt']);
     $r->addRoute('POST', '/login', ['MainController', 'createJwt']);

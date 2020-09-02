@@ -60,7 +60,6 @@ function isValidUser($id, $pw){
     $st=null;$pdo = null;
 
     return intval($res[0]["exist"]);
-
 }
 
 function deleteUser($id)
@@ -80,6 +79,66 @@ function deleteUser($id)
     $st=null;$pdo = null;
 
     return $id;
+}
+
+function getUserCareer($idx, $bound) {
+    $pdo = pdoSqlConnect();
+    $query = "SELECT careerName FROM UserCareer WHERE userIdx = ? AND careerPrivacyBounds = ? AND isDeleted = 'N';";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $bound]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st=null;$pdo = null;
+
+    return $res;
+}
+
+function isCareerIdxExists($idx) {
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM UserCareer WHERE userIdx = ? and isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st=null;$pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+function isValidUserIdx($idx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT EXISTS(SELECT * FROM User WHERE userIdx = ? and isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st=null;$pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+function isValidAccessRights($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT EXISTS(
+                SELECT u.userIdx
+                FROM User AS u
+                    INNER JOIN (SELECT userIdx, friendIdx FROM Friends WHERE isFriendBanned = 'N') AS f ON u.userIdx = f.userIdx
+                WHERE u.userIdx = ?) AS exsits;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st=null;$pdo = null;
+
+    return intval($res[0]["exist"]);
 }
 
 function getUserIdxFromId($id){

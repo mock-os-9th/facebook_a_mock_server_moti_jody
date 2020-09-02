@@ -184,25 +184,6 @@ function getLogs($path)
     fclose($fp);
 }
 
-function isString($data) {
-    if(is_string($data)) {
-        return 1;
-    }
-    return 0;
-}
-function isInteger($data) {
-    if(is_integer($data)) {
-        return 1;
-    }
-    return 0;
-}
-function isNull($data) {
-    if($data == null) {
-        return 1;
-    }
-    return 0;
-}
-
 function isValidPwd($pwd) {
     if(preg_match("/^[0-9a-zA-Z!@#$%^&*?_~-]{6,}+$/", $pwd)) {
         return 1;
@@ -211,7 +192,7 @@ function isValidPwd($pwd) {
 }
 
 function isValidPhoneNum($phoneNum) {
-    if(preg_match("/^[0-9]{11,11}+$/", $phoneNum)) {
+    if(preg_match("/^[+0-9]{11,14}+$/", $phoneNum)) {
         return 1;
     }
     return 0;
@@ -224,6 +205,12 @@ function isValidEmail($email) {
 }
 function isValidDate($bday) {
     if(preg_match("/^(19|20)\d{2}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[0-1])$/", $bday)) {
+        return 1;
+    }
+    return 0;
+}
+function isValidBound($bound) {
+    if(preg_match("/^[GFESML]+$/", $bound)) {
         return 1;
     }
     return 0;

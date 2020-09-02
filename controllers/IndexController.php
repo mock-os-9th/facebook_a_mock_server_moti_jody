@@ -39,145 +39,145 @@ try {
             $bday = isset($req->bday) ? $req->bday : null;
             $gender = isset($req->bday) ? $req->bday : null;
 
-            if(isNull($phoneNum)) {
+            if($phoneNum == null) {
                 $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "phoneNum이 null 입니다.";
+                $res->code = 441;
+                $res->message = "phoneNum이 null 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if(isNull($pwd)) {
+            if($pwd == null) {
                 $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "pwd가 null 입니다.";
+                $res->code = 442;
+                $res->message = "pwd가 null 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if(isNull($secondName)) {
+            if($secondName == null) {
                 $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "secondName이 null 입니다.";
+                $res->code = 443;
+                $res->message = "secondName이 null 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if(isNull($firstName)) {
+            if($firstName == null) {
                 $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "firstName이 null 입니다.";
+                $res->code = 444;
+                $res->message = "firstName이 null 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if(isNull($bday)) {
+            if($bday == null) {
                 $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "bday이 null 입니다.";
+                $res->code = 445;
+                $res->message = "bday이 null 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if(isNull($gender)) {
+            if($gender == null) {
                 $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "gender가 null 입니다.";
+                $res->code = 446;
+                $res->message = "gender가 null 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
 
-            if(!isNull($email)) {
-                if(!isString($email)) {
+            if($email != null) {
+                if(!is_string($email)) {
                     $res->isSuccess = FALSE;
-                    $res->code = 410;
-                    $res->message = "email은 String이여야 합니다.";
+                    $res->code = 411;
+                    $res->message = "email은 String이여야 합니다";
                     echo json_encode($res, JSON_NUMERIC_CHECK);
                     break;
                 }
             }
-            if(!isString($phoneNum)) {
+            if(!is_string($phoneNum)) {
                 $res->isSuccess = FALSE;
-                $res->code = 410;
-                $res->message = "phoneNum은 String이여야 합니다.";
+                $res->code = 412;
+                $res->message = "phoneNum은 String이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if(!isString($pwd)) {
+            if(!is_string($pwd)) {
                 $res->isSuccess = FALSE;
-                $res->code = 410;
-                $res->message = "pwd는 String이여야 합니다.";
+                $res->code = 413;
+                $res->message = "pwd는 String이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if(!isString($secondName)) {
+            if(!is_string($secondName)) {
                 $res->isSuccess = FALSE;
-                $res->code = 410;
-                $res->message = "secondName은 String이여야 합니다.";
+                $res->code = 414;
+                $res->message = "secondName은 String이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if(!isString($firstName)) {
+            if(!is_string($firstName)) {
                 $res->isSuccess = FALSE;
-                $res->code = 410;
-                $res->message = "firstName는 String이여야 합니다.";
+                $res->code = 415;
+                $res->message = "firstName는 String이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if(!isString($bday)) {
+            if(!is_string($bday)) {
                 $res->isSuccess = FALSE;
-                $res->code = 410;
-                $res->message = "bday는 String이여야 합니다.";
+                $res->code = 416;
+                $res->message = "bday는 String이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if(!isString($gender)) {
+            if(!is_string($gender)) {
                 $res->isSuccess = FALSE;
-                $res->code = 410;
-                $res->message = "gender는 String이여야 합니다.";
+                $res->code = 417;
+                $res->message = "gender는 String이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
 
-            if(!isNull($email)) {
+            if($email == null) {
                 if (!isValidEmail($email)) {
                     $res->isSuccess = FALSE;
-                    $res->code = 430;
-                    $res->message = "email 형식이 올바르지 않습니다.";
+                    $res->code = 431;
+                    $res->message = "email @와 .을 포함해야 합니다";
                     echo json_encode($res, JSON_NUMERIC_CHECK);
                     break;
                 }
             }
             if(!isValidPhoneNum($phoneNum)) {
                 $res->isSuccess = FALSE;
-                $res->code = 430;
-                $res->message = "phoneNum은 11자 입력 되어야 합니다.";
+                $res->code = 421;
+                $res->message = "phoneNum은 + 또는 0~9 형태이며 길이는 11~14 이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
             if(!isValidPwd($pwd)) {
                 $res->isSuccess = FALSE;
-                $res->code = 430;
-                $res->message = "비밀번호에는 최소 6자 이상의 문자, 숫자 및 기호(예: !, %%)가 포함되어야 합니다.";
+                $res->code = 433;
+                $res->message = "pwd는 최소 6자 이상의 문자, 숫자 및 기호(예: !, %%)가 포함되어야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
             if(!isValidDate($bday)) {
                 $res->isSuccess = FALSE;
-                $res->code = 430;
-                $res->message = "bday는 YYYY-MM-DD 형식이여야 합니다.";
+                $res->code = 434;
+                $res->message = "bday는 YYYY-MM-DD 형식이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
 
-            if(!isNull($email)) {
+            if($email == null) {
                 if (isEmailDuplicated($email)) {
                     $res->isSuccess = FALSE;
-                    $res->code = 460;
-                    $res->message = "이미 사용중인 email입니다.";
+                    $res->code = 461;
+                    $res->message = "이미 사용중인 email 입니다";
                     echo json_encode($res, JSON_NUMERIC_CHECK);
                     break;
                 }
             }
             if(isPhoneNumDuplicate($phoneNum)) {
                 $res->isSuccess = FALSE;
-                $res->code = 460;
-                $res->message = "이미 사용중인 phoneNum입니다.";
+                $res->code = 462;
+                $res->message = "이미 사용중인 phoneNum 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
@@ -202,15 +202,15 @@ try {
             if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
                 $res->isSuccess = FALSE;
                 $res->code = 400;
-                $res->message = "회원탈퇴 실패";
+                $res->message = "존재하지 않는 회원이거나 이미 탈퇴한 회원 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
 
-//            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
-//
-//            $id = $data->id;
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+
+            $id = $data->id;
 //            $pw = $data->pw;
 //
 //            if(!isValidUser($id, $pw)) {
@@ -233,24 +233,128 @@ try {
          * API Name : 프로필 정보 가져오기 API
          * 마지막 수정 날짜 : 19.04.29
          */
-        case "getProfileInfo":
+        case "getUserInfo":
             http_response_code(200);
 
             $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
 
             if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
                 $res->isSuccess = FALSE;
-                $res->code = 400;
-                $res->message = "회원탈퇴 실패";
+                $res->code = 450;
+                $res->message = "해당유저가 존재하지 않습니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
 
-            $res->result = getProfileInfo($req->name);
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $idx = getUserIdxFromId($data->id);
+
+            $res->result = getUserInfo($idx);
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        case "getUserCareer":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "해당유저가 존재하지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $idx = getUserIdxFromId($data->id);
+
+            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+            $bound = isset($_GET["bound"]) ? $_GET["bound"] : null;
+
+            if($targetIdx == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "idx가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if($bound == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 442;
+                $res->message = "bound가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(is_integer($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "idx는 int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!is_string($bound)) {
+                $res->isSuccess = FALSE;
+                $res->code = 412;
+                $res->message = "bound는 String 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(!isCareerIdxExists($idx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "경력이 존재 하지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if($targetIdx == 0) {
+                $targetIdx = $idx;
+            }
+            else if(!isValidUserIdx($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "존재하지 친구 인덱스 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(strlen($bound) != 1) {
+                $res->isSuccess = FALSE;
+                $res->code = 420;
+                $res->message = "bound의 길이는 1 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if($targetIdx != $idx) {
+                if (!isValidAccessRights($idx, $targetIdx)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 470;
+                    $res->message = "접근 권한이 없습니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+            }
+
+            $res->result = getUserCareer($targetIdx, $bound);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "경력 조회 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
