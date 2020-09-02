@@ -311,21 +311,23 @@ try {
                 return;
             }
 
-            if(!isCareerIdxExists($idx)) {
-                $res->isSuccess = FALSE;
-                $res->code = 451;
-                $res->message = "경력이 존재 하지 않습니다";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
             if($targetIdx == 0) {
                 $targetIdx = $idx;
             }
             else if(!isValidUserIdx($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 452;
-                $res->message = "존재하지 친구 인덱스 입니다";
+                $res->message = "존재하지 않는 타겟 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+
+            if(!isCareerIdxExists($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "경력이 존재 하지 않습니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;

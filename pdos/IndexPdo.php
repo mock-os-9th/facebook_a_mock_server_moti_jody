@@ -125,20 +125,16 @@ function isValidUserIdx($idx) {
 function isValidAccessRights($idx, $targetIdx) {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT EXISTS(
-                SELECT u.userIdx
-                FROM User AS u
-                    INNER JOIN (SELECT userIdx, friendIdx FROM Friends WHERE isFriendBanned = 'N') AS f ON u.userIdx = f.userIdx
-                WHERE u.userIdx = ?) AS exsits;";
+    $query = "SELECT NOT EXISTS(SELECT * FROM Blocked WHERE userIdx = ? AND blockedUserIdx = ? AND isDeleted = 'N') AS notExist";
 
     $st = $pdo->prepare($query);
-    $st->execute([$idx]);
+    $st->execute([$idx, $targetIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
     $st=null;$pdo = null;
 
-    return intval($res[0]["exist"]);
+    return intval($res[0]["notExist"]);
 }
 
 function getUserIdxFromId($id){
