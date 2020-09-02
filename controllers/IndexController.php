@@ -134,7 +134,7 @@ try {
                 break;
             }
 
-            if($email == null) {
+            if($email != null) {
                 if (!isValidEmail($email)) {
                     $res->isSuccess = FALSE;
                     $res->code = 431;
@@ -165,7 +165,7 @@ try {
                 break;
             }
 
-            if($email == null) {
+            if($email != null) {
                 if (isEmailDuplicated($email)) {
                     $res->isSuccess = FALSE;
                     $res->code = 461;
@@ -182,7 +182,7 @@ try {
                 break;
             }
 
-            $res->result = createUser($email, $phoneNum, $pwd, $secondName, $firstName, $bday, $gender);
+            $res->userIdx = createUser($email, $phoneNum, $pwd, $secondName, $firstName, $bday, $gender);
 
             $res->isSuccess = TRUE;
             $res->code = 200;

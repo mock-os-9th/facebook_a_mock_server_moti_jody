@@ -9,10 +9,11 @@ function createUser($email, $phoneNum, $pwd, $secondName, $firstName, $bday, $ge
     $st = $pdo->prepare($query);
     $st->execute([$email, $phoneNum, $pwd, $secondName, $firstName, $bday, $gender]);
 
+    $recruitId = $pdo->lastInsertId();
     $st = null;
     $pdo = null;
 
-    return "회원가입 성공";
+    return $recruitId;
 }
 
 function isEmailDuplicated($email){
