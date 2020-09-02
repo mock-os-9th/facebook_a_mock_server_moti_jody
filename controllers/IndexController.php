@@ -480,6 +480,71 @@ try {
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        case "getMainFeed":
+            http_response_code(200);
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+            $page = $_GET["page"];
+            $page = isset($page) ? intval($page) : null;
+            $limit = $_GET["limit"];
+            $limit = isset($limit) ? intval($limit) : null;
+
+
+            $userIdx = getUserIdxFromJwt($jwt,JWT_SECRET_KEY);
+
+            if($userIdx == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(is_null($page)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "page is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(is_null($limit)){
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "limit is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(gettype($page) != 'integer'){
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "page의 타입이 잘못되었습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(gettype($limit) != 'integer'){
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "limit의 타입이 잘못되었습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            $res->page = $page;
+            $res->limit = $limit;
+            $res->result = getMainFeed($page,$limit,$userIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "메인 피드 조회 성공";
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

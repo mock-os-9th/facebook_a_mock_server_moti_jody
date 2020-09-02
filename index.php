@@ -25,6 +25,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/jwt', ['MainController', 'validateJwt']);
     $r->addRoute('POST', '/login', ['MainController', 'createJwt']);
 
+    $r->addRoute('GET','/posts', ['IndexController','getMainFeed']);
+
     $r->addRoute('PATCH','/comment/{idx}/like',['IndexController','commentLikePush']);
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
