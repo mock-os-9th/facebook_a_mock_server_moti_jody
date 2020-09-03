@@ -16,7 +16,8 @@ function createUser($email, $phoneNum, $pwd, $secondName, $firstName, $bday, $ge
     return $recruitId;
 }
 
-function isEmailDuplicated($email){
+function isEmailDuplicated($email)
+{
     $pdo = pdoSqlConnect();
     $query = "SELECT EXISTS(SELECT * FROM User WHERE email = ?) AS exist;";
 
@@ -25,11 +26,14 @@ function isEmailDuplicated($email){
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return intval($res[0]["exist"]);
 }
-function isPhoneNumDuplicate($phoneNum){
+
+function isPhoneNumDuplicate($phoneNum)
+{
     $pdo = pdoSqlConnect();
     $query = "SELECT EXISTS(SELECT * FROM User WHERE phoneNum = ?) AS exist;";
 
@@ -38,19 +42,21 @@ function isPhoneNumDuplicate($phoneNum){
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return intval($res[0]["exist"]);
 }
 
-function isValidUser($id, $pw){
+function isValidUser($id, $pw)
+{
     $pdo = pdoSqlConnect();
 
-    if(isValidPhoneNum($id)){
+    if (isValidPhoneNum($id)) {
         $query = "SELECT EXISTS(SELECT * FROM User WHERE phoneNum= ? AND pwd = ? AND isDeleted = 'N') AS exist;";
-    }else if(isValidEmail($id)){
+    } else if (isValidEmail($id)) {
         $query = "SELECT EXISTS(SELECT * FROM User WHERE email= ? AND pwd = ? AND isDeleted = 'N') AS exist;";
-    }else{
+    } else {
         return false;
     }
     $st = $pdo->prepare($query);
@@ -58,7 +64,8 @@ function isValidUser($id, $pw){
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return intval($res[0]["exist"]);
 }
@@ -67,22 +74,24 @@ function deleteUser($id)
 {
     $pdo = pdoSqlConnect();
 
-    if(isValidPhoneNum($id)){
+    if (isValidPhoneNum($id)) {
         $query = "UPDATE User SET isDeleted = 'Y' WHERE phoneNum = ?;";
-    }else if(isValidEmail($id)){
+    } else if (isValidEmail($id)) {
         $query = "UPDATE User SET isDeleted = 'Y' WHERE email = ?;";
-    }else{
+    } else {
         return false;
     }
     $st = $pdo->prepare($query);
     $st->execute([$id]);
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return $id;
 }
 
-function getUserCareer($idx, $bound) {
+function getUserCareer($idx, $bound)
+{
     $pdo = pdoSqlConnect();
     $query = "SELECT careerName FROM UserCareer WHERE userIdx = ? AND careerPrivacyBounds = ? AND isDeleted = 'N';";
 
@@ -91,12 +100,14 @@ function getUserCareer($idx, $bound) {
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return $res;
 }
 
-function isCareerIdxExists($idx) {
+function isCareerIdxExists($idx)
+{
     $pdo = pdoSqlConnect();
     $query = "SELECT EXISTS(SELECT * FROM UserCareer WHERE userIdx = ? and isDeleted = 'N') AS exist;";
 
@@ -105,11 +116,14 @@ function isCareerIdxExists($idx) {
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return intval($res[0]["exist"]);
 }
-function isValidUserIdx($idx) {
+
+function isValidUserIdx($idx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "SELECT EXISTS(SELECT * FROM User WHERE userIdx = ? and isDeleted = 'N') AS exist;";
@@ -119,11 +133,14 @@ function isValidUserIdx($idx) {
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return intval($res[0]["exist"]);
 }
-function isValidAccessRights($idx, $targetIdx) {
+
+function isValidAccessRights($idx, $targetIdx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "SELECT NOT EXISTS(SELECT * FROM Blocked WHERE userIdx = ? AND blockedUserIdx = ? AND isDeleted = 'N') AS notExist";
@@ -133,19 +150,21 @@ function isValidAccessRights($idx, $targetIdx) {
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return intval($res[0]["notExist"]);
 }
 
-function getUserIdxFromId($id){
+function getUserIdxFromId($id)
+{
     $pdo = pdoSqlConnect();
 
-    if(isValidPhoneNum($id)){
+    if (isValidPhoneNum($id)) {
         $query = "select userIdx from User where phoneNum = ? and isDeleted = 'N'";
-    }else if(isValidEmail($id)){
+    } else if (isValidEmail($id)) {
         $query = "select userIdx from User where email = ? and isDeleted = 'N'";
-    }else{
+    } else {
         return false;
     }
 
@@ -154,12 +173,14 @@ function getUserIdxFromId($id){
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return intval($res[0]["userIdx"]);
 }
 
-function isValidCommentIdx($idx){
+function isValidCommentIdx($idx)
+{
     $pdo = pdoSqlConnect();
     $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE commentIdx = ? and isDeleted = 'N') AS exist;";
 
@@ -168,48 +189,55 @@ function isValidCommentIdx($idx){
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return intval($res[0]["exist"]);
 }
 
-function isUserLikedComment($userIdx,$commentIdx){
+function isUserLikedComment($userIdx, $commentIdx)
+{
     $pdo = pdoSqlConnect();
     $query = "SELECT EXISTS(SELECT * FROM CommentLike WHERE userIdx = ? and commentIdx = ?) AS exist;";
 
     $st = $pdo->prepare($query);
-    $st->execute([$userIdx,$commentIdx]);
+    $st->execute([$userIdx, $commentIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 
     return intval($res[0]["exist"]);
 }
 
-function modifyCommentLike($commentIdx,$userIdx,$likeIdx,$isLike){
+function modifyCommentLike($commentIdx, $userIdx, $likeIdx, $isLike)
+{
     $pdo = pdoSqlConnect();
 
-    if($isLike == 'N'){
+    if ($isLike == 'N') {
         $query = "update CommentLike set commentLikeIdx = ?, isDeleted = 'N' where commentIdx = ? and userIdx = ?";
         $st = $pdo->prepare($query);
-        $st->execute([$likeIdx,$commentIdx,$userIdx]);
-    }else{
+        $st->execute([$likeIdx, $commentIdx, $userIdx]);
+    } else {
         $query = "update CommentLike set isDeleted = 'Y' where commentIdx = ? and userIdx = ?";
         $st = $pdo->prepare($query);
-        $st->execute([$commentIdx,$userIdx]);
+        $st->execute([$commentIdx, $userIdx]);
     }
 
-    $st=null;$pdo = null;
+    $st = null;
+    $pdo = null;
 }
 
-function makeCommentLike($commentIdx,$userIdx,$likeIdx){
+function makeCommentLike($commentIdx, $userIdx, $likeIdx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "insert into CommentLike (commentIdx,userIdx,commentLikeIdx) values (?,?,?)";
     $st = $pdo->prepare($query);
-    $st->execute([$commentIdx,$userIdx,$likeIdx]);
-    $st=null;$pdo = null;
+    $st->execute([$commentIdx, $userIdx, $likeIdx]);
+    $st = null;
+    $pdo = null;
 }
 
 function getMainFeed($page, $limit, $userIdx)
@@ -303,7 +331,16 @@ left outer join UserPostHide on UserPostHide.postIdx = Posts.postIdx
 left outer join PostLike on PostLike.postIdx = Posts.postIdx
 left outer join UserPostSaved on UserPostSaved.postIdx = Posts.postIdx
 left outer join SettingPostNotification on SettingPostNotification.postIdx = Posts.postIdx
-where Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx)
+where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.userIdx = $userIdx,false,true))
+                                           from PrivacyBoundExcept
+                                           where Posts.postIdx = PrivacyBoundExcept.idx
+                                             and PrivacyBoundExcept.exceptApplyType = 'P'group by PrivacyBoundExcept.idx), true)
+  and if(postPrivacyBounds = 'S', true = (select bit_or(if(PrivacyBoundShow.userIdx = $userIdx,true,false))
+                                           from PrivacyBoundShow
+                                           where Posts.postIdx = PrivacyBoundShow.idx
+                                             and PrivacyBoundShow.showApplyType = 'P'), true) 
+  and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
+  and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
 order by Posts.createAt desc
 limit $page,$limit;";
     $st = $pdo->prepare($query);
@@ -312,7 +349,7 @@ limit $page,$limit;";
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
-    foreach($res as $key => $row){
+    foreach ($res as $key => $row) {
         $res[$key]['imgVodList'] = json_decode($row['imgVodList']);
         $res[$key]['likeImgList'] = json_decode($row['likeImgList']);
     }
@@ -323,7 +360,95 @@ limit $page,$limit;";
     return $res;
 }
 
+function isValidMoodIdx($moodIdx)
+{
+    $pdo = pdoSqlConnect();
 
+    $query = "select exists(select * from PostMood where moodIdx = ?) as exist";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$moodIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]['exist']);
+}
+
+function isValidActivityIdx($activityIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "select exists(select * from PostActivity where activityIdx = ?) as exist";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$activityIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]['exist']);
+}
+
+function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,moodActivity) values ('P',?,?,?,?,?);";
+    echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
+    $st = $pdo->prepare($query);
+    $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity]);
+
+    $mainPostIdx = $pdo->lastInsertId();
+
+    if ($moodActivity == 'M') {
+        $query = "insert into PostMood(moodIdx, postIdx) VALUES (?,?)";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$moodIdx, $mainPostIdx]);
+    }
+    if ($moodActivity == 'A') {
+        $query = "insert into PostActivity(activityIdx, postIdx,activityContents) VALUES (?,?,?)";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$activityIdx, $mainPostIdx, $activityContents]);
+    }
+
+
+    if ($postPrivacyBound == 'E') {
+        foreach ($friendExcept as $key => $item) {
+            $query = "insert into PrivacyBoundExcept(idx, userIdx, exceptApplyType) VALUES (?,?,?)";
+
+            $st = $pdo->prepare($query);
+            $st->execute([$mainPostIdx, $item, 'P']);
+        }
+    }
+    if ($postPrivacyBound == 'S') {
+        foreach ($friendShow as $key => $item) {
+            $query = "insert into PrivacyBoundShow(idx, userIdx, showApplyType) VALUES (?,?,?)";
+
+            $st = $pdo->prepare($query);
+            $st->execute([$mainPostIdx, $item, 'P']);
+        }
+    }
+    foreach ($imgVodList as $key => $item) {
+        $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl) values ('I',?,?,?,?,?)";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $item->imgVodContents, $item->imgVodUrl]);
+
+        $imgPostIdx = $pdo->lastInsertId();
+
+        $query = "insert into PostImgVideo(postIdx,imgVideoPostIdx) values (?,?)";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$mainPostIdx, $imgPostIdx]);
+    }
+}
 
 ////READ
 //function testDetail($testNo)

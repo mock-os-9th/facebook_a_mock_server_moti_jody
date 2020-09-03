@@ -215,3 +215,15 @@ function isValidBound($bound) {
     }
     return 0;
 }
+function isValidPrivacyBoundType($bound){
+    if($bound != 'G' && $bound != 'F' &&$bound != 'E' &&$bound != 'S' &&$bound != 'M' &&$bound != 'L'){
+        return 0;
+    }
+    return 1;
+}
+function isValidMoodActivityType($moodActivity){
+    if($moodActivity != 'M' && $moodActivity != 'A'){
+        return 0;
+    }
+    return 1;
+}
