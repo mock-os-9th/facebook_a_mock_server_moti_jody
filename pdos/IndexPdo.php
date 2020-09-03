@@ -204,6 +204,104 @@ function getUserFriendList($idx)
     return $res;
 }
 
+function blockUser($idx, $targetIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "INSERT INTO Blocked (useridx, blockedUserIdx) VALUES (?, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
+    $st = null;
+    $pdo = null;
+}
+
+function isBlockedFriend($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT EXISTS(SELECT * FROM Blocked WHERE userIdx = ? AND blockedUserIdx = ? AND isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+function isFriend($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT EXISTS(SELECT * FROM Friends WHERE userIdx = ? AND friendIdx = ? AND isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+function followUser($idx, $targetIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE Following SET isDeleted = 'N' WHERE userIdx = ? AND followingUserIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
+    $st = null;
+    $pdo = null;
+}
+function unfollowUser($idx, $targetIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE Following SET isDeleted = 'Y' WHERE userIdx = ? AND followingUserIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
+    $st = null;
+    $pdo = null;
+}
+function isFollowedFriend($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT EXISTS(SELECT * FROM Following WHERE userIdx = ? AND followingUserIdx = ? AND isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+function isUnFollowedFriend($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT EXISTS(SELECT * FROM Following WHERE userIdx = ? AND followingUserIdx = ? AND isDeleted = 'Y') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+
 function isValidCommentIdx($idx)
 {
     $pdo = pdoSqlConnect();
@@ -289,6 +387,8 @@ function getMainFeed($page, $limit, $userIdx)
        Activity.activityImgUrl,
        Activity.activityContents,
        Posts.postContents,
+       Posts.postImgVideoUrl,
+       Posts.postImgVideoType,
        Posts.postSharedType                                    as sharedPostType,
        Posts.postSharedIdx,
        UserName.postIdx,
@@ -320,7 +420,7 @@ from Posts
                                    left outer join ActivityCategory
                                                    on PostActivity.activityIdx = ActivityCategory.activityIdx) as Activity
                          on Activity.postIdx = Posts.postIdx
-         left outer join (select json_arrayagg(json_object('imgVodUrl', Posts.postImgVideoUrl, 'imgVodContents',
+         left outer join (select json_arrayagg(json_object('imgVodPostIdx',Posts.postIdx,'imgVodUrl', Posts.postImgVideoUrl,'imgVodType',Posts.postImgVideoType, 'imgVodContents',
                                                            Posts.postContents, 'imgVodLikeCount',
                                                            ImgVideoLike.imgVodLikeCount, 'imgVodCommentCount',
                                                            imgVodCommentCount, 'imgVodSharedCount', imgVodSharedCount,
