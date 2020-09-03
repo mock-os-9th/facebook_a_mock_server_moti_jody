@@ -257,6 +257,72 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
+        case "getUserFriend":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "해당유저가 존재하지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $idx = getUserIdxFromId($data->id);
+
+            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+
+            if ($targetIdx == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "idx가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (is_integer($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "idx는 int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if ($targetIdx == 0) {
+                $targetIdx = $idx;
+            } else if (!isValidUserIdx($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "존재하지 않는 타겟 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if ($targetIdx != $idx) {
+                if (!isValidAccessRights($idx, $targetIdx)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 470;
+                    $res->message = "접근 권한이 없습니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+            }
+
+            $res->result = getUserFriend($targetIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "전체 친구 목록 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
         case "getUserCareer":
             http_response_code(200);
 
@@ -353,6 +419,61 @@ try {
             }
 
             $res->result = getUserCareer($targetIdx, $bound);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "경력 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        case "getUserFriendList":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "해당유저가 존재하지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $idx = getUserIdxFromId($data->id);
+
+            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+
+            if ($targetIdx == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "idx가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (is_integer($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "idx는 int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if ($targetIdx == 0) {
+                $targetIdx = $idx;
+            } else if (!isValidUserIdx($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "존재하지 않는 타겟 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $res->result = getUserFriendList($targetIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "경력 조회 성공";

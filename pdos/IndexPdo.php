@@ -179,6 +179,31 @@ function getUserIdxFromId($id)
     return intval($res[0]["userIdx"]);
 }
 
+function getUserFriendList($idx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select f.friendIdx,
+                   concat(u.firstName, ' ', u.secondName) as userName,
+                   u.profileImgUrl,
+                   (SELECT count(F.userIdx)
+                    from Friends F
+                    WHERE F.userIdx IN (SELECT userIdx FROM Friends WHERE Friends.friendIdx = f.friendIdx)
+                    AND F.friendIdx = $idx) as knowingFriendCount
+            from Friends as f
+                inner join (select userIdx, firstName, secondName, profileImgUrl from User) as u on u.userIdx = f.friendIdx
+            where f.userIdx = $idx;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+
 function isValidCommentIdx($idx)
 {
     $pdo = pdoSqlConnect();
