@@ -241,7 +241,7 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
     }
 }
 
-function getPersonalFeed($page, $limit, $isFilter, $date, $writerType, $userIdx)
+function getPersonalFeed($page, $limit, $isFilter, $date, $writerType, $userIdx, $searchIdx)
 {
     $pdo = pdoSqlConnect();
 
@@ -360,13 +360,14 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
                                              and PrivacyBoundShow.showApplyType = 'P'), true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
   and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
-  and if(`".$isFilter."` = 'Y', if(isnull(`".$date."`),true, date(Posts.createAt) = `".$date."`) and if(isnull(`".$writerType."`),true,(case when `".$writerType."` = 'G' then true when `".$writerType."` = 'M' then $userIdx = Posts.writerIdx else not $userIdx = Posts.writerIdx end)) ,true)
+  and if(? = 'Y', if(isnull(?),true, date(Posts.createAt) = ?) and if(isnull(?),true,(case when ? = 'G' then true when ? = 'M' then $userIdx = Posts.writerIdx else not $userIdx = Posts.writerIdx end)) ,true)
   and Posts.postType = 'P'
+  and Posts.userIdx = $searchIdx
 order by Posts.createAt desc
 limit $page,$limit;";
 
     $st = $pdo->prepare($query);
-    $st->execute();
+    $st->execute([$isFilter,$date,$date,$writerType,$writerType,$writerType]);
 
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();

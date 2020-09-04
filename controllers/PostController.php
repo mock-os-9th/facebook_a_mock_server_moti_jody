@@ -770,7 +770,7 @@ try {
 
             $res->page = $page;
             $res->limit = $limit;
-            $res->result = getPersonalFeed($page, $limit,$isFilter,$date,$writerType, $userIdx);
+            $res->result = getPersonalFeed($page, $limit,$isFilter,$date,$writerType, $userIdx, $searchIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "메인 피드 조회 성공";
