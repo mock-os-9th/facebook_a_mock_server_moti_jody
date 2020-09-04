@@ -798,7 +798,7 @@ try {
                 return;
             }
 
-            $res->result = getOnePost($postIdx);
+            $res->result = getOnePost($postIdx,$userIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "게시물 조회 성공";
