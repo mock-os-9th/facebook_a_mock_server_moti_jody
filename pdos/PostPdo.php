@@ -139,7 +139,7 @@ function isValidMoodIdx($moodIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "select exists(select * from PostMood where moodIdx = ?) as exist";
+    $query = "select exists(select * from MoodCategory where moodIdx = ?) as exist";
 
     $st = $pdo->prepare($query);
     $st->execute([$moodIdx]);
@@ -156,7 +156,7 @@ function isValidActivityIdx($activityIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "select exists(select * from PostActivity where activityIdx = ?) as exist";
+    $query = "select exists(select * from ActivityCategory where activityIdx = ?) as exist";
 
     $st = $pdo->prepare($query);
     $st->execute([$activityIdx]);
