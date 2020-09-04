@@ -153,7 +153,32 @@ try {
                 return;
             }
 
-            $res->result = blockUser($idx, $targetIdx);
+            blockUser($idx, $targetIdx);
+
+            if (isDeletedFriend($idx, $targetIdx) || isDeletedFriend($targetIdx, $idx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 461;
+                $res->message = "이미 삭제 된 사용자 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            deleteFriend($idx, $targetIdx);
+            deleteFriend($targetIdx, $idx);
+
+            if (isUnFollowedFriend($idx, $targetIdx) || isUnFollowedFriend($targetIdx, $idx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 462;
+                $res->message = "이미 언팔로우 된 사용자 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            unfollowUser($idx, $targetIdx);
+            unfollowUser($targetIdx, $idx);
+
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "친구 차단 성공";
@@ -416,7 +441,7 @@ try {
 
             if (isUnFollowedFriend($idx, $targetIdx) || isUnFollowedFriend($targetIdx, $idx)) {
                 $res->isSuccess = FALSE;
-                $res->code = 460;
+                $res->code = 461;
                 $res->message = "이미 언팔로우 된 사용자 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
