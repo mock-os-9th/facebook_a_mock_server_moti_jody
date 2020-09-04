@@ -609,7 +609,7 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (isValidUserIdx($searchIdx) == 0) {
+            if ($searchIdx != 0 && isValidUserIdx($searchIdx) == 0) {
                 $res->isSuccess = FALSE;
                 $res->code = 451;
                 $res->message = "userIdx에 해당하는 유저가 없습니다";
