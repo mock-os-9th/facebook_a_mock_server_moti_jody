@@ -19,22 +19,22 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']);
     $r->addRoute('DELETE', '/user', ['IndexController', 'deleteUser']);
 
-    $r->addRoute('GET', '/profile/info', ['IndexController', 'getUserInfo']);
-    $r->addRoute('GET', '/user/{idx}/career', ['IndexController', 'getUserCareer']);
+    $r->addRoute('GET', '/profile/info', ['UserController', 'getUserInfo']);
+    $r->addRoute('GET', '/user/{idx}/career', ['UserController', 'getUserCareer']);
 
-    $r->addRoute('GET', '/user/{idx}/friend', ['IndexController', 'getUserFriendList']);
-    $r->addRoute('PATCH', '/friend/{idx}/block', ['IndexController', 'blockUser']);
-    $r->addRoute('PATCH', '/friend/{idx}/follow', ['IndexController', 'followUser']);
-    $r->addRoute('PATCH', '/friend/{idx}/unfollow', ['IndexController', 'unfollowUser']);
+    $r->addRoute('GET', '/user/{idx}/friend', ['FriendController', 'getUserFriendList']);
+    $r->addRoute('PATCH', '/friend/{idx}/block', ['FriendController', 'blockUser']);
+    $r->addRoute('PATCH', '/friend/{idx}/follow', ['FriendController', 'followUser']);
+    $r->addRoute('PATCH', '/friend/{idx}/unfollow', ['FriendController', 'unfollowUser']);
 
 
     $r->addRoute('GET', '/jwt', ['MainController', 'validateJwt']);
     $r->addRoute('POST', '/login', ['MainController', 'createJwt']);
 
-    $r->addRoute('GET','/posts', ['IndexController','getMainFeed']);
-    $r->addRoute('POST','/posts',['IndexController','createPost']);
+    $r->addRoute('GET','/posts', ['PostController','getMainFeed']);
+    $r->addRoute('POST','/posts',['PostController','createPost']);
 
-    $r->addRoute('PATCH','/comment/{idx}/like',['IndexController','commentLikePush']);
+    $r->addRoute('PATCH','/comment/{idx}/like',['CommentController','commentLikePush']);
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)

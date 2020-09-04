@@ -1,0 +1,555 @@
+<?php
+require 'function.php';
+
+const JWT_SECRET_KEY = "TEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEY";
+
+$res = (object)array();
+header('Content-Type: json');
+$req = json_decode(file_get_contents("php://input"));
+try {
+    addAccessLogs($accessLogs, $req);
+    switch ($handler) {
+        case "index":
+            http_response_code(200);
+            echo "API Server";
+            break;
+        case "ACCESS_LOGS":
+            //            header('content-type text/html charset=utf-8');
+            header('Content-Type: text/html; charset=UTF-8');
+            getLogs("./logs/access.log");
+            break;
+        case "ERROR_LOGS":
+            //            header('content-type text/html charset=utf-8');
+            header('Content-Type: text/html; charset=UTF-8');
+            getLogs("./logs/errors.log");
+            break;
+            
+        case "commentLikePush":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+
+            if ($userIdx == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $commentIdx = intval($vars["idx"]);
+            $isLike = $req->isLike;
+            $likeIdx = $req->likeIdx;
+
+            if (gettype($commentIdx) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "댓글 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (gettype($isLike) != 'string') {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "댓글 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (gettype($likeIdx) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 412;
+                $res->message = "댓글 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (strlen($isLike) != 1) {
+                $res->isSuccess = FALSE;
+                $res->code = 420;
+                $res->message = "좋아요 여부 길이 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if ($isLike != 'N' && $isLike != 'Y') {
+                $res->isSuccess = FALSE;
+                $res->code = 430;
+                $res->message = "좋아요 여부 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (is_null($commentIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "댓글 인덱스가 null입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (is_null($isLike)) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "좋아요 여부가 null입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (is_null($likeIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "좋아요 인덱스가 null입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (!isValidCommentIdx($commentIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 댓글입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (isUserLikedComment($userIdx, $commentIdx)) {
+                modifyCommentLike($commentIdx, $userIdx, $likeIdx, $isLike);
+            } else {
+                makeCommentLike($commentIdx, $userIdx, $likeIdx);
+            }
+
+            $res->isSuccess = true;
+            $res->code = 200;
+            $res->message = "좋아요 변경 완료";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            return;
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        case "getMainFeed":
+            http_response_code(200);
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+            $page = $_GET["page"];
+            $page = isset($page) ? intval($page) : null;
+            $limit = $_GET["limit"];
+            $limit = isset($limit) ? intval($limit) : null;
+
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+            if ($userIdx == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (is_null($page)) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "page is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (is_null($limit)) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "limit is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (gettype($page) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "page의 타입이 잘못되었습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (gettype($limit) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "limit의 타입이 잘못되었습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            $res->page = $page;
+            $res->limit = $limit;
+            $res->result = getMainFeed($page, $limit, $userIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "메인 피드 조회 성공";
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        case "createPost":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+            $feedUserIdx = isset($req->userIdx) ? $req->feedUserIdx : null;
+            $postPrivacyBound = isset($req->postPrivacyBound) ? $req->postPrivacyBound : null;
+            $postContents = isset($req->postContents) ? $req->postContents : null;
+            $moodActivity = isset($req->moodActivity) ? $req->moodActivity : null;
+            $moodIdx = isset($req->moodIdx) ? $req->moodIdx : null;
+            $activityIdx = isset($req->activityIdx) ? $req->activityIdx : null;
+            $activityContents = isset($req->activityContents) ? $req->activityContents : null;
+            $imgVodList = isset($req->imgVodList) ? $req->imgVodList : null;
+            $friendExcept = isset($req->friendExcept) ? $req->friendExcept : null;
+            $friendShow = isset($req->friendShow) ? $req->friendShow : null;
+
+
+            if (is_null($postPrivacyBound)) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "공개범위는 필수입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (is_null($postContents) && is_null($imgVodList)) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "본문 혹은 사진은 필수입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if ($moodActivity == 'M') {
+                if (is_null($moodIdx)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 442;
+                    $res->message = "moodActivity가 M이면 moodIdx는 필수입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (gettype($moodIdx) != 'string') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 418;
+                    $res->message = "moodIdx의 타입이 잘못됐습니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (!isValidMoodIdx($moodIdx)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 454;
+                    $res->message = "존재하지 않는 moodIdx입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+
+            }
+            if ($moodActivity == 'A') {
+                if (is_null($activityIdx)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 442;
+                    $res->message = "moodActivity가 A이면 activityIdx는 필수입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (gettype($activityIdx) != 'integer') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 419;
+                    $res->message = "activityIdx의 타입이 잘못됐습니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+
+                if (!isValidActivityIdx($activityIdx)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 455;
+                    $res->message = "존재하지 않는 activityIdx입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+            }
+
+            if ($postPrivacyBound == 'E') {
+                if (is_null($friendExcept)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 444;
+                    $res->message = "postPrivacyBound가 E이면 friendExcept는 필수입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (gettype($friendExcept) != 'array') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 416;
+                    $res->message = "제외할 친구리스트 타입 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                foreach ($friendExcept as $key => $item) {
+                    if (gettype($item) != 'integer') {
+                        $res->isSuccess = FALSE;
+                        $res->code = 492;
+                        $res->message = "제외할 친구 인덱스 타입 오류";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                }
+
+                foreach ($friendExcept as $key => $item) {
+                    if (!isValidUserIdx($item)) {
+                        $res->isSuccess = FALSE;
+                        $res->code = 452;
+                        $res->message = "존재하지 않는 userIdx입니다";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                }
+            }
+            if ($postPrivacyBound == 'S') {
+                if (is_null($friendShow)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 445;
+                    $res->message = "postPrivacyBound가 S이면 friendShow는 필수입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (gettype($friendShow) != 'array') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 417;
+                    $res->message = "보여줄 친구리스트 타입 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+
+
+                foreach ($friendShow as $key => $item) {
+                    if (gettype($item) != 'integer') {
+                        $res->isSuccess = FALSE;
+                        $res->code = 493;
+                        $res->message = "보여줄 친구 인덱스 타입 오류";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                }
+
+                foreach ($friendShow as $key => $item) {
+                    if (!isValidUserIdx($item)) {
+                        $res->isSuccess = FALSE;
+                        $res->code = 453;
+                        $res->message = "존재하지 않는 userIdx입니다";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                }
+            }
+
+            if (!is_null($feedUserIdx)) {
+                if (gettype($feedUserIdx) != 'string') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 410;
+                    $res->message = "userIdx의 타입이 잘못됐습니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (gettype($feedUserIdx) != 'string') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 414;
+                    $res->message = "userIdx의 타입이 잘못됐습니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (!isValidUserIdx($feedUserIdx)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 451;
+                    $res->message = "존재하지 않는 userIdx입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+            }
+            if (gettype($postPrivacyBound) != 'string') {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "postPrivacyBound의 타입이 잘못됐습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (!is_null($postContents)) {
+                if (gettype($postContents) != 'string') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 412;
+                    $res->message = "postContents의 타입이 잘못됐습니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (strlen($postContents) > 500) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 421;
+                    $res->message = "본문 길이 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+            }
+
+            if (!is_null($moodActivity)) {
+                if (gettype($moodActivity) != 'string') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 413;
+                    $res->message = "moodActivity의 타입이 잘못됐습니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (strlen($moodActivity) != 1) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 422;
+                    $res->message = "moodActivity 길이 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (isValidMoodActivityType($moodActivity) == 0) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 431;
+                    $res->message = "moodActivity 유형 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+            }
+
+
+            if (!is_null($activityContents) && gettype($activityContents) != 'string') {
+                $res->isSuccess = FALSE;
+                $res->code = 490;
+                $res->message = "activityContents의 타입이 잘못됐습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+
+            if (!is_null($imgVodList)) {
+                if (gettype($imgVodList) != 'array') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 491;
+                    $res->message = "imgVodList의 타입이 잘못됐습니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+
+                foreach ($imgVodList as $key => $item) {
+                    if (gettype($item->imgVodUrl) != 'string') {
+                        $res->isSuccess = FALSE;
+                        $res->code = 414;
+                        $res->message = "imgVodUrl의 타입 오류";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                    if (gettype($item->imgVodContents) != 'string') {
+                        $res->isSuccess = FALSE;
+                        $res->code = 415;
+                        $res->message = "imgVodContents의 타입 오류";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                }
+
+                foreach ($imgVodList as $key => $item) {
+                    if (strlen($item->imgVodContents) > 100) {
+                        $res->isSuccess = FALSE;
+                        $res->code = 423;
+                        $res->message = "imgVodContents의 길이 오류";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                }
+            }
+
+            if (isValidPrivacyBoundType($postPrivacyBound) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 430;
+                $res->message = "postPrivacyBound 유형 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (strlen($postPrivacyBound) != 1) {
+                $res->isSuccess = FALSE;
+                $res->code = 420;
+                $res->message = "공개범위 길이 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+
+            $res->result = createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "게시글 생성 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+    }
+} catch (\Exception $e) {
+    return getSQLErrorException($errorLogs, $e, $req);
+}
