@@ -586,7 +586,7 @@ try {
             $writerType = $req->writerType;
             $writerType = isset($writerType) ? $writerType : null;
             $searchIdx = $vars['idx'];
-            $searchIdx = isset($searchIdx) ? $searchIdx : null;
+            $searchIdx = isset($searchIdx) ? intval($searchIdx) : null;
 
             $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
 
