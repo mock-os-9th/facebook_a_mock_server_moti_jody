@@ -9,7 +9,7 @@ function getMainFeed($page, $limit, $userIdx)
     $query = "select Posts.postType,
        UserName.userIdx                                              as userIdx,
        UserName.name                                                 as userName,
-       WriterName.userIdx                                            as writerIdx,
+       WriterName.writerIdx                                            as writerIdx,
        WriterName.name                                               as writerName,
        if(timestampdiff(minute, Posts.createAt, now()) > 60, if(timestampdiff(hour, Posts.createAt, now()) > 24,
                                                                 if(timestampdiff(day, Posts.createAt, now()) > 30,
@@ -45,7 +45,7 @@ from Posts
       from Posts
                left outer join User on User.userIdx = Posts.userIdx) as UserName on Posts.postIdx = UserName.postIdx
          left outer join
-     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.userIdx
+     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx
       from Posts
                left outer join User on User.userIdx = Posts.writerIdx) as WriterName
      on Posts.postIdx = WriterName.postIdx
@@ -250,7 +250,7 @@ function getPersonalFeed($page, $limit, $isFilter, $date, $writerType, $userIdx,
     $query = "select Posts.postType,
        UserName.userIdx                                              as userIdx,
        UserName.name                                                 as userName,
-       WriterName.userIdx                                            as writerIdx,
+       WriterName.writerIdx                                            as writerIdx,
        WriterName.name                                               as writerName,
        case
             when timestampdiff(month , Posts.createAt, now()) > 6 then concat(year(Posts.createAt),'년',month(Posts.createAt),'달',day(Posts.createAt),'일')
@@ -289,7 +289,7 @@ from Posts
       from Posts
                left outer join User on User.userIdx = Posts.userIdx) as UserName on Posts.postIdx = UserName.postIdx
          left outer join
-     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.userIdx
+     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx
       from Posts
                left outer join User on User.userIdx = Posts.writerIdx) as WriterName
      on Posts.postIdx = WriterName.postIdx
@@ -362,7 +362,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
   and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
   and if(? = 'Y', if(isnull(?),true, date(Posts.createAt) = ?) and if(isnull(?),true,(case when ? = 'G' then true when ? = 'M' then $userIdx = Posts.writerIdx else not $userIdx = Posts.writerIdx end)) ,true)
   and Posts.postType = 'P'
-  and if($searchIdx = 0,Posts.userIdx = $userIdx,Posts.userIdx = $searchIdx)
+  and if($searchIdx = 0,Posts.userIdx = $userIdx or Posts.writerIdx = $userIdx,Posts.writerIdx = $searchIdx or Posts.userIdx = $searchIdx)
 order by Posts.createAt desc
 limit $page,$limit;";
 
