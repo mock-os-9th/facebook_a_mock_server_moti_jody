@@ -227,3 +227,15 @@ function isValidMoodActivityType($moodActivity){
     }
     return 1;
 }
+function isValidYNType($var){
+    if($var != 'Y' && $var != 'N'){
+        return 0;
+    }
+    return 1;
+}
+function isValidWriterType($type){
+    if($type != 'M' && $type != 'P' && $type != 'O'){
+        return 0;
+    }
+    return 1;
+}

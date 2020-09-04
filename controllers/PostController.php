@@ -23,7 +23,7 @@ try {
             header('Content-Type: text/html; charset=UTF-8');
             getLogs("./logs/errors.log");
             break;
-            
+
         case "commentLikePush":
             http_response_code(200);
 
@@ -537,7 +537,7 @@ try {
                         addErrorLogs($errorLogs, $res, $req);
                         return;
                     }
-                    if(!is_null($item->imgVodUrl) && is_null($item -> imgVodType)){
+                    if (!is_null($item->imgVodUrl) && is_null($item->imgVodType)) {
                         $res->isSuccess = FALSE;
                         $res->code = 446;
                         $res->message = "imgVodUrl이 들어가면 imgVodType은 필수입니다";
@@ -575,6 +575,18 @@ try {
 
         case "getPersonalFeed":
             http_response_code(200);
+            $page = $_GET["page"];
+            $page = isset($page) ? intval($page) : null;
+            $limit = $_GET["limit"];
+            $limit = isset($limit) ? intval($limit) : null;
+            $isFilter = $_GET["isFilter"];
+            $isFilter = isset($isFilter) ? intval($isFilter) : null;
+            $date = $_GET["date"];
+            $date = isset($date) ? intval($date) : null;
+            $writerType = $_GET["writerType"];
+            $writerType = isset($writerType) ? intval($writerType) : null;
+            $searchIdx = $vars['idx'];
+            $searchIdx = isset($searchIdx) ? intval($searchIdx) : null;
 
             $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
 
@@ -589,7 +601,179 @@ try {
 
             $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
 
+            if ($userIdx == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (isValidUserIdx($searchIdx) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "userIdx에 해당하는 유저가 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
 
+            if (is_null($page)) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "page is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (is_null($limit)) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "limit is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (gettype($page) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "page의 타입이 잘못되었습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (gettype($limit) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "limit의 타입이 잘못되었습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (gettype($searchIdx) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 412;
+                $res->message = "유저 인덱스의 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (gettype($isFilter) != 'string') {
+                $res->isSuccess = FALSE;
+                $res->code = 413;
+                $res->message = "isFilter 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (isValidYNType($isFilter) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 430;
+                $res->message = "isFilter 유형 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (is_null($searchIdx) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "searchIdx is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (is_null($isFilter) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "isFilter is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (is_null($page) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 442;
+                $res->message = "page is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (is_null($limit) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 443;
+                $res->message = "limit is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if($isFilter == 'Y'){
+                if (is_null($date) == 0) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 444;
+                    $res->message = "date is null";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (is_null($writerType) == 0) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 445;
+                    $res->message = "writerType is null";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (gettype($date) != 'string') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 414;
+                    $res->message = "date 타입 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+
+                if (gettype($writerType) != 'string') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 415;
+                    $res->message = "writerType 유형 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if (isValidWriterType($writerType) == 0) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 431;
+                    $res->message = "writerType 유형 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+
+                if (isValidDate($date) == 0) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 432;
+                    $res->message = "date 유형 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+            }
+
+            $res->page = $page;
+            $res->limit = $limit;
+            $res->result = getPersonalFeed($page, $limit,$isFilter,$date,$writerType, $userIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "메인 피드 조회 성공";
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
