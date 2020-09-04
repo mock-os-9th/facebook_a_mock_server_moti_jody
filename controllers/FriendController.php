@@ -67,13 +67,8 @@ try {
                 return;
             }
 
-            $res->result = getUserFriendList($targetIdx);
-            foreach ($res->result->friendList as $key => $row) {
-                $res->result->friendList[$key]['friendIdx'] = json_decode($row['friendidx']);
-                $res->result->friendList[$key]['friendName'] = json_decode($row['friendName']);
-                $res->result->friendList[$key]['friendImgUrl'] = json_decode($row['friendImgUrl']);
-                $res->result->friendList[$key]['knowingFriendCount'] = json_decode($row['knowingFriendCount']);
-            }
+            $res->result = getUserFriendList($idx, $targetIdx);
+
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "전체 친구 목록 조회 성공";
