@@ -159,13 +159,29 @@ function isValidActivityIdx($activityIdx)
 function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow)
 {
     $pdo = pdoSqlConnect();
+    if(count($imgVodList) > 1){
+        $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,moodActivity) values ('P',?,?,?,?,?);";
+        echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
+        $st = $pdo->prepare($query);
+        $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity]);
 
-    $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,moodActivity) values ('P',?,?,?,?,?);";
-    echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
-    $st = $pdo->prepare($query);
-    $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity]);
+        $mainPostIdx = $pdo->lastInsertId();
+    }else if(count($imgVodList) == 1){
+        $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType,moodActivity) values ('P',?,?,?,?,?,?,?);";
+        echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
+        $st = $pdo->prepare($query);
+        $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents,$imgVodList[0]->imgVodUrl,$imgVodList[0]->imgVodType,$moodActivity]);
 
-    $mainPostIdx = $pdo->lastInsertId();
+        $mainPostIdx = $pdo->lastInsertId();
+    }else{
+        $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,moodActivity) values ('P',?,?,?,?,?);";
+        echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
+        $st = $pdo->prepare($query);
+        $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents,$moodActivity]);
+
+        $mainPostIdx = $pdo->lastInsertId();
+    }
+
 
     if ($moodActivity == 'M') {
         $query = "insert into PostMood(moodIdx, postIdx) VALUES (?,?)";
@@ -197,17 +213,19 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
             $st->execute([$mainPostIdx, $item, 'P']);
         }
     }
-    foreach ($imgVodList as $key => $item) {
-        $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl) values ('I',?,?,?,?,?)";
+    if(count($imgVodList) > 1){
+        foreach ($imgVodList as $key => $item) {
+            $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType) values ('I',?,?,?,?,?,?)";
 
-        $st = $pdo->prepare($query);
-        $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $item->imgVodContents, $item->imgVodUrl]);
+            $st = $pdo->prepare($query);
+            $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $item->imgVodContents, $item->imgVodUrl,$item->imgVodType]);
 
-        $imgPostIdx = $pdo->lastInsertId();
+            $imgPostIdx = $pdo->lastInsertId();
 
-        $query = "insert into PostImgVideo(postIdx,imgVideoPostIdx) values (?,?)";
+            $query = "insert into PostImgVideo(postIdx,imgVideoPostIdx) values (?,?)";
 
-        $st = $pdo->prepare($query);
-        $st->execute([$mainPostIdx, $imgPostIdx]);
+            $st = $pdo->prepare($query);
+            $st->execute([$mainPostIdx, $imgPostIdx]);
+        }
     }
 }

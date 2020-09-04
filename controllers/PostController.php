@@ -510,6 +510,14 @@ try {
                         addErrorLogs($errorLogs, $res, $req);
                         return;
                     }
+                    if (gettype($item->imgVodType) != 'string') {
+                        $res->isSuccess = FALSE;
+                        $res->code = 494;
+                        $res->message = "imgVodType의 타입 오류";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
                 }
 
                 foreach ($imgVodList as $key => $item) {
@@ -517,6 +525,22 @@ try {
                         $res->isSuccess = FALSE;
                         $res->code = 423;
                         $res->message = "imgVodContents의 길이 오류";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                    if (strlen($item->imgVodType) > 100) {
+                        $res->isSuccess = FALSE;
+                        $res->code = 424;
+                        $res->message = "imgVodType의 길이 오류";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                    if(!is_null($item->imgVodUrl) && is_null($item -> imgVodType)){
+                        $res->isSuccess = FALSE;
+                        $res->code = 446;
+                        $res->message = "imgVodUrl이 들어가면 imgVodType은 필수입니다";
                         echo json_encode($res, JSON_NUMERIC_CHECK);
                         addErrorLogs($errorLogs, $res, $req);
                         return;
@@ -541,7 +565,6 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-
 
             $res->result = createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow);
             $res->isSuccess = TRUE;
