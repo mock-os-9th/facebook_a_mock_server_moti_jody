@@ -716,23 +716,15 @@ try {
             }
 
             if($isFilter == 'Y'){
-                if (is_null($date)) {
+                if (is_null($date)&&is_null($writerType)) {
                     $res->isSuccess = FALSE;
                     $res->code = 444;
-                    $res->message = "date is null";
+                    $res->message = "isFilter가 Y이면 date나 writerType 둘 중 하나는 필수입니다";
                     echo json_encode($res, JSON_NUMERIC_CHECK);
                     addErrorLogs($errorLogs, $res, $req);
                     return;
                 }
-                if (is_null($writerType)) {
-                    $res->isSuccess = FALSE;
-                    $res->code = 445;
-                    $res->message = "writerType is null";
-                    echo json_encode($res, JSON_NUMERIC_CHECK);
-                    addErrorLogs($errorLogs, $res, $req);
-                    return;
-                }
-                if (gettype($date) != 'string') {
+                if (!is_null($date)&&gettype($date) != 'string') {
                     $res->isSuccess = FALSE;
                     $res->code = 414;
                     $res->message = "date 타입 오류";
@@ -741,7 +733,7 @@ try {
                     return;
                 }
 
-                if (gettype($writerType) != 'string') {
+                if (!is_null($writerType)&&gettype($writerType) != 'string') {
                     $res->isSuccess = FALSE;
                     $res->code = 415;
                     $res->message = "writerType 유형 오류";
@@ -749,7 +741,7 @@ try {
                     addErrorLogs($errorLogs, $res, $req);
                     return;
                 }
-                if (isValidWriterType($writerType) == 0) {
+                if (!is_null($writerType)&&isValidWriterType($writerType) == 0) {
                     $res->isSuccess = FALSE;
                     $res->code = 431;
                     $res->message = "writerType 유형 오류";
@@ -758,7 +750,7 @@ try {
                     return;
                 }
 
-                if (isValidDate($date) == 0) {
+                if (!is_null($date)&&isValidDate($date) == 0) {
                     $res->isSuccess = FALSE;
                     $res->code = 432;
                     $res->message = "date 유형 오류";
@@ -773,7 +765,7 @@ try {
             $res->result = getPersonalFeed($page, $limit,$isFilter,$date,$writerType, $userIdx, $searchIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
-            $res->message = "메인 피드 조회 성공";
+            $res->message = "개인 피드 조회 성공";
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
