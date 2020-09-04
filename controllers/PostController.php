@@ -580,13 +580,13 @@ try {
             $limit = $_GET["limit"];
             $limit = isset($limit) ? intval($limit) : null;
             $isFilter = $req->isFilter;
-            $isFilter = isset($isFilter) ? intval($isFilter) : null;
+            $isFilter = isset($isFilter) ? $isFilter : null;
             $date = $req->date;
-            $date = isset($date) ? intval($date) : null;
+            $date = isset($date) ? $date : null;
             $writerType = $req->writerType;
-            $writerType = isset($writerType) ? intval($writerType) : null;
+            $writerType = isset($writerType) ? $writerType : null;
             $searchIdx = $vars['idx'];
-            $searchIdx = isset($searchIdx) ? intval($searchIdx) : null;
+            $searchIdx = isset($searchIdx) ? $searchIdx : null;
 
             $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
 
