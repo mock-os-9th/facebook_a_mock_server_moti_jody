@@ -572,6 +572,27 @@ try {
             $res->message = "게시글 생성 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        case "getPersonalFeed":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

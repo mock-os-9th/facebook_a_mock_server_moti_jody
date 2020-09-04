@@ -7,17 +7,17 @@ function getMainFeed($page, $limit, $userIdx)
     $page = ($page - 1) * $limit;
 
     $query = "select Posts.postType,
-       UserName.userIdx                                        as userIdx,
-       UserName.name                                           as userName,
-       WriterName.userIdx                                      as writerIdx,
-       WriterName.name                                         as writerName,
+       UserName.userIdx                                              as userIdx,
+       UserName.name                                                 as userName,
+       WriterName.userIdx                                            as writerIdx,
+       WriterName.name                                               as writerName,
        if(timestampdiff(minute, Posts.createAt, now()) > 60, if(timestampdiff(hour, Posts.createAt, now()) > 24,
-                                                          if(timestampdiff(day, Posts.createAt, now()) > 30,
-                                                             concat(timestampdiff(month, Posts.createAt, now()), '개월'),
-                                                             concat(timestampdiff(day, Posts.createAt, now()), '일')),
-                                                          concat(timestampdiff(hour, Posts.createAt, now()), '시간')),
+                                                                if(timestampdiff(day, Posts.createAt, now()) > 30,
+                                                                   concat(timestampdiff(month, Posts.createAt, now()), '개월'),
+                                                                   concat(timestampdiff(day, Posts.createAt, now()), '일')),
+                                                                concat(timestampdiff(hour, Posts.createAt, now()), '시간')),
           concat(timestampdiff(minute, Posts.createAt, now()), '분')) as lastTime,
-       if(moodActivity = 'M', '기분', '활동')                      as moodActivity,
+       if(moodActivity = 'M', '기분', '활동')                            as moodActivity,
        Mood.moodName,
        Mood.moodImgUrl,
        Activity.activityName,
@@ -26,7 +26,7 @@ function getMainFeed($page, $limit, $userIdx)
        Posts.postContents,
        Posts.postImgVideoUrl,
        Posts.postImgVideoType,
-       Posts.postSharedType                                    as sharedPostType,
+       Posts.postSharedType                                          as sharedPostType,
        Posts.postSharedIdx,
        UserName.postIdx,
        imgVodList,
@@ -34,10 +34,11 @@ function getMainFeed($page, $limit, $userIdx)
        likeImgList,
        commentCount,
        sharedCount,
-       if(UserPostHide.userIdx = $userIdx,'Y','N') as isHided,
-       if(PostLike.userIdx = $userIdx,'Y','N') as isLiked,
-       if(UserPostSaved.userIdx = $userIdx,'Y','N') as isSaved,
-       if(SettingPostNotification.userIdx = $userIdx,'Y','N') as isNotificated
+       if(UserPostHide.userIdx = $userIdx, 'Y', 'N')                        as isHided,
+       if(PostLike.userIdx = $userIdx, 'Y', 'N')                            as isLiked,
+       if(UserPostSaved.userIdx = $userIdx, 'Y', 'N')                       as isSaved,
+       if(SettingPostNotification.userIdx = $userIdx, 'Y', 'N')             as isNotificated
+
 from Posts
          left outer join
      (select postIdx, concat(User.firstName, User.secondName) as name, Posts.userIdx
@@ -57,7 +58,7 @@ from Posts
                                    left outer join ActivityCategory
                                                    on PostActivity.activityIdx = ActivityCategory.activityIdx) as Activity
                          on Activity.postIdx = Posts.postIdx
-         left outer join (select json_arrayagg(json_object('imgVodPostIdx',Posts.postIdx,'imgVodUrl', Posts.postImgVideoUrl,'imgVodType',Posts.postImgVideoType, 'imgVodContents',
+         left outer join (select json_arrayagg(json_object('imgVodPostIdx',Posts.postIdx,'imgVodUrl', Posts.postImgVideoUrl,'imgVodType',Posts.postImgVideoType,'imgVodContents',
                                                            Posts.postContents, 'imgVodLikeCount',
                                                            ImgVideoLike.imgVodLikeCount, 'imgVodCommentCount',
                                                            imgVodCommentCount, 'imgVodSharedCount', imgVodSharedCount,
@@ -69,7 +70,7 @@ from Posts
                                    left outer join (select imgVideoPostIdx,
                                                            count(*)                                as imgVodLikeCount,
                                                            json_arrayagg(LikeCategory.likeIconUrl) as imgVodLikeImgList,
-                                                           if(PostLike.userIdx = 1, 'Y', 'N')      as isLiked
+                                                           if(PostLike.userIdx = $userIdx, 'Y', 'N')      as isLiked
                                                     from PostImgVideo
                                                              left outer join PostLike on PostLike.postIdx = PostImgVideo.imgVideoPostIdx
                                                              left outer join LikeCategory on likeIdx = PostLike.postLikeIdx
@@ -86,13 +87,25 @@ from Posts
                                                     group by imgVideoPostIdx) as ImgVideoShared
                                                    on ImgVideoShared.imgVideoPostIdx = PostImgVideo.imgVideoPostIdx
                           group by PostImgVideo.postIdx) as imgVodList on imgVodList.postIdx = Posts.postIdx
-left outer join (select Posts.postIdx, count(*) as likeCount, json_arrayagg(LikeCategory.likeIconUrl) as likeImgList from Posts left outer join PostLike on Posts.postIdx = PostLike.postIdx left outer join LikeCategory on LikeCategory.likeIdx = PostLike.postLikeIdx group by postIdx) as PostLikeCount on PostLikeCount.postIdx = Posts.postIdx
-left outer join (select Posts.postIdx, count(*) as commentCount from Posts left outer join PostComment on Posts.postIdx = PostComment.postIdx group by Posts.postIdx) as PostCommentCount on PostCommentCount.postIdx = Posts.postIdx
-left outer join (select Posts.postIdx, count(*) as sharedCount from Posts left outer join PostShared on Posts.postIdx = PostShared.postIdx group by Posts.postIdx) as PostSharedCount on PostSharedCount.postIdx = Posts.postIdx
-left outer join UserPostHide on UserPostHide.postIdx = Posts.postIdx
-left outer join PostLike on PostLike.postIdx = Posts.postIdx
-left outer join UserPostSaved on UserPostSaved.postIdx = Posts.postIdx
-left outer join SettingPostNotification on SettingPostNotification.postIdx = Posts.postIdx
+         left outer join (select Posts.postIdx,
+                                 count(*)                                as likeCount,
+                                 json_arrayagg(LikeCategory.likeIconUrl) as likeImgList
+                          from Posts
+                                   left outer join PostLike on Posts.postIdx = PostLike.postIdx
+                                   left outer join LikeCategory on LikeCategory.likeIdx = PostLike.postLikeIdx
+                          group by postIdx) as PostLikeCount on PostLikeCount.postIdx = Posts.postIdx
+         left outer join (select Posts.postIdx, count(*) as commentCount
+                          from Posts
+                                   left outer join PostComment on Posts.postIdx = PostComment.postIdx
+                          group by Posts.postIdx) as PostCommentCount on PostCommentCount.postIdx = Posts.postIdx
+         left outer join (select Posts.postIdx, count(*) as sharedCount
+                          from Posts
+                                   left outer join PostShared on Posts.postIdx = PostShared.postIdx
+                          group by Posts.postIdx) as PostSharedCount on PostSharedCount.postIdx = Posts.postIdx
+         left outer join UserPostHide on UserPostHide.postIdx = Posts.postIdx
+         left outer join PostLike on PostLike.postIdx = Posts.postIdx
+         left outer join UserPostSaved on UserPostSaved.postIdx = Posts.postIdx
+         left outer join SettingPostNotification on SettingPostNotification.postIdx = Posts.postIdx
 where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.userIdx = $userIdx,false,true))
                                            from PrivacyBoundExcept
                                            where Posts.postIdx = PrivacyBoundExcept.idx
@@ -100,9 +113,10 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
   and if(postPrivacyBounds = 'S', true = (select bit_or(if(PrivacyBoundShow.userIdx = $userIdx,true,false))
                                            from PrivacyBoundShow
                                            where Posts.postIdx = PrivacyBoundShow.idx
-                                             and PrivacyBoundShow.showApplyType = 'P'), true) 
+                                             and PrivacyBoundShow.showApplyType = 'P'), true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
   and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
+  and Posts.postType = 'P'
 order by Posts.createAt desc
 limit $page,$limit;";
     $st = $pdo->prepare($query);
@@ -126,7 +140,7 @@ function isValidMoodIdx($moodIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "select exists(select * from PostMood where moodIdx = ?) as exist";
+    $query = "select exists(select * from MoodCategory where moodIdx = ?) as exist";
 
     $st = $pdo->prepare($query);
     $st->execute([$moodIdx]);
@@ -143,7 +157,7 @@ function isValidActivityIdx($activityIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "select exists(select * from PostActivity where activityIdx = ?) as exist";
+    $query = "select exists(select * from ActivityCategory where activityIdx = ?) as exist";
 
     $st = $pdo->prepare($query);
     $st->execute([$activityIdx]);
@@ -161,21 +175,18 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
     $pdo = pdoSqlConnect();
     if(count($imgVodList) > 1){
         $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,moodActivity) values ('P',?,?,?,?,?);";
-        echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
         $st = $pdo->prepare($query);
         $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity]);
 
         $mainPostIdx = $pdo->lastInsertId();
     }else if(count($imgVodList) == 1){
         $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType,moodActivity) values ('P',?,?,?,?,?,?,?);";
-        echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
         $st = $pdo->prepare($query);
         $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents,$imgVodList[0]->imgVodUrl,$imgVodList[0]->imgVodType,$moodActivity]);
 
         $mainPostIdx = $pdo->lastInsertId();
     }else{
         $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,moodActivity) values ('P',?,?,?,?,?);";
-        echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
         $st = $pdo->prepare($query);
         $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents,$moodActivity]);
 
