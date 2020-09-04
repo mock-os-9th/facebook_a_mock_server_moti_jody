@@ -769,6 +769,42 @@ try {
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        case "getOnePost":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+            $postIdx = $vars['idx'];
+            $postIdx = isset($postIdx) ? intval($postIdx) : null;
+
+            if(isValidPostIdx($postIdx) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "해당 인덱스의 게시물이 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $res->result = getOnePost($postIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "게시물 조회 성공";
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);
