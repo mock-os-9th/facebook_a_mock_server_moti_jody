@@ -513,9 +513,9 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
                                              and PrivacyBoundShow.showApplyType = 'P'), true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
   and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
+  and Posts.postType = 'P'
   and Posts.postIdx = $postIdx
-order by Posts.createAt desc
-limit $page,$limit;";
+order by Posts.createAt desc";
     $st = $pdo->prepare($query);
     $st->execute();
 
