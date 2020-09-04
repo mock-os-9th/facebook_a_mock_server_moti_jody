@@ -18,7 +18,7 @@ function getUserFriendList($idx, $targetIdx)
                             FROM Friends
                             WHERE Friends.friendIdx = f.friendIdx
                                 AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N'  or userIdx = $targetIdx and Blocked.isDeleted = 'N'))
-                            AND F.friendIdx = $targetIdx),
+                            AND F.friendIdx = f.friendIdx AND F.userIdx != $idx),
                                 'isFriend', (
                                                case
                                                    when ((select exists(select *
