@@ -579,11 +579,11 @@ try {
             $page = isset($page) ? intval($page) : null;
             $limit = $_GET["limit"];
             $limit = isset($limit) ? intval($limit) : null;
-            $isFilter = $_GET["isFilter"];
+            $isFilter = $req->isFilter;
             $isFilter = isset($isFilter) ? intval($isFilter) : null;
-            $date = $_GET["date"];
+            $date = $req->date;
             $date = isset($date) ? intval($date) : null;
-            $writerType = $_GET["writerType"];
+            $writerType = $req->writerType;
             $writerType = isset($writerType) ? intval($writerType) : null;
             $searchIdx = $vars['idx'];
             $searchIdx = isset($searchIdx) ? intval($searchIdx) : null;
