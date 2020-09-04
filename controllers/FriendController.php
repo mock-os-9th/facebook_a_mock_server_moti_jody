@@ -60,8 +60,16 @@ try {
                 $targetIdx = $idx;
             } else if (!isValidUserIdx($targetIdx)) {
                 $res->isSuccess = FALSE;
-                $res->code = 452;
+                $res->code = 451;
                 $res->message = "존재하지 않는 타겟 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (!friendExist($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "조회할 친구가 없습니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
@@ -321,6 +329,61 @@ try {
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "친구 언팔로우 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        case "getTogetherFriendList":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "해당유저가 존재하지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $idx = getUserIdxFromId($data->id);
+
+            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+
+            if ($targetIdx == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "idx가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (is_integer($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "idx는 int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if ($targetIdx == 0) {
+                $targetIdx = $idx;
+            } else if (!isValidUserIdx($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "존재하지 않는 타겟 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $res->result = getTogetherFriendList($idx, $targetIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "전체 친구 목록 조회 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
     }
