@@ -1,41 +1,46 @@
 <?php
 
-function getUserFriendList($idx)
+function getUserFriendList($idx, $targetIdx)
 {
     $pdo = pdoSqlConnect();
     $query = "select concat(u.firstName, ' ', u.secondName) as userName,
-                       (select count(userIdx)
-                       from Friends
-                       where userIdx = $idx
-                         and friendIdx not in (select blockedUserIdx from Blocked where userIdx = $idx)
-                           ) as friendCount,
-                       (select json_arrayagg(json_object('friendIdx', f.friendIdx,
-                                'friendName', concat(u.firstName, ' ', u.secondName),
-                               'friendImgUrl', u.profileImgUrl,
-                               'knowingFriendCount', (SELECT count(F.userIdx)
-                                from Friends F
-                                WHERE F.userIdx IN (SELECT userIdx
-                                FROM Friends
-                                WHERE Friends.friendIdx = f.friendIdx
-                                    AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx))
-                                AND F.friendIdx = $idx))) as friendList
-                        from Friends as f
-                            inner join (select userIdx, firstName, secondName, profileImgUrl
-                            from User
-                            where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx)
-                                ) as u on u.userIdx = f.friendIdx
-                        where f.userIdx = $idx) as friendList
-                from User as u
-                where u.userIdx = $idx;";
+                   (select count(userIdx)
+                   from Friends
+                   where userIdx = $targetIdx
+                     and friendIdx not in (select blockedUserIdx from Blocked where userIdx = $idx or userIdx = $targetIdx)) as friendCount,
+                   (select json_arrayagg(friendobj) from (
+                    select json_object('friendIdx', f.friendIdx,
+                            'friendName', concat(u.firstName, ' ', u.secondName),
+                           'friendImgUrl', u.profileImgUrl,
+                           'knowingFriendCount', (SELECT count(F.userIdx)
+                            from Friends F
+                            WHERE F.userIdx IN (SELECT userIdx
+                            FROM Friends
+                            WHERE Friends.friendIdx = f.friendIdx
+                                AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx or userIdx = $targetIdx))
+                            AND F.friendIdx = $targetIdx)) as friendobj
+                    from Friends as f
+                        inner join (select userIdx, firstName, secondName, profileImgUrl
+                                    from User
+                                    where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx or useridx = $targetIdx)
+                                    ) as u on u.userIdx = f.friendIdx
+                    where f.userIdx = $targetIdx
+                    order by u.firstName
+                    ) as friendArray) as friendList
+            from User as u
+            where u.userIdx = $targetIdx;";
 
     $st = $pdo->prepare($query);
-    $st->execute([$idx]);
+    $st->execute([$idx, $targetIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
     $st = null;
     $pdo = null;
 
+    foreach ($res as $key => $row) {
+        $res[$key]['friendList'] = json_decode($row['friendList']);
+    }
     return $res[0];
 }
 
