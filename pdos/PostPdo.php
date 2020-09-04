@@ -362,7 +362,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
   and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
   and if(? = 'Y', if(isnull(?),true, date(Posts.createAt) = ?) and if(isnull(?),true,(case when ? = 'G' then true when ? = 'M' then $userIdx = Posts.writerIdx else not $userIdx = Posts.writerIdx end)) ,true)
   and Posts.postType = 'P'
-  and if($searchIdx = 0,Posts.userIdx = $userIdx,Posts.userIdx = $searchIdx)
+  and if($searchIdx = 0,Posts.userIdx = $userIdx or Posts.writerIdx = $userIdx,Posts.writerIdx = $searchIdx or Posts.userIdx = $searchIdx)
 order by Posts.createAt desc
 limit $page,$limit;";
 
