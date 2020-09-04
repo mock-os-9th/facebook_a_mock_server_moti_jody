@@ -67,12 +67,13 @@ try {
                 return;
             }
 
-            $res->result = getUserFriendList($targetIdx);
-            foreach ($res->result->friendList as $key => $row) {
-                $res->result->friendList[$key]['friendIdx'] = json_decode($row['friendidx']);
-                $res->result->friendList[$key]['friendName'] = json_decode($row['friendName']);
-                $res->result->friendList[$key]['friendImgUrl'] = json_decode($row['friendImgUrl']);
-                $res->result->friendList[$key]['knowingFriendCount'] = json_decode($row['knowingFriendCount']);
+            $getUserFriendList = getUserFriendList($targetIdx);
+            $res->result = $getUserFriendList;
+            foreach ($getUserFriendList as $key => $row) {
+                $getUserFriendList[$key]['friendIdx'] = json_decode($row['friendidx']);
+                $getUserFriendList[$key]['friendName'] = json_decode($row['friendName']);
+                $getUserFriendList[$key]['friendImgUrl'] = json_decode($row['friendImgUrl']);
+                $getUserFriendList[$key]['knowingFriendCount'] = json_decode($row['knowingFriendCount']);
             }
             $res->isSuccess = TRUE;
             $res->code = 200;
