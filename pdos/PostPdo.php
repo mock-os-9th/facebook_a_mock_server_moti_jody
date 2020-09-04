@@ -360,7 +360,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
                                              and PrivacyBoundShow.showApplyType = 'P'), true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
   and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
-  and if($isFilter = 'Y', if(isnull($date),true, date(Posts.createAt) = $date) and if(isnull($writerType),true,(case when $writerType = 'G' then true when $writerType = 'M' then $userIdx = Posts.writerIdx else not $userIdx = Posts.writerIdx end)) ,true)
+  and if(`".$isFilter."` = 'Y', if(isnull(`".$date."`),true, date(Posts.createAt) = `".$date."`) and if(isnull(`".$writerType."`),true,(case when `".$writerType."` = 'G' then true when `".$writerType."` = 'M' then $userIdx = Posts.writerIdx else not $userIdx = Posts.writerIdx end)) ,true)
   and Posts.postType = 'P'
 order by Posts.createAt desc
 limit $page,$limit;";
