@@ -116,6 +116,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
                                              and PrivacyBoundShow.showApplyType = 'P'), true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
   and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
+  and Posts.postType = 'P'
 order by Posts.createAt desc
 limit $page,$limit;";
     $st = $pdo->prepare($query);
@@ -174,21 +175,18 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
     $pdo = pdoSqlConnect();
     if(count($imgVodList) > 1){
         $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,moodActivity) values ('P',?,?,?,?,?);";
-        echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
         $st = $pdo->prepare($query);
         $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity]);
 
         $mainPostIdx = $pdo->lastInsertId();
     }else if(count($imgVodList) == 1){
         $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType,moodActivity) values ('P',?,?,?,?,?,?,?);";
-        echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
         $st = $pdo->prepare($query);
         $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents,$imgVodList[0]->imgVodUrl,$imgVodList[0]->imgVodType,$moodActivity]);
 
         $mainPostIdx = $pdo->lastInsertId();
     }else{
         $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,moodActivity) values ('P',?,?,?,?,?);";
-        echo $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity;
         $st = $pdo->prepare($query);
         $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $postContents,$moodActivity]);
 
