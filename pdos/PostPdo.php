@@ -9,7 +9,7 @@ function getMainFeed($page, $limit, $userIdx)
     $query = "select Posts.postType,
        UserName.userIdx                                              as userIdx,
        UserName.name                                                 as userName,
-       WriterName.userIdx                                            as writerIdx,
+       WriterName.writerIdx                                            as writerIdx,
        WriterName.name                                               as writerName,
        if(timestampdiff(minute, Posts.createAt, now()) > 60, if(timestampdiff(hour, Posts.createAt, now()) > 24,
                                                                 if(timestampdiff(day, Posts.createAt, now()) > 30,
@@ -250,7 +250,7 @@ function getPersonalFeed($page, $limit, $isFilter, $date, $writerType, $userIdx,
     $query = "select Posts.postType,
        UserName.userIdx                                              as userIdx,
        UserName.name                                                 as userName,
-       WriterName.userIdx                                            as writerIdx,
+       WriterName.writerIdx                                            as writerIdx,
        WriterName.name                                               as writerName,
        case
             when timestampdiff(month , Posts.createAt, now()) > 6 then concat(year(Posts.createAt),'년',month(Posts.createAt),'달',day(Posts.createAt),'일')
