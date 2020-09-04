@@ -679,7 +679,7 @@ try {
                 return;
             }
 
-            if (is_null($searchIdx) == 0) {
+            if (is_null($searchIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 440;
                 $res->message = "searchIdx is null";
@@ -688,7 +688,7 @@ try {
                 return;
             }
 
-            if (is_null($isFilter) == 0) {
+            if (is_null($isFilter)) {
                 $res->isSuccess = FALSE;
                 $res->code = 441;
                 $res->message = "isFilter is null";
@@ -697,7 +697,7 @@ try {
                 return;
             }
 
-            if (is_null($page) == 0) {
+            if (is_null($page)) {
                 $res->isSuccess = FALSE;
                 $res->code = 442;
                 $res->message = "page is null";
@@ -706,7 +706,7 @@ try {
                 return;
             }
 
-            if (is_null($limit) == 0) {
+            if (is_null($limit)) {
                 $res->isSuccess = FALSE;
                 $res->code = 443;
                 $res->message = "limit is null";
@@ -716,7 +716,7 @@ try {
             }
 
             if($isFilter == 'Y'){
-                if (is_null($date) == 0) {
+                if (is_null($date)) {
                     $res->isSuccess = FALSE;
                     $res->code = 444;
                     $res->message = "date is null";
@@ -724,7 +724,7 @@ try {
                     addErrorLogs($errorLogs, $res, $req);
                     return;
                 }
-                if (is_null($writerType) == 0) {
+                if (is_null($writerType)) {
                     $res->isSuccess = FALSE;
                     $res->code = 445;
                     $res->message = "writerType is null";
