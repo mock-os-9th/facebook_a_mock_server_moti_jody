@@ -64,7 +64,7 @@ function getUserFriendList($idx, $targetIdx)
 function friendExist($idx) {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT EXISTS(SELECT * FROM Friends WHERE userIdx = ? isDeleted = 'N') AS exist;";
+    $query = "SELECT EXISTS(SELECT * FROM Friends WHERE userIdx = ? and isDeleted = 'N') AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$idx]);
