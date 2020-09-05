@@ -34,7 +34,9 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('PATCH', '/friend/{idx}/follow', ['FriendController', 'followUser']);
     $r->addRoute('PATCH', '/friend/{idx}/unfollow', ['FriendController', 'unfollowUser']);
     $r->addRoute('DELETE', '/friend/{idx}', ['FriendController', 'deleteFriend']);
-    $r->addRoute('GET', '/friend/{idx}/together', ['FriendController', 'getTogetherFriendList']);
+    $r->addRoute('GET', '/friend/{idx}/together', ['FriendController', 'getKnownFriendList']);
+    $r->addRoute('GET', '/friendRequest', ['FriendController', 'getRequestedFriendList']);
+    $r->addRoute('GET', '/friend/{idx}', ['FriendController', 'searchFriend']);
 
     $r->addRoute('GET', '/jwt', ['MainController', 'validateJwt']);
     $r->addRoute('POST', '/login', ['MainController', 'createJwt']);

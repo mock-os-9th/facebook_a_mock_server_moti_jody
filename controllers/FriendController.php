@@ -338,6 +338,10 @@ try {
             $targetIdx = $vars['idx'];
             $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
+            if ($targetIdx == 0) {
+                $targetIdx = $idx;
+            }
+
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
                 $res->code = 441;
@@ -356,9 +360,7 @@ try {
                 return;
             }
 
-            if ($targetIdx == 0) {
-                $targetIdx = $idx;
-            } else if (!isValidUserIdx($targetIdx)) {
+            if (!isValidUserIdx($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 451;
                 $res->message = "존재하지 않는 타겟 idx 입니다";
@@ -761,8 +763,7 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
-
-        case "getTogetherFriendList":
+        case "getKnownFriendList":
             http_response_code(200);
 
             $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
@@ -800,9 +801,7 @@ try {
                 return;
             }
 
-            if ($targetIdx == 0) {
-                $targetIdx = $idx;
-            } else if (!isValidUserIdx($targetIdx)) {
+            if (!isValidUserIdx($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 452;
                 $res->message = "존재하지 않는 타겟 idx 입니다";
@@ -810,11 +809,68 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
+            if (isBlockedFriend($idx, $targetIdx) || isBlockedFriend($targetIdx, $idx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 470;
+                $res->message = "접근 권한이 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if ($idx == $targetIdx) {
+                $res->isSuccess = FALSE;
+                $res->code = 490;
+                $res->message = "자기 자신이 idx가 될 수 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (!isKnownFriendExist($idx, $targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "조회 할 함께 아는 친구가 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
 
-            $res->result = getTogetherFriendList($idx, $targetIdx);
+            $res->result = getKnownFriendList($idx, $targetIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
-            $res->message = "전체 친구 목록 조회 성공";
+            $res->message = "함께 아는 친구 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        case "getRequestedFriendList":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "해당유저가 존재하지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $idx = getUserIdxFromId($data->id);
+
+            if(!isRequestedFriendExist($idx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "조회 할 친구 요청이 없습니다 ";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $res->result = getRequestedFriendList($idx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "친구 요청 조회 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
     }
