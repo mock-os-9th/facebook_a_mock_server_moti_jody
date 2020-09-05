@@ -272,7 +272,7 @@ try {
                     addErrorLogs($errorLogs, $res, $req);
                     return;
                 }
-                if (gettype($moodIdx) != 'string') {
+                if (gettype($moodIdx) != 'integer') {
                     $res->isSuccess = FALSE;
                     $res->code = 417;
                     $res->message = "moodIdx의 타입이 잘못됐습니다";
@@ -295,6 +295,14 @@ try {
                     $res->isSuccess = FALSE;
                     $res->code = 442;
                     $res->message = "moodActivity가 A이면 activityIdx는 필수입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if(is_null($activityContents)){
+                    $res->isSuccess = FALSE;
+                    $res->code = 447;
+                    $res->message = "moodActivity가 A이면 activityContents는 필수입니다";
                     echo json_encode($res, JSON_NUMERIC_CHECK);
                     addErrorLogs($errorLogs, $res, $req);
                     return;
@@ -355,6 +363,14 @@ try {
                         addErrorLogs($errorLogs, $res, $req);
                         return;
                     }
+                    if(isFriend($userIdx,$item) == 0){
+                        $res->isSuccess = FALSE;
+                        $res->code = 457;
+                        $res->message = "friendExcept 친구가 아닌 인덱스가 있습니다";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
                 }
             }
             if ($postPrivacyBound == 'S') {
@@ -374,7 +390,6 @@ try {
                     addErrorLogs($errorLogs, $res, $req);
                     return;
                 }
-
 
                 foreach ($friendShow as $key => $item) {
                     if (gettype($item) != 'integer') {
@@ -396,22 +411,22 @@ try {
                         addErrorLogs($errorLogs, $res, $req);
                         return;
                     }
+                    if(isFriend($userIdx,$item) == 0){
+                        $res->isSuccess = FALSE;
+                        $res->code = 456;
+                        $res->message = "friendShow 친구가 아닌 인덱스가 있습니다";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
                 }
             }
 
             if (!is_null($feedUserIdx)) {
-                if (gettype($feedUserIdx) != 'string') {
+                if (gettype($feedUserIdx) != 'integer') {
                     $res->isSuccess = FALSE;
                     $res->code = 410;
-                    $res->message = "userIdx의 타입이 잘못됐습니다";
-                    echo json_encode($res, JSON_NUMERIC_CHECK);
-                    addErrorLogs($errorLogs, $res, $req);
-                    return;
-                }
-                if (gettype($feedUserIdx) != 'string') {
-                    $res->isSuccess = FALSE;
-                    $res->code = 414;
-                    $res->message = "userIdx의 타입이 잘못됐습니다";
+                    $res->message = "feedUserIdx의 타입이 잘못됐습니다";
                     echo json_encode($res, JSON_NUMERIC_CHECK);
                     addErrorLogs($errorLogs, $res, $req);
                     return;
