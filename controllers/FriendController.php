@@ -37,7 +37,7 @@ try {
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $idx = getUserIdxFromId($data->id);
 
-            $targetIdx = isset($req->friendIdx) ? $req->friendIdx : null;
+            $targetIdx = isset($req->targetIdx) ? $req->targetIdx : null;
 
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
