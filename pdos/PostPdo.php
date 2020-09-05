@@ -532,3 +532,97 @@ order by Posts.createAt desc";
 
     return $res[0];
 }
+
+function editPost($postIdx,$feedUserIdx,$userIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow){
+    $pdo = pdoSqlConnect();
+    if (count($imgVodList) > 1) {
+        $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx = ?;";
+        $st = $pdo->prepare($query);
+        $st->execute([$postPrivacyBound, $postContents, $moodActivity,$postIdx]);
+    } else if (count($imgVodList) == 1) {
+        $query = "update Posts set postPrivacyBounds=?,postContents=?,postImgVideoUrl=?,postImgVideoType=?,moodActivity=? where postIdx = ?;";
+        $st = $pdo->prepare($query);
+        $st->execute([$postPrivacyBound, $postContents, $imgVodList[0]->imgVodUrl, $imgVodList[0]->imgVodType, $moodActivity,$postIdx]);
+    } else {
+        $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx=?;";
+        $st = $pdo->prepare($query);
+        $st->execute([$postPrivacyBound, $postContents, $moodActivity,$postIdx]);
+    }
+
+
+    if ($moodActivity == 'M') {
+        $query = "update PostMood set moodIdx=? where postIdx = ? ";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$moodIdx, $postIdx]);
+    }
+    if ($moodActivity == 'A') {
+        $query = "update PostActivity set activityIdx=?, activityContents=? where postIdx = ?";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$activityIdx, $activityContents, $postIdx]);
+    }
+
+
+    if ($postPrivacyBound == 'E') {
+        $query = "delete from PrivacyBoundExcept where idx = ?";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$postIdx]);
+        foreach ($friendExcept as $key => $item) {
+            $query = "insert into PrivacyBoundExcept(idx, userIdx, exceptApplyType) values (?,?,'P')";
+
+            $st = $pdo->prepare($query);
+            $st->execute([$postIdx, $item]);
+        }
+    }
+    if ($postPrivacyBound == 'S') {
+        $query = "delete from PrivacyBoundShow where idx = ?";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$postIdx]);
+        foreach ($friendShow as $key => $item) {
+            $query = "insert into PrivacyBoundShow(idx, userIdx, showApplyType) values (?,?,'P')";
+
+            $st = $pdo->prepare($query);
+            $st->execute([$postIdx, $item]);
+        }
+    }
+    if(count($imgVodList) > 1) {
+        $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.postIdx = ?;";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$postIdx]);
+
+        foreach ($imgVodList as $key => $item) {
+            $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType) values ('I',?,?,?,?,?,?)";
+
+            $st = $pdo->prepare($query);
+            $st->execute([$feedUserIdx ,$userIdx,$postPrivacyBound, $item->imgVodContents, $item->imgVodUrl, $item->imgVodType]);
+
+            $imgPostIdx = $pdo->lastInsertId();
+
+            $query = "insert into PostImgVideo(postIdx,imgVideoPostIdx) values (?,?)";
+
+            $st = $pdo->prepare($query);
+            $st->execute([$postIdx, $imgPostIdx]);
+        }
+    }
+}
+
+function isEditablePost($userIdx,$postIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "select exists(select * from Posts where postIdx = ? and writerIdx = 'N' and isDeleted = 'N') as exist";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx,$userIdx]);
+
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]['exist']);
+}

@@ -40,6 +40,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST','/posts',['PostController','createPost']);
     $r->addRoute('GET','/user/{idx}/posts',['PostController','getPersonalFeed']);
     $r->addRoute('GET','/posts/{idx}',['PostController','getOnePost']);
+    $r->addRoute('PATCH','/posts/{idx}',['PostController','editPost']);
 
     $r->addRoute('PATCH','/comment/{idx}/like',['CommentController','commentLikePush']);
 
