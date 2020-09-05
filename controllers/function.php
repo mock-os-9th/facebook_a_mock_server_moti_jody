@@ -239,3 +239,9 @@ function isValidWriterType($type){
     }
     return 1;
 }
+function isValidlikeFilter($likeFilter){
+    if($likeFilter <= 0 && $likeFilter > 8){
+        return 0;
+    }
+    return 1;
+}
