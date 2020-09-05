@@ -36,7 +36,7 @@ function acceptFriendRequest($idx, $targetIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "INSERT INTO FriendRequest (senderIdx, receiverIdx) VALUES (?, ?);";
+    $query = "UPDATE FriendRequest SET isDeleted = 'Y' WHERE senderIdx = ? and receiverIdx = ?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$idx, $targetIdx]);

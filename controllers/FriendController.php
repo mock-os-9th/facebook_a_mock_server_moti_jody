@@ -157,7 +157,7 @@ try {
 
             if (isBlockedFriend($idx, $targetIdx)) {
                 $res->isSuccess = FALSE;
-                $res->code = 461;
+                $res->code = 462;
                 $res->message = "차단 된 사용자 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
@@ -174,12 +174,19 @@ try {
             if (isFriend($idx, $targetIdx) || !isRequestedFriend($idx, $targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 460;
-                $res->message = "이미 친구이거나 이미 친구 요청을 수락한 친구 입니다";
+                $res->message = "이미 친구 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-
+            if (!isRequestedFriend($idx, $targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 461;
+                $res->message = "사용자가 요청을 보낸 친구 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
             if ($idx == $targetIdx) {
                 $res->isSuccess = FALSE;
                 $res->code = 490;
