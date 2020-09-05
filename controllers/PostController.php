@@ -1388,6 +1388,7 @@ try {
             $page = isset($page)?intval($page):null;
             $limit = $_GET["limit"];
             $limit = isset($limit)?intval($limit):null;
+            $likeFilter = $_GET["likeFilter"];
             $likeFilter = isset($likeFilter)?intval($likeFilter):null;
             $postIdx = $vars["idx"];
             $postIdx = isset($postIdx)?intval($postIdx):null;
