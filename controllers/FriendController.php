@@ -902,7 +902,8 @@ try {
             $targetIdx = $vars['idx'];
             $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
-            $keyword = isset($_GET['keyword']) ? intval($_GET['keyword']) : null;
+            $keyword = $_GET['keyword'];
+            $keyword = isset($keyword) ? intval($keyword) : null;
 
             if ($targetIdx == 0) {
                 $targetIdx = $idx;
