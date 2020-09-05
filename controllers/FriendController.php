@@ -917,7 +917,7 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if ($keyword == null) {
+            if (is_null($keyword)) {
                 $res->isSuccess = FALSE;
                 $res->code = 442;
                 $res->message = "keyword가 null 입니다";
