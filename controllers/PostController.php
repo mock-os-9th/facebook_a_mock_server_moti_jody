@@ -1666,7 +1666,7 @@ try {
                 return;
             }
             $postType = getPostType($postIdx);
-            sharePost($postIdx,$userIdx,$friendIdx,$privacyBound,$contents);
+            sharePost($postIdx,$postType,$userIdx,$friendIdx,$privacyBound,$contents);
 
             $res->postIdx = $postIdx;
             $res->isSuccess = true;
