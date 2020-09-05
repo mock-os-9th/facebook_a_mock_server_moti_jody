@@ -823,11 +823,11 @@ function modifyPostHide($postIdx,$userIdx,$isHided){
     $pdo = pdoSqlConnect();
 
     if($isHided == 'N'){
-        $query = "update UserPostHide set isDeleted = 'Y' where userIdx = ? and postIdx = ?";
+        $query = "update UserPostHide set isDeleted = 'N' where userIdx = ? and postIdx = ?";
         $st = $pdo->prepare($query);
         $st->execute([$userIdx,$postIdx]);
     }else{
-        $query = "update UserPostHide set isDeleted = 'N' where userIdx = ? and postIdx = ?";
+        $query = "update UserPostHide set isDeleted = 'Y' where userIdx = ? and postIdx = ?";
         $st = $pdo->prepare($query);
         $st->execute([$userIdx,$postIdx]);
     }
