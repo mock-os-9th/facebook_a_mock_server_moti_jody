@@ -55,6 +55,9 @@ function addFriend($idx, $targetIdx) {
 
     $st = null;
     $pdo = null;
+}
+function addFollowing($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
 
     $query = "INSERT INTO Following (userIdx, followingUserIdx) VALUES (?, ?);";
 

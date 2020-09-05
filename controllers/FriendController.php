@@ -207,6 +207,8 @@ try {
                 acceptFriendRequest($targetIdx, $idx);
                 addFriend($idx, $targetIdx);
                 addFriend($targetIdx, $idx);
+                addFollowing($idx, $targetIdx);
+                addFollowing($targetIdx, $idx);
             }
 
             $res->isSuccess = TRUE;
