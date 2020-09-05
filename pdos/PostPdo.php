@@ -648,6 +648,22 @@ function deletePost($postIdx){
 
 }
 
+function isUserLikedPost($userIdx, $postIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM PostLike WHERE userIdx = ? and postIdx = ?) AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx, $postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+
 function modifyPostLike($postIdx, $userIdx, $likeIdx, $isLike)
 {
     $pdo = pdoSqlConnect();

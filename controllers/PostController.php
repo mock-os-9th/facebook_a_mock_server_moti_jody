@@ -1344,7 +1344,6 @@ try {
             } else {
                 makePostLike($postIdx, $userIdx, $likeIdx);
             }
-
             $res->isSuccess = true;
             $res->code = 200;
             $res->message = "좋아요 변경 완료";
