@@ -711,5 +711,9 @@ function getPostLikeStatus($postIdx,$userIdx){
     $st = null;
     $pdo = null;
 
-    return $res[0]['isDeleted'];
+    if($res[0]['isDeleted'] == 'N'){
+        return 'Y';
+    }else{
+        return 'N';
+    }
 }

@@ -1321,7 +1321,7 @@ try {
                 return;
             }
 
-
+            $isLike = null;
 
             if (isUserLikedPost($userIdx, $postIdx)) {
                 $isLike = getPostLikeStatus($postIdx,$userIdx);
@@ -1329,6 +1329,13 @@ try {
             } else {
                 makePostLike($postIdx, $userIdx, $likeIdx);
             }
+
+            if($isLike == 'N'){
+                $res->isLike = 'Y';
+            }else{
+                $res->isLike = 'N'
+            }
+
             $res->isSuccess = true;
             $res->code = 200;
             $res->message = "좋아요 변경 완료";
