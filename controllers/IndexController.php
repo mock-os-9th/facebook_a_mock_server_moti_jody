@@ -37,7 +37,7 @@ try {
             $secondName = isset($req->secondName) ? $req->secondName : null;
             $firstName = isset($req->firstName) ? $req->firstName : null;
             $bday = isset($req->bday) ? $req->bday : null;
-            $gender = isset($req->bday) ? $req->bday : null;
+            $gender = isset($req->gender) ? $req->gender : null;
 
             if ($phoneNum == null) {
                 $res->isSuccess = FALSE;
