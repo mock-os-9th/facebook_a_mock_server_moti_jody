@@ -1484,6 +1484,75 @@ try {
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        case "hidePost":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+            $postIdx = $vars["idx"];
+            $postIdx = isset($postIdx)?intval($postIdx):null;
+
+            if($postIdx == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "게시글 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(is_null($postIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "게시글 인덱스는 필수입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(isValidPostIdx($postIdx) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 게시글 인덱스 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(isEditablePost($userIdx,$postIdx) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 470;
+                $res->message = "숨기기 권한이 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(isPostHided($postIdx,$userIdx) == 0){
+                makePostHide($postIdx,$userIdx);
+                $res->isHided = 'Y';
+            }else{
+                $isHided = getPostHided($postIdx,$userIdx);
+                modifyPostHide($postIdx,$userIdx,$isHided);
+                $res->isHided = $isHided == 'N' ? 'Y' : 'N';
+            }
+
+
+            $res->isSuccess = true;
+            $res->code = 200;
+            $res->message = "게시글 숨기기 완료";
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

@@ -49,6 +49,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('DELETE','/posts/{idx}',['PostController','deletePost']);
     $r->addRoute('POST','/posts/{idx}/like',['PostController','postLikePush']);
     $r->addRoute('GET','/posts/{idx}/like',['PostController','getPostLikeList']);
+    $r->addRoute('POST','/hide/posts/{idx}',['PostController','hidePost']);
 
     $r->addRoute('PATCH','/comment/{idx}/like',['CommentController','commentLikePush']);
 
