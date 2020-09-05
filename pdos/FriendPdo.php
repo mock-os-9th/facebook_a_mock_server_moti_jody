@@ -156,7 +156,7 @@ function getUserFriendList($idx, $targetIdx)
                     from Friends as f
                         inner join (select userIdx, firstName, secondName, profileImgUrl
                                     from User
-                                    where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N'  or useridx = $targetIdx and Blocked.isDeleted = 'N')
+                                    where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N'  or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                                     ) as u on u.userIdx = f.friendIdx
                     where f.userIdx = $targetIdx
                     order by u.firstName
@@ -196,7 +196,7 @@ function blockUser($idx, $targetIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "INSERT INTO Blocked (useridx, blockedUserIdx) VALUES (?, ?);";
+    $query = "INSERT INTO Blocked (userIdx, blockedUserIdx) VALUES (?, ?);";
 
     $st = $pdo->prepare($query);
     $st->execute([$idx, $targetIdx]);
@@ -351,7 +351,7 @@ function getKnownFriendList($idx, $targetIdx)
                         inner join (select userIdx, firstName, secondName, profileImgUrl
                                     from User
                                     where userIdx != $idx
-                                        AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or useridx = $targetIdx and Blocked.isDeleted = 'N')
+                                        AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                                     ) as u on u.userIdx = f.friendIdx
                     where f.userIdx = $targetIdx
                         AND f.friendIdx in (
@@ -362,7 +362,7 @@ function getKnownFriendList($idx, $targetIdx)
                                   select blockedUserIdx
                                   from Blocked
                                   where userIdx = $idx and Blocked.isDeleted = 'N'
-                                     or useridx = $targetIdx and Blocked.isDeleted = 'N'
+                                     or userIdx = $targetIdx and Blocked.isDeleted = 'N'
                                   )
                             )
                     order by u.firstName
@@ -394,7 +394,7 @@ function isKnownFriendExist($idx, $targetIdx) {
                                           (select blockedUserIdx
                                           from Blocked
                                           where userIdx = $idx and Blocked.isDeleted = 'N'
-                                             or useridx = $targetIdx and Blocked.isDeleted = 'N')
+                                             or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                    )) AS exist;";
 
     $st = $pdo->prepare($query);
@@ -521,7 +521,7 @@ function searchFriend($idx, $targetIdx, $keyword)
                 from Friends as f
                     inner join (select userIdx, firstName, secondName, profileImgUrl
                                 from User
-                                where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or useridx = $targetIdx and Blocked.isDeleted = 'N')
+                                where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                                 ) as u on u.userIdx = f.friendIdx
                 where f.userIdx = $targetIdx
                 and (u.firstName like concat('%', $keyword, '%') or u.secondName like concat('%', $keyword, '%'))
@@ -549,9 +549,9 @@ function friendExistWithKeyword($idx, $targetIdx, $keyword) {
     $query = "SELECT EXISTS(
                 (select *
                 from Friends as f
-                    inner join (select userIdx, firstName, secondName, profileImgUrl
+                    inner join (select *
                                 from User
-                                where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or useridx = $targetIdx and Blocked.isDeleted = 'N')
+                                where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                                 ) as u on u.userIdx = f.friendIdx
                 where f.userIdx = $targetIdx
                 and (u.firstName like concat('%', $keyword, '%') or u.secondName like concat('%', $keyword, '%'))
