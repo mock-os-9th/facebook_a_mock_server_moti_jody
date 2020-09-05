@@ -37,7 +37,8 @@ try {
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $idx = getUserIdxFromId($data->id);
 
-            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+            $targetIdx = $vars['idx'];
+            $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
@@ -124,7 +125,8 @@ try {
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $idx = getUserIdxFromId($data->id);
 
-            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+            $targetIdx = $vars['idx'];
+            $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
@@ -223,7 +225,8 @@ try {
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $idx = getUserIdxFromId($data->id);
 
-            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+            $targetIdx = $vars['idx'];
+            $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
@@ -286,7 +289,8 @@ try {
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $idx = getUserIdxFromId($data->id);
 
-            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+            $targetIdx = $vars['idx'];
+            $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
@@ -389,7 +393,8 @@ try {
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $idx = getUserIdxFromId($data->id);
 
-            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+            $targetIdx = $vars['idx'];
+            $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
@@ -475,7 +480,8 @@ try {
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $idx = getUserIdxFromId($data->id);
 
-            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+            $targetIdx = $vars['idx'];
+            $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
@@ -561,7 +567,8 @@ try {
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $idx = getUserIdxFromId($data->id);
 
-            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+            $targetIdx = $vars['idx'];
+            $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
@@ -662,7 +669,8 @@ try {
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $idx = getUserIdxFromId($data->id);
 
-            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+            $targetIdx = $vars['idx'];
+            $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
