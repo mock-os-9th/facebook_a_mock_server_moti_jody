@@ -1242,6 +1242,117 @@ try {
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        case "postLikePush":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+            $postIdx = intval($vars["idx"]);
+            $isLike = $req->isLike;
+            $likeIdx = $req->likeIdx;
+
+            if (gettype($postIdx) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "게시글 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (gettype($isLike) != 'string') {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "isLike 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (gettype($likeIdx) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 412;
+                $res->message = "likeIdx 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (strlen($isLike) != 1) {
+                $res->isSuccess = FALSE;
+                $res->code = 420;
+                $res->message = "isLike 길이 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if ($isLike != 'N' && $isLike != 'Y') {
+                $res->isSuccess = FALSE;
+                $res->code = 430;
+                $res->message = "isLike 유형 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (is_null($postIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "게시글 인덱스는 필수입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (is_null($isLike)) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "isLike는 필수입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (is_null($likeIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 442;
+                $res->message = "likeIdx는 필수입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (!isValidPostIdx($postIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 게시글입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (isUserLikedPost($userIdx, $postIdx)) {
+                modifyPostLike($postIdx, $userIdx, $likeIdx, $isLike);
+            } else {
+                makePostLike($postIdx, $userIdx, $likeIdx);
+            }
+
+            $res->isSuccess = true;
+            $res->code = 200;
+            $res->message = "좋아요 변경 완료";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            return;
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

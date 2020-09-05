@@ -647,3 +647,32 @@ function deletePost($postIdx){
     $st->execute([$postIdx]);
 
 }
+
+function modifyPostLike($postIdx, $userIdx, $likeIdx, $isLike)
+{
+    $pdo = pdoSqlConnect();
+
+    if ($isLike == 'N') {
+        $query = "update PostLike set postLikeIdx = ?, isDeleted = 'N' where postIdx = ? and userIdx = ?";
+        $st = $pdo->prepare($query);
+        $st->execute([$likeIdx, $postIdx, $userIdx]);
+    } else {
+        $query = "update PostLike set isDeleted = 'Y' where postIdx = ? and userIdx = ?";
+        $st = $pdo->prepare($query);
+        $st->execute([$postIdx, $userIdx]);
+    }
+
+    $st = null;
+    $pdo = null;
+}
+
+function makePostLike($postIdx, $userIdx, $likeIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "insert into PostLike (postIdx,userIdx,postLikeIdx) values (?,?,?)";
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx, $userIdx, $likeIdx]);
+    $st = null;
+    $pdo = null;
+}
