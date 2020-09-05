@@ -43,7 +43,7 @@ function isRequestedFriend($idx, $targetIdx) {
 
     return intval($res[0]["exist"]);
 }
-function isAceeptedBefore($idx, $targetIdx) {
+function isAcceptedBefore($idx, $targetIdx) {
     $pdo = pdoSqlConnect();
 
     $query = "SELECT EXISTS(SELECT * FROM FriendRequest WHERE senderIdx = ? and receiverIdx = ? and isDeleted = 'Y') AS exist;";

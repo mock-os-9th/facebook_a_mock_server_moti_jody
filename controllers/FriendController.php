@@ -103,19 +103,9 @@ try {
 
             if(isAcceptedBefore($idx, $targetIdx)) {
                 updateRequestFriend($idx, $targetIdx);
-                $res->isSuccess = TRUE;
-                $res->code = 200;
-                $res->message = "친구 요청 성공";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                break;
             }
             else {
                 requestFriend($idx, $targetIdx);
-                $res->isSuccess = TRUE;
-                $res->code = 200;
-                $res->message = "친구 요청 성공";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                break;
             }
             $res->isSuccess = TRUE;
             $res->code = 200;
