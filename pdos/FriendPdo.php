@@ -1,5 +1,37 @@
 <?php
 
+function requestFriend($idx, $targetIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "INSERT INTO FriendRequest (senderIdx, receiverIdx) VALUES (?, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
+    $recruitId = $pdo->lastInsertId();
+    $st = null;
+    $pdo = null;
+
+    return $recruitId;
+}
+
+function isRequestedFriend($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT EXISTS(SELECT * FROM FriendRequest WHERE senderIdx = ? and receiverIdx = ? and isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+
 function getUserFriendList($idx, $targetIdx)
 {
     $pdo = pdoSqlConnect();

@@ -26,6 +26,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/profile/info', ['UserController', 'getUserInfo']);
     $r->addRoute('GET', '/user/{idx}/career', ['UserController', 'getUserCareer']);
 
+    $r->addRoute('POST', '/friendrequest', ['FriendController', 'requestFriend']);
     $r->addRoute('GET', '/user/{idx}/friend', ['FriendController', 'getUserFriendList']);
     $r->addRoute('PATCH', '/friend/{idx}/block', ['FriendController', 'blockUser']);
     $r->addRoute('PATCH', '/friend/{idx}/follow', ['FriendController', 'followUser']);
