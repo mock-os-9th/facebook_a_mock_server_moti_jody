@@ -376,6 +376,14 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
+            if (isBlockedFriend($idx, $targetIdx) || isBlockedFriend($targetIdx, $idx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 470;
+                $res->message = "접근 권한이 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
 
             $res->result = getUserFriendList($idx, $targetIdx);
             $res->isSuccess = TRUE;
@@ -873,6 +881,100 @@ try {
             $res->message = "친구 요청 조회 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        case "searchFriend":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "해당유저가 존재하지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $idx = getUserIdxFromId($data->id);
+
+            $targetIdx = $vars['idx'];
+            $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
+
+            $keyword = $_GET["keyword"];
+            $keyword = isset($keyword) ? stringval($keyword) : null;
+
+            if ($targetIdx == 0) {
+                $targetIdx = $idx;
+            }
+
+            if ($targetIdx == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "idx가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (is_null($keyword)) {
+                $res->isSuccess = FALSE;
+                $res->code = 442;
+                $res->message = "keyword가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (!is_integer($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "idx는 int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (gettype($keyword) != 'string') {
+                $res->isSuccess = FALSE;
+                $res->code = 412;
+                $res->message = "keyword는 String 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (!isValidUserIdx($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 타겟 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (!friendExistWithKeyword($idx, $targetIdx, $keyword)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "친구 검색 결과가 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (isBlockedFriend($idx, $targetIdx) || isBlockedFriend($targetIdx, $idx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 470;
+                $res->message = "접근 권한이 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $res->result = searchFriend($idx, $targetIdx, $keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "친구 검색 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);
