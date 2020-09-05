@@ -1333,7 +1333,7 @@ try {
             if($isLike == 'N'){
                 $res->isLike = 'Y';
             }else{
-                $res->isLike = 'N'
+                $res->isLike = 'N';
             }
 
             $res->isSuccess = true;
