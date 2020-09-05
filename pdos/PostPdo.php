@@ -86,6 +86,7 @@ from Posts
                                                              left outer join PostShared on imgVideoPostIdx = PostShared.postIdx
                                                     group by imgVideoPostIdx) as ImgVideoShared
                                                    on ImgVideoShared.imgVideoPostIdx = PostImgVideo.imgVideoPostIdx
+                                                   where Posts.isDeleted = 'N'
                           group by PostImgVideo.postIdx) as imgVodList on imgVodList.postIdx = Posts.postIdx
          left outer join (select Posts.postIdx,
                                  count(*)                                as likeCount,
@@ -117,6 +118,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
   and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
   and Posts.postType = 'P'
+  and isDeleted = 'N'
 order by Posts.createAt desc
 limit $page,$limit;";
     $st = $pdo->prepare($query);
@@ -330,6 +332,7 @@ from Posts
                                                              left outer join PostShared on imgVideoPostIdx = PostShared.postIdx
                                                     group by imgVideoPostIdx) as ImgVideoShared
                                                    on ImgVideoShared.imgVideoPostIdx = PostImgVideo.imgVideoPostIdx
+                                                   where Posts.isDeleted = 'N'
                           group by PostImgVideo.postIdx) as imgVodList on imgVodList.postIdx = Posts.postIdx
          left outer join (select Posts.postIdx,
                                  count(*)                                as likeCount,
@@ -363,6 +366,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
   and if(? = 'Y', if(isnull(?),true, date(Posts.createAt) = ?) and if(isnull(?),true,(case when ? = 'G' then true when ? = 'M' then $userIdx = Posts.writerIdx else not $userIdx = Posts.writerIdx end)) ,true)
   and Posts.postType = 'P'
   and if($searchIdx = 0,Posts.userIdx = $userIdx or Posts.writerIdx = $userIdx,Posts.writerIdx = $searchIdx or Posts.userIdx = $searchIdx)
+  and isDeleted = 'N'
 order by Posts.createAt desc
 limit $page,$limit;";
 
@@ -483,6 +487,7 @@ from Posts
                                                              left outer join PostShared on imgVideoPostIdx = PostShared.postIdx
                                                     group by imgVideoPostIdx) as ImgVideoShared
                                                    on ImgVideoShared.imgVideoPostIdx = PostImgVideo.imgVideoPostIdx
+                                                   where Posts.isDeleted = 'N'
                           group by PostImgVideo.postIdx) as imgVodList on imgVodList.postIdx = Posts.postIdx
          left outer join (select Posts.postIdx,
                                  count(*)                                as likeCount,
@@ -515,6 +520,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
   and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
   and Posts.postType = 'P'
   and Posts.postIdx = $postIdx
+  and isDeleted = 'N'
 order by Posts.createAt desc";
     $st = $pdo->prepare($query);
     $st->execute();
@@ -613,7 +619,7 @@ function editPost($postIdx,$feedUserIdx,$userIdx, $postPrivacyBound, $postConten
 function isEditablePost($userIdx,$postIdx){
     $pdo = pdoSqlConnect();
 
-    $query = "select exists(select * from Posts where postIdx = ? and writerIdx = ? and isDeleted = 'N') as exist";
+    $query = "select exists(select * from Posts where postIdx = ? and writerIdx = ? and isDeleted = 'N' and (postType = 'P' or postType = 'A')) as exist";
 
     $st = $pdo->prepare($query);
     $st->execute([$postIdx,$userIdx]);
@@ -625,4 +631,19 @@ function isEditablePost($userIdx,$postIdx){
     $pdo = null;
 
     return intval($res[0]['exist']);
+}
+
+function deletePost($postIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.postIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
+    $query = "update Posts set isDeleted = 'Y' where postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
 }

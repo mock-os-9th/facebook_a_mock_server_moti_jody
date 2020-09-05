@@ -1178,6 +1178,54 @@ try {
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        case "deletePost":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+            $postIdx = $vars["idx"];
+            $postIdx = isset($postIdx)?intval($postIdx):null;
+
+            if(isValidPostIdx($postIdx) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 게시물입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(isEditablePost($userIdx,$postIdx) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 470;
+                $res->message = "삭제할 권한이 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            deletePost($postIdx);
+            $res->postIdx = $postIdx;
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "게시글 삭제 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);
