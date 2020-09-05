@@ -9,6 +9,18 @@ function requestFriend($idx, $targetIdx)
     $st = $pdo->prepare($query);
     $st->execute([$idx, $targetIdx]);
 
+    $st = null;
+    $pdo = null;
+}
+function updateRequestFriend($idx, $targetIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE FriendRequest SET isDeleted = 'N' WHERE senderIdx = ? and receiverIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
     $recruitId = $pdo->lastInsertId();
     $st = null;
     $pdo = null;
@@ -31,7 +43,68 @@ function isRequestedFriend($idx, $targetIdx) {
 
     return intval($res[0]["exist"]);
 }
+function isAcceptedBefore($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
 
+    $query = "SELECT EXISTS(SELECT * FROM FriendRequest WHERE senderIdx = ? and receiverIdx = ? and isDeleted = 'Y') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+
+function acceptFriendRequest($idx, $targetIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE FriendRequest SET isDeleted = 'Y' WHERE senderIdx = ? and receiverIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
+    $st = null;
+    $pdo = null;
+}
+
+function addFriend($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "INSERT INTO Friends (userIdx, friendIdx) VALUES (?, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
+    $st = null;
+    $pdo = null;
+}
+function addFollowing($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "INSERT INTO Following (userIdx, followingUserIdx) VALUES (?, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
+    $st = null;
+    $pdo = null;
+}
+function unDeleteFriend($idx, $targetIdx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE Friends SET isDeleted = 'N' WHERE userIdx = ? and friendIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
+    $st = null;
+    $pdo = null;
+}
 function getUserFriendList($idx, $targetIdx)
 {
     $pdo = pdoSqlConnect();
