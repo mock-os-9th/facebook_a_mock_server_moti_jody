@@ -905,6 +905,8 @@ try {
             $keyword = $_GET["keyword"];
             $keyword = isset($keyword) ? stringval($keyword) : null;
 
+            echo $keyword;
+
             if ($targetIdx == 0) {
                 $targetIdx = $idx;
             }
