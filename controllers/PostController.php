@@ -1538,7 +1538,7 @@ try {
             }
 
             if(isPostHided($postIdx) == 0){
-                makePostHide($postIdx);
+                makePostHide($postIdx,$userIdx);
             }else{
                 $isHided = getPostHided($postIdx,$userIdx);
                 modifyPostHide($postIdx,$userIdx,$isHided);

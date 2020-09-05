@@ -794,13 +794,13 @@ function isPostHided($postIdx){
 
 }
 
-function getPostHided($postIdx){
+function getPostHided($postIdx,$userIdx){
     $pdo = pdoSqlConnect();
 
-    $query = "select isDeleted from UserPostHide where postIdx = ?";
+    $query = "select isDeleted from UserPostHide where postIdx = ? and userIdx = ?";
 
     $st = $pdo->prepare($query);
-    $st->execute([$postIdx]);
+    $st->execute([$postIdx,$userIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
