@@ -37,12 +37,12 @@ try {
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $idx = getUserIdxFromId($data->id);
 
-            $targetIdx = isset($req->targetIdx) ? $req->targetIdx : null;
+            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
 
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
                 $res->code = 440;
-                $res->message = "targetIdx가 null 입니다";
+                $res->message = "idx가 null 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
@@ -51,7 +51,7 @@ try {
             if (!is_integer($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 410;
-                $res->message = "targetIdx는 Int 이여야 합니다";
+                $res->message = "idx는 Int 이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
@@ -60,7 +60,7 @@ try {
             if (!isValidUserIdx($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 451;
-                $res->message = "존재하지 않는 타겟 targetIdx 입니다";
+                $res->message = "존재하지 않는 타겟 idx 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
@@ -101,6 +101,105 @@ try {
             }
 
             requestFriend($idx, $targetIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "친구 요청 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        case "acceptFriendRequest" :
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "해당유저가 존재하지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $idx = getUserIdxFromId($data->id);
+
+            $targetIdx = isset($vars["idx"]) ? $vars["idx"] : null;
+
+            if ($targetIdx == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "idx가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (!is_integer($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "idx는 Int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (!isValidUserIdx($targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 타겟 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (isBlockedFriend($idx, $targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 461;
+                $res->message = "차단 된 사용자 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!isRequestedFriend($targetIdx, $idx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "들어온 친구 요청이 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (isFriend($idx, $targetIdx) || !isRequestedFriend($idx, $targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 460;
+                $res->message = "이미 친구이거나 이미 친구 요청을 수락한 친구 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if ($idx == $targetIdx) {
+                $res->isSuccess = FALSE;
+                $res->code = 490;
+                $res->message = "자기 자신이 idx가 될 수 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (isDeletedFriend($idx, $targetIdx) || isDeletedFriend($targetIdx, $idx)) {
+                acceptFriendRequest($idx, $targetIdx);
+                unDeleteFriend($idx, $targetIdx);
+                unDeleteFriend($targetIdx, $idx);
+                followUser($idx, $targetIdx);
+                followUser($targetIdx, $idx);
+            }
+            else {
+                acceptFriendRequest($idx, $targetIdx);
+                addFriend($idx, $targetIdx);
+                addFriend($targetIdx, $idx);
+            }
+
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "친구 요청 성공";
