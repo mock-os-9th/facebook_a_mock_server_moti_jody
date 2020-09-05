@@ -776,3 +776,63 @@ limit $page, $limit;";
 
     return $res;
 }
+
+function isPostHided($postIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "select exists(select * from UserPostHide where postIdx = ?) as exist";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['exist'];
+
+}
+
+function getPostHided($postIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "select isDeleted from UserPostHide where postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['isDeleted'] = 'N' ? 'Y' : 'N';
+}
+
+function makePostHide($postIdx,$userIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "insert into UserPostHide(postIdx,userIdx) values (?,?)";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx,$userIdx]);
+}
+
+function modifyPostHide($postIdx,$userIdx,$isHided){
+    $pdo = pdoSqlConnect();
+
+    if($isHided == 'N'){
+        $query = "update UserPostHide set isDeleted = 'Y' where userIdx = ? and postIdx = ?";
+        $st = $pdo->prepare($query);
+        $st->execute([$userIdx,$postIdx]);
+    }else{
+        $query = "update UserPostHide set isDeleted = 'N' where userIdx = ? and postIdx = ?";
+        $st = $pdo->prepare($query);
+        $st->execute([$userIdx,$postIdx]);
+    }
+
+
+
+
+}
