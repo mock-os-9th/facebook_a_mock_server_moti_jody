@@ -101,7 +101,12 @@ try {
                 return;
             }
 
-            requestFriend($idx, $targetIdx);
+            if(isAcceptedBefore($idx, $targetIdx)) {
+                updateRequestFriend($idx, $targetIdx);
+            }
+            else {
+                requestFriend($idx, $targetIdx);
+            }
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "친구 요청 성공";
