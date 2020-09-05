@@ -1537,7 +1537,7 @@ try {
                 return;
             }
 
-            if(isPostHided($postIdx) == 0){
+            if(isPostHided($postIdx,$userIdx) == 0){
                 makePostHide($postIdx,$userIdx);
                 $res->isHided = 'Y';
             }else{

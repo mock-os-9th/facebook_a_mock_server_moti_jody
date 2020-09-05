@@ -777,13 +777,13 @@ limit $page, $limit;";
     return $res;
 }
 
-function isPostHided($postIdx){
+function isPostHided($postIdx,$userIdx){
     $pdo = pdoSqlConnect();
 
-    $query = "select exists(select * from UserPostHide where postIdx = ?) as exist";
+    $query = "select exists(select * from UserPostHide where postIdx = ? and userIdx = ?) as exist";
 
     $st = $pdo->prepare($query);
-    $st->execute([$postIdx]);
+    $st->execute([$postIdx,$userIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
