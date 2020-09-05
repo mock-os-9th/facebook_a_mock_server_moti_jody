@@ -48,7 +48,7 @@ try {
                 return;
             }
 
-            if (is_integer($targetIdx)) {
+            if (!is_integer($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 410;
                 $res->message = "targetIdx는 Int 이여야 합니다";
