@@ -554,7 +554,7 @@ function friendExistWithKeyword($idx, $targetIdx, $keyword) {
                                 where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or useridx = $targetIdx and Blocked.isDeleted = 'N')
                                 ) as u on u.userIdx = f.friendIdx
                 where f.userIdx = $targetIdx
-                and (u.firstName like concat('%', ?, '%') or u.secondName like concat('%', ?, '%'))
+                and (u.firstName like concat('%', $keyword, '%') or u.secondName like concat('%', $keyword, '%'))
                 order by u.firstName
                 )) AS exist;";
 
