@@ -525,7 +525,7 @@ try {
                         addErrorLogs($errorLogs, $res, $req);
                         return;
                     }
-                    if (gettype($item->imgVodContents) != 'string') {
+                    if (!is_null($item->imgVodList)&&gettype($item->imgVodContents) != 'string') {
                         $res->isSuccess = FALSE;
                         $res->code = 414;
                         $res->message = "imgVodContents의 타입 오류";
@@ -544,7 +544,7 @@ try {
                 }
 
                 foreach ($imgVodList as $key => $item) {
-                    if (strlen($item->imgVodContents) > 100) {
+                    if (!is_null($item->imgVodList)&&strlen($item->imgVodContents) > 100) {
                         $res->isSuccess = FALSE;
                         $res->code = 423;
                         $res->message = "imgVodContents의 길이 오류";
@@ -934,6 +934,14 @@ try {
                     addErrorLogs($errorLogs, $res, $req);
                     return;
                 }
+                if(is_null($activityContents)){
+                    $res->isSuccess = FALSE;
+                    $res->code = 447;
+                    $res->message = "moodActivity가 A이면 activityContents는 필수입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
                 if (gettype($activityIdx) != 'integer') {
                     $res->isSuccess = FALSE;
                     $res->code = 419;
@@ -990,7 +998,16 @@ try {
                         addErrorLogs($errorLogs, $res, $req);
                         return;
                     }
+                    if(isFriend($userIdx,$item) == 0){
+                        $res->isSuccess = FALSE;
+                        $res->code = 458;
+                        $res->message = "friendExcept 친구가 아닌 인덱스가 있습니다";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
                 }
+
             }
             if ($postPrivacyBound == 'S') {
                 if (is_null($friendShow)) {
@@ -1027,6 +1044,14 @@ try {
                         $res->isSuccess = FALSE;
                         $res->code = 452;
                         $res->message = "존재하지 않는 userIdx입니다";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                    if(isFriend($userIdx,$item) == 0){
+                        $res->isSuccess = FALSE;
+                        $res->code = 457;
+                        $res->message = "friendShow 친구가 아닌 인덱스가 있습니다";
                         echo json_encode($res, JSON_NUMERIC_CHECK);
                         addErrorLogs($errorLogs, $res, $req);
                         return;
@@ -1118,7 +1143,7 @@ try {
                         addErrorLogs($errorLogs, $res, $req);
                         return;
                     }
-                    if (gettype($item->imgVodContents) != 'string') {
+                    if (!is_null($item->imgVodList)&&gettype($item->imgVodContents) != 'string') {
                         $res->isSuccess = FALSE;
                         $res->code = 415;
                         $res->message = "imgVodContents의 타입 오류";
@@ -1137,7 +1162,7 @@ try {
                 }
 
                 foreach ($imgVodList as $key => $item) {
-                    if (strlen($item->imgVodContents) > 100) {
+                    if (!is_null($item->imgVodList)&&strlen($item->imgVodContents) > 100) {
                         $res->isSuccess = FALSE;
                         $res->code = 423;
                         $res->message = "imgVodContents의 길이 오류";
