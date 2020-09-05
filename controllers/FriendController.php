@@ -179,7 +179,7 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (!isRequestedFriend($idx, $targetIdx)) {
+            if (isRequestedFriend($idx, $targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 461;
                 $res->message = "사용자가 요청을 보낸 친구 입니다";
