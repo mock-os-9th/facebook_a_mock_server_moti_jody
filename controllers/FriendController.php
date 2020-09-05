@@ -197,14 +197,14 @@ try {
             }
 
             if (isDeletedFriend($idx, $targetIdx) || isDeletedFriend($targetIdx, $idx)) {
-                acceptFriendRequest($idx, $targetIdx);
+                acceptFriendRequest($targetIdx, $idx);
                 unDeleteFriend($idx, $targetIdx);
                 unDeleteFriend($targetIdx, $idx);
                 followUser($idx, $targetIdx);
                 followUser($targetIdx, $idx);
             }
             else {
-                acceptFriendRequest($idx, $targetIdx);
+                acceptFriendRequest($targetIdx, $idx);
                 addFriend($idx, $targetIdx);
                 addFriend($targetIdx, $idx);
             }
