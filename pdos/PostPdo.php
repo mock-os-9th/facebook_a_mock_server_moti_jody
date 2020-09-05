@@ -790,7 +790,7 @@ function isPostHided($postIdx,$userIdx){
     $st = null;
     $pdo = null;
 
-    return $res[0]['exist'];
+    return intval($res[0]['exist']);
 
 }
 
