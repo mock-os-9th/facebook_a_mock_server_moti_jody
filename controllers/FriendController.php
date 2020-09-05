@@ -101,7 +101,7 @@ try {
                 return;
             }
 
-            if(isAcceptedBefore($idx, $targetIdx)) {
+            if(isAcceptedOrDeletedBefore($idx, $targetIdx)) {
                 updateRequestFriend($idx, $targetIdx);
             }
             else {
@@ -269,6 +269,14 @@ try {
                 return;
             }
 
+            if(isAcceptedOrDeletedBefore($idx, $targetIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 460;
+                $res->message = "이미 친구 요청을 거절한 친구 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
             if (isBlockedFriend($idx, $targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 462;
