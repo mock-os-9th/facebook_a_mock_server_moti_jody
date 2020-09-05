@@ -4,7 +4,7 @@ function requestFriend($idx, $targetIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "INSERT INTO User (senderidx, receiverIdx) VALUES (?, ?);";
+    $query = "INSERT INTO FriendRequest (senderidx, receiverIdx) VALUES (?, ?);";
 
     $st = $pdo->prepare($query);
     $st->execute([$idx, $targetIdx]);

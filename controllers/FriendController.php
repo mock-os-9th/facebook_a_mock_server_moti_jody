@@ -135,7 +135,7 @@ try {
                 return;
             }
 
-            if (is_integer($targetIdx)) {
+            if (!is_integer($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 411;
                 $res->message = "idx는 int 이여야 합니다";
@@ -198,7 +198,7 @@ try {
                 return;
             }
 
-            if (is_integer($targetIdx)) {
+            if (!is_integer($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 411;
                 $res->message = "idx는 int 이여야 합니다";
@@ -301,7 +301,7 @@ try {
                 return;
             }
 
-            if (is_integer($targetIdx)) {
+            if (!is_integer($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 411;
                 $res->message = "idx는 int 이여야 합니다";
@@ -387,7 +387,7 @@ try {
                 return;
             }
 
-            if (is_integer($targetIdx)) {
+            if (!is_integer($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 411;
                 $res->message = "idx는 int 이여야 합니다";
@@ -473,7 +473,7 @@ try {
                 return;
             }
 
-            if (is_integer($targetIdx)) {
+            if (!is_integer($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 411;
                 $res->message = "idx는 int 이여야 합니다";
@@ -574,7 +574,7 @@ try {
                 return;
             }
 
-            if (is_integer($targetIdx)) {
+            if (!is_integer($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 411;
                 $res->message = "idx는 int 이여야 합니다";
