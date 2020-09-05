@@ -1539,12 +1539,14 @@ try {
 
             if(isPostHided($postIdx) == 0){
                 makePostHide($postIdx,$userIdx);
+                $res->isHided = 'Y';
             }else{
                 $isHided = getPostHided($postIdx,$userIdx);
                 modifyPostHide($postIdx,$userIdx,$isHided);
+                $res->isHided = $isHided == 'N' ? 'Y' : 'N';
             }
 
-            $res->isHided = $isHided = 'N' ? 'Y' : 'N';
+
             $res->isSuccess = true;
             $res->code = 200;
             $res->message = "게시글 숨기기 완료";

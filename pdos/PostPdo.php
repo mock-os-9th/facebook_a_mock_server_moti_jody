@@ -807,7 +807,7 @@ function getPostHided($postIdx,$userIdx){
     $st = null;
     $pdo = null;
 
-    return $res[0]['isDeleted'] = 'N' ? 'Y' : 'N';
+    return $res[0]['isDeleted'] == 'N' ? 'Y' : 'N';
 }
 
 function makePostHide($postIdx,$userIdx){
@@ -831,8 +831,4 @@ function modifyPostHide($postIdx,$userIdx,$isHided){
         $st = $pdo->prepare($query);
         $st->execute([$userIdx,$postIdx]);
     }
-
-
-
-
 }
