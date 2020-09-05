@@ -717,3 +717,62 @@ function getPostLikeStatus($postIdx,$userIdx){
         return 'N';
     }
 }
+
+function getPostLikeList($postIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "select likeIdx,count(*) as likeCount from PostLike left outer join LikeCategory on postLikeIdx = likeIdx where postIdx = ? and isDeleted = 'N' group by likeIdx;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+
+function getPostLikeUserList($postIdx,$userIdx,$page,$limit,$likeFilter){
+    $pdo = pdoSqlConnect();
+
+    $page = ($page - 1) * $limit;
+
+    if($likeFilter == 1){
+        $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = 1,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
+from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = 1) as isKnowingFriend
+from PostLike
+         left outer join LikeCategory on postLikeIdx = likeIdx
+         left outer join User on User.userIdx = PostLike.userIdx
+         left outer join Friends as f1 on f1.userIdx = PostLike.userIdx
+         left outer join Friends as f2 on f1.friendIdx = f2.userIdx
+where postIdx = $postIdx
+  and PostLike.isDeleted = 'N') as F
+group by userIdx
+limit $page, $limit;";
+    }else{
+        $likeFilter = $likeFilter - 1;
+        $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = 1,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
+from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = 1) as isKnowingFriend
+from PostLike
+         left outer join LikeCategory on postLikeIdx = likeIdx
+         left outer join User on User.userIdx = PostLike.userIdx
+         left outer join Friends as f1 on f1.userIdx = PostLike.userIdx
+         left outer join Friends as f2 on f1.friendIdx = f2.userIdx
+where postIdx = $postIdx
+  and PostLike.isDeleted = 'N') as F
+  where likeIdx = $likeFilter
+group by userIdx
+limit $page, $limit;";
+    }
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}

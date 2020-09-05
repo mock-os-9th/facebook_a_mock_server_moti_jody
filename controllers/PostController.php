@@ -589,7 +589,7 @@ try {
                 return;
             }
 
-            $res->result = createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow);
+            createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "게시글 생성 성공";
@@ -1225,7 +1225,7 @@ try {
                 return;
             }
 
-            $res->result = editPost($postIdx,$feedUserIdx,$userIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow);
+            editPost($postIdx,$feedUserIdx,$userIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "게시글 수정 성공";
@@ -1364,8 +1364,122 @@ try {
             $res->isSuccess = true;
             $res->code = 200;
             $res->message = "좋아요 변경 완료";
+
             echo json_encode($res, JSON_NUMERIC_CHECK);
-            return;
+            break;
+
+        case "getPostLikeList":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+            $page = $_GET["page"];
+            $page = isset($page)?intval($page):null;
+            $limit = $_GET["limit"];
+            $limit = isset($limit)?intval($limit):null;
+            $likeFilter = isset($likeFilter)?intval($likeFilter):null;
+            $postIdx = $vars["idx"];
+            $postIdx = isset($postIdx)?intval($postIdx):null;
+
+            if($postIdx == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "게시물 인덱스의 타입이 잘못됐습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if($page == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "page의 타입이 잘못됐습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if($limit == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 412;
+                $res->message = "limit의 타입이 잘못됐습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if($likeFilter == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 413;
+                $res->message = "likeFilter의 타입이 잘못됐습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(isValidlikeFilter($likeFilter) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 430;
+                $res->message = "likeFilter유형 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(is_null($postIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "게시글 idx는 필수입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(is_null($page)){
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "page는 필수입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(is_null($limit)){
+                $res->isSuccess = FALSE;
+                $res->code = 442;
+                $res->message = "limit는 필수입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(is_null($likeFilter)){
+                $res->isSuccess = FALSE;
+                $res->code = 443;
+                $res->message = "likeFilter는 필수입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(isValidPostIdx($postIdx) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 게시물입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $res->likeList = getPostLikeList($postIdx);
+            $res->userList = getPostLikeUserList($postIdx,$userIdx,$page,$limit,$likeFilter);
+            $res->page = $page;
+            $res->limit = $limit;
+            $res->isSuccess = true;
+            $res->code = 200;
+            $res->message = "좋아요 리스트 조회 완료";
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
