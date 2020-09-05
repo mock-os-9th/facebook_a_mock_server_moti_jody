@@ -338,6 +338,10 @@ try {
             $targetIdx = $vars['idx'];
             $targetIdx = isset($targetIdx) ? intval($targetIdx) : null;
 
+            if ($targetIdx == 0) {
+                $targetIdx = $idx;
+            }
+
             if ($targetIdx == null) {
                 $res->isSuccess = FALSE;
                 $res->code = 441;
@@ -356,9 +360,7 @@ try {
                 return;
             }
 
-            if ($targetIdx == 0) {
-                $targetIdx = $idx;
-            } else if (!isValidUserIdx($targetIdx)) {
+            if (!isValidUserIdx($targetIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 451;
                 $res->message = "존재하지 않는 타겟 idx 입니다";
