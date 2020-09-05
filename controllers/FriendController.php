@@ -952,6 +952,7 @@ try {
                 return;
             }
             if (!friendExistWithKeyword($idx, $targetIdx, $keyword)) {
+                $res->keyword = $keyword;
                 $res->isSuccess = FALSE;
                 $res->code = 452;
                 $res->message = "친구 검색 결과가 없습니다";
