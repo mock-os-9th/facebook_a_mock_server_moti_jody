@@ -1553,6 +1553,124 @@ try {
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        case "sharePost":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+            $postIdx = $vars["idx"];
+            $postIdx = isset($postIdx)?intval($postIdx):null;
+            $friendIdx = $req->friendIdx;
+            $friendIdx = isset($friendIdx)?intval($friendIdx):null;
+            $privacyBound = $req->privacyBound;
+            $privacyBound = isset($privacyBound)?$privacyBound:null;
+            $contents = $req->contents;
+            $contents = isset($contents)?$contents:null;
+
+            if($postIdx == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "게시글 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if($friendIdx == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "친구 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(gettype($privacyBound) != 'string') {
+                $res->isSuccess = FALSE;
+                $res->code = 412;
+                $res->message = "공개범위 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(gettype($contents) != 'string') {
+                $res->isSuccess = FALSE;
+                $res->code = 413;
+                $res->message = "본문 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(strlen($contents) > 500){
+                $res->isSuccess = FALSE;
+                $res->code = 420;
+                $res->message = "본문 길이 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(is_null($postIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "postIdx is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(is_null($privacyBound)){
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "privacyBound is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(isValidPrivacyBoundType($privacyBound) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 430;
+                $res->message = "공개범위 유형 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(isValidPostIdx($postIdx) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 게시글 인덱스 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(isValidUserIdx($userIdx) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "존재하지 않는 (친구)유저 인덱스 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            $postType = getPostType($postIdx);
+            sharePost($postIdx,$userIdx,$friendIdx,$privacyBound,$contents);
+
+            $res->postIdx = $postIdx;
+            $res->isSuccess = true;
+            $res->code = 200;
+            $res->message = "게시글 공유 완료";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

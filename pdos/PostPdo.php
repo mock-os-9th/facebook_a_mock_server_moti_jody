@@ -647,6 +647,51 @@ function deletePost($postIdx){
     $st = $pdo->prepare($query);
     $st->execute([$postIdx]);
 
+    $query = "delete from PostActivity where postIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
+    $query = "update PostComment set isDeleted = 'Y' where postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
+    $query = "update PostLike set isDeleted = 'Y' where postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
+    $query = "update PostNotification set isDeleted = 'Y' where postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
+    $query = "delete from PrivacyBoundExcept where idx = ? and exceptApplyType = 'P'";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
+    $query = "delete from PrivacyBoundShow where idx = ? and showApplyType = 'P'";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
+    $query = "update SettingPostNotification set isDeleted = 'Y' where postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
+    $query = "update UserPostHide set isDeleted = 'Y' where postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
+    $query = "update UserPostSaved set isDeleted = 'Y' where postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+
     $query = "update Posts set isDeleted = 'Y' where postIdx = ?";
 
     $st = $pdo->prepare($query);
@@ -831,4 +876,27 @@ function modifyPostHide($postIdx,$userIdx,$isHided){
         $st = $pdo->prepare($query);
         $st->execute([$userIdx,$postIdx]);
     }
+}
+
+function getPostType($postIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "select postType from Posts where postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['isDeleted'] == 'N' ? 'Y' : 'N';
+}
+
+function sharePost($postIdx,$postType,$userIdx,$friendIdx,$privacyBound,$contents){
+    $pdo = pdoSqlConnect();
+    $query = "insert into Posts(postType,postSharedIdx,postSharedType,writerIdx,userIdx,postPrivacyBounds,postContents) values ('P',?,?,?,?,?,?)";
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx,$postType,$userIdx,$friendIdx,$privacyBound,$contents]);
 }
