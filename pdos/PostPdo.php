@@ -647,3 +647,48 @@ function deletePost($postIdx){
     $st->execute([$postIdx]);
 
 }
+
+function isUserLikedPost($userIdx, $postIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM PostLike WHERE userIdx = ? and postIdx = ?) AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx, $postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+
+function modifyPostLike($postIdx, $userIdx, $likeIdx, $isLike)
+{
+    $pdo = pdoSqlConnect();
+
+    if ($isLike == 'N') {
+        $query = "update PostLike set postLikeIdx = ?, isDeleted = 'N' where postIdx = ? and userIdx = ?";
+        $st = $pdo->prepare($query);
+        $st->execute([$likeIdx, $postIdx, $userIdx]);
+    } else {
+        $query = "update PostLike set isDeleted = 'Y' where postIdx = ? and userIdx = ?";
+        $st = $pdo->prepare($query);
+        $st->execute([$postIdx, $userIdx]);
+    }
+
+    $st = null;
+    $pdo = null;
+}
+
+function makePostLike($postIdx, $userIdx, $likeIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "insert into PostLike (postIdx,userIdx,postLikeIdx) values (?,?,?)";
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx, $userIdx, $likeIdx]);
+    $st = null;
+    $pdo = null;
+}
