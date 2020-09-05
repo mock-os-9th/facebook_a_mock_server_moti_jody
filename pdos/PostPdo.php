@@ -613,7 +613,7 @@ function editPost($postIdx,$feedUserIdx,$userIdx, $postPrivacyBound, $postConten
 function isEditablePost($userIdx,$postIdx){
     $pdo = pdoSqlConnect();
 
-    $query = "select exists(select * from Posts where postIdx = ? and writerIdx = 'N' and isDeleted = 'N') as exist";
+    $query = "select exists(select * from Posts where postIdx = ? and writerIdx = ? and isDeleted = 'N') as exist";
 
     $st = $pdo->prepare($query);
     $st->execute([$postIdx,$userIdx]);
