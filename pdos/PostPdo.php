@@ -11,12 +11,15 @@ function getMainFeed($page, $limit, $userIdx)
        UserName.name                                                 as userName,
        WriterName.writerIdx                                            as writerIdx,
        WriterName.name                                               as writerName,
-       if(timestampdiff(minute, Posts.createAt, now()) > 60, if(timestampdiff(hour, Posts.createAt, now()) > 24,
-                                                                if(timestampdiff(day, Posts.createAt, now()) > 30,
-                                                                   concat(timestampdiff(month, Posts.createAt, now()), '개월'),
-                                                                   concat(timestampdiff(day, Posts.createAt, now()), '일')),
-                                                                concat(timestampdiff(hour, Posts.createAt, now()), '시간')),
-          concat(timestampdiff(minute, Posts.createAt, now()), '분')) as lastTime,
+       case
+            when timestampdiff(month , Posts.createAt, now()) > 6 then concat(year(Posts.createAt),'년',month(Posts.createAt),'달',day(Posts.createAt),'일')
+           when timestampdiff(day , Posts.createAt, now()) > 30 then concat(timestampdiff(month , Posts.createAt, now()),'달 전')
+           when timestampdiff(hour , Posts.createAt, now()) > 24 then concat(timestampdiff(day , Posts.createAt, now()),'일 전')
+           when timestampdiff(minute , Posts.createAt, now()) > 60 then concat(timestampdiff(hour , Posts.createAt, now()),'시간 전')
+           when timestampdiff(second, Posts.createAt, now()) > 60 then concat(timestampdiff(minute , Posts.createAt, now()),'분 전')
+           else concat(timestampdiff(second, Posts.createAt, now()),'초 전')
+           end
+           as lastTime,
        if(moodActivity = 'M', '기분', '활동')                            as moodActivity,
        Mood.moodName,
        Mood.moodImgUrl,
@@ -116,7 +119,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
                                            where Posts.postIdx = PrivacyBoundShow.idx
                                              and PrivacyBoundShow.showApplyType = 'P'), true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
-  and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
+  and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = 1 group by Friends.userIdx),true)
   and Posts.postType = 'P'
   and Posts.isDeleted = 'N'
 order by Posts.createAt desc
@@ -362,7 +365,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
                                            where Posts.postIdx = PrivacyBoundShow.idx
                                              and PrivacyBoundShow.showApplyType = 'P'), true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
-  and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
+  and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = 1 group by Friends.userIdx),true)
   and if(? = 'Y', if(isnull(?),true, date(Posts.createAt) = ?) and if(isnull(?),true,(case when ? = 'G' then true when ? = 'M' then $userIdx = Posts.writerIdx else not $userIdx = Posts.writerIdx end)) ,true)
   and Posts.postType = 'P'
   and if($searchIdx = 0,Posts.userIdx = $userIdx or Posts.writerIdx = $userIdx,Posts.writerIdx = $searchIdx or Posts.userIdx = $searchIdx)
@@ -412,12 +415,15 @@ function getOnePost($postIdx,$userIdx){
        UserName.name                                                 as userName,
        WriterName.writerIdx                                            as writerIdx,
        WriterName.name                                               as writerName,
-       if(timestampdiff(minute, Posts.createAt, now()) > 60, if(timestampdiff(hour, Posts.createAt, now()) > 24,
-                                                                if(timestampdiff(day, Posts.createAt, now()) > 30,
-                                                                   concat(timestampdiff(month, Posts.createAt, now()), '개월'),
-                                                                   concat(timestampdiff(day, Posts.createAt, now()), '일')),
-                                                                concat(timestampdiff(hour, Posts.createAt, now()), '시간')),
-          concat(timestampdiff(minute, Posts.createAt, now()), '분')) as lastTime,
+       case
+            when timestampdiff(month , Posts.createAt, now()) > 6 then concat(year(Posts.createAt),'년',month(Posts.createAt),'달',day(Posts.createAt),'일')
+           when timestampdiff(day , Posts.createAt, now()) > 30 then concat(timestampdiff(month , Posts.createAt, now()),'달 전')
+           when timestampdiff(hour , Posts.createAt, now()) > 24 then concat(timestampdiff(day , Posts.createAt, now()),'일 전')
+           when timestampdiff(minute , Posts.createAt, now()) > 60 then concat(timestampdiff(hour , Posts.createAt, now()),'시간 전')
+           when timestampdiff(second, Posts.createAt, now()) > 60 then concat(timestampdiff(minute , Posts.createAt, now()),'분 전')
+           else concat(timestampdiff(second, Posts.createAt, now()),'초 전')
+           end
+           as lastTime,
        if(moodActivity = 'M', '기분', '활동')                            as moodActivity,
        Mood.moodName,
        Mood.moodImgUrl,
@@ -517,7 +523,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
                                            where Posts.postIdx = PrivacyBoundShow.idx
                                              and PrivacyBoundShow.showApplyType = 'P'), true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
-  and if(postPrivacyBounds = 'F', Posts.writerIdx = (select friendIdx from Friends where userIdx = $userIdx),true)
+  and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = 1 group by Friends.userIdx),true)
   and Posts.postType = 'P'
   and Posts.postIdx = $postIdx
   and Posts.isDeleted = 'N'
