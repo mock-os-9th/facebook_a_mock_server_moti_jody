@@ -43,7 +43,7 @@ function isRequestedFriend($idx, $targetIdx) {
 
     return intval($res[0]["exist"]);
 }
-function isAcceptedBefore($idx, $targetIdx) {
+function isAcceptedOrDeletedBefore($idx, $targetIdx) {
     $pdo = pdoSqlConnect();
 
     $query = "SELECT EXISTS(SELECT * FROM FriendRequest WHERE senderIdx = ? and receiverIdx = ? and isDeleted = 'Y') AS exist;";
@@ -58,7 +58,6 @@ function isAcceptedBefore($idx, $targetIdx) {
 
     return intval($res[0]["exist"]);
 }
-
 function acceptFriendRequest($idx, $targetIdx)
 {
     $pdo = pdoSqlConnect();
@@ -98,6 +97,18 @@ function unDeleteFriend($idx, $targetIdx) {
     $pdo = pdoSqlConnect();
 
     $query = "UPDATE Friends SET isDeleted = 'N' WHERE userIdx = ? and friendIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
+    $st = null;
+    $pdo = null;
+}
+function rejectFriendRequest($idx, $targetIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE FriendRequest SET isDeleted = 'Y' WHERE senderIdx = ? and receiverIdx = ?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$idx, $targetIdx]);
