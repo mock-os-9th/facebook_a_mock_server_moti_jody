@@ -105,6 +105,18 @@ function unDeleteFriend($idx, $targetIdx) {
     $st = null;
     $pdo = null;
 }
+function rejectFriendRequest($idx, $targetIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE FriendRequest SET isDeleted = 'Y' WHERE senderIdx = ? and receiverIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx, $targetIdx]);
+
+    $st = null;
+    $pdo = null;
+}
 function getUserFriendList($idx, $targetIdx)
 {
     $pdo = pdoSqlConnect();
