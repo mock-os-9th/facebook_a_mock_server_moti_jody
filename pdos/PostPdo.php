@@ -698,3 +698,18 @@ function makePostLike($postIdx, $userIdx, $likeIdx)
     $st = null;
     $pdo = null;
 }
+
+function getPostLikeStatus($postIdx,$userIdx){
+    $pdo = pdoSqlConnect();
+    $query = "SELECT isDeleted from PostLike where userIdx = ? and postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx, $postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['isDeleted'];
+}
