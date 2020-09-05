@@ -934,7 +934,7 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (!is_string($keyword)) {
+            if (gettype($keyword) != 'string') {
                 $res->isSuccess = FALSE;
                 $res->code = 412;
                 $res->message = "keyword는 String 이여야 합니다";
