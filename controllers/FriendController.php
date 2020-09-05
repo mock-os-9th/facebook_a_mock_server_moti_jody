@@ -905,6 +905,8 @@ try {
             $keyword = $_GET["keyword"];
             $keyword = isset($keyword) ? stringval($keyword) : null;
 
+            echo $keyword;
+
             if ($targetIdx == 0) {
                 $targetIdx = $idx;
             }
@@ -917,7 +919,7 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (is_null($keyword)) {
+            if (is_null($_GET["keyword"])) {
                 $res->isSuccess = FALSE;
                 $res->code = 442;
                 $res->message = "keyword가 null 입니다";
@@ -934,7 +936,7 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (gettype($keyword) != 'string') {
+            if (gettype($_GET["keyword"]) != 'string') {
                 $res->isSuccess = FALSE;
                 $res->code = 412;
                 $res->message = "keyword는 String 이여야 합니다";
@@ -951,7 +953,7 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (!friendExistWithKeyword($idx, $targetIdx, $keyword)) {
+            if (!friendExistWithKeyword($idx, $targetIdx, $_GET["keyword"])) {
                 $res->isSuccess = FALSE;
                 $res->code = 452;
                 $res->message = "친구 검색 결과가 없습니다";
@@ -968,7 +970,7 @@ try {
                 return;
             }
 
-            $res->result = searchFriend($idx, $targetIdx, $keyword);
+            $res->result = searchFriend($idx, $targetIdx, $_GET["keyword"]);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "친구 검색 성공";
