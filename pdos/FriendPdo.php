@@ -19,7 +19,7 @@ function requestFriend($idx, $targetIdx)
 function isRequestedFriend($idx, $targetIdx) {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT EXISTS(SELECT * FROM FriendRequest WHERE senderIdx = ? and recieverIdx = ? and isDeleted = 'N') AS exist;";
+    $query = "SELECT EXISTS(SELECT * FROM FriendRequest WHERE senderIdx = ? and receiverIdx = ? and isDeleted = 'N') AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$idx, $targetIdx]);
