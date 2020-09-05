@@ -1587,7 +1587,7 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if($friendIdx == 0){
+            if(!is_null($friendIdx)&&$friendIdx == 0){
                 $res->isSuccess = FALSE;
                 $res->code = 411;
                 $res->message = "친구 인덱스 타입 오류";
@@ -1604,22 +1604,25 @@ try {
                 return;
             }
 
-            if(gettype($contents) != 'string') {
-                $res->isSuccess = FALSE;
-                $res->code = 413;
-                $res->message = "본문 타입 오류";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
+            if(!is_null($contents)){
+                if(gettype($contents) != 'string') {
+                    $res->isSuccess = FALSE;
+                    $res->code = 413;
+                    $res->message = "본문 타입 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+                if(strlen($contents) > 500){
+                    $res->isSuccess = FALSE;
+                    $res->code = 420;
+                    $res->message = "본문 길이 오류";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
             }
-            if(strlen($contents) > 500){
-                $res->isSuccess = FALSE;
-                $res->code = 420;
-                $res->message = "본문 길이 오류";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
+
             if(is_null($postIdx)){
                 $res->isSuccess = FALSE;
                 $res->code = 440;
