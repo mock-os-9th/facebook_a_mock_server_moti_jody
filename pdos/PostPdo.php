@@ -891,7 +891,7 @@ function getPostType($postIdx){
     $st = null;
     $pdo = null;
 
-    return $res[0]['isDeleted'] == 'N' ? 'Y' : 'N';
+    return $res[0]['postType'];
 }
 
 function sharePost($postIdx,$postType,$userIdx,$friendIdx,$privacyBound,$contents){
