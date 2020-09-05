@@ -407,3 +407,80 @@ function isKnownFriendExist($idx, $targetIdx) {
 
     return intval($res[0]["exist"]);
 }
+function getRequestedFriendList($idx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select count(*),
+               (select json_arrayagg(friendobj)
+               from (select json_object('friendIdx', fr.senderIdx,
+                   'friendName', concat(u.firstName, ' ', u.secondName),
+                   'friendImgUrl', u.profileImgUrl,
+                   'knowingFriendCount', (SELECT count(F.userIdx)
+                    from Friends F
+                    WHERE F.userIdx IN (SELECT userIdx
+                    FROM Friends
+                    WHERE Friends.friendIdx = fr.senderIdx
+                      AND userIdx not in
+                          (select blockedUserIdx
+                      from Blocked
+                      where userIdx = $idx and Blocked.isDeleted = 'N'))
+                      AND F.friendIdx = fr.senderIdx AND F.userIdx != $idx),
+                   'requestedDate',
+                          case
+                              when (timestampdiff(month, createAt, now()) > 6)
+                                  then concat(timestampdiff(year, createAt, now()), '년')
+                              when (timestampdiff(day, createAt, now()) > 30)
+                                  then concat(timestampdiff(month, createAt, now()),'달')
+                              when (timestampdiff(hour, createAt, now()) > 24 )
+                                  then concat(timestampdiff(day, createAt, now()),'일')
+                              when (timestampdiff(minute , createAt, now()) > 60)
+                                  then concat(timestampdiff(hour, createAt, now()),'시간')
+                              when (timestampdiff(second, createAt, now()) > 60)
+                                  then concat(timestampdiff(minute , createAt, now()),'분')
+                              else concat(timestampdiff(second, createAt, now()),'초')
+                          end
+                    ) as friendobj
+                from FriendRequest as fr
+                    inner join (select userIdx, firstName, secondName, profileImgUrl
+                                from User
+                                where userIdx != $idx
+                                    AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N')
+                                ) as u on u.userIdx = fr.senderIdx
+                where fr.receiverIdx = $idx
+                order by createAt desc
+                ) as friendArray as friendRequestList
+        from FriendRequest
+        where receiverIdx = $idx and isDeleted = 'N';";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    foreach ($res as $key => $row) {
+        $res[$key]['friendRequestList'] = json_decode($row['friendRequestList']);
+    }
+    return $res[0];
+}
+function isRequestedFriendExist($idx) {
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT EXISTS(select senderIdx from FriendRequest
+                   where receiverIdx = $idx
+                   AND senderIdx not in
+                       (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N')
+                ) AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$idx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}

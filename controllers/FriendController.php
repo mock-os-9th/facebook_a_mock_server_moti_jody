@@ -763,7 +763,6 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
-
         case "getKnownFriendList":
             http_response_code(200);
 
@@ -839,6 +838,39 @@ try {
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "함께 아는 친구 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        case "getRequestedFriendList":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "해당유저가 존재하지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $idx = getUserIdxFromId($data->id);
+
+            if(!isRequestedFriendExist($idx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "조회 할 친구 요청이 없습니다 ";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $res->result = getRequestedFriendList($idx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "친구 요청 조회 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
     }
