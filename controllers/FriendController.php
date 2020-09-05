@@ -269,7 +269,7 @@ try {
                 return;
             }
 
-            if(isAcceptedOrDeletedBefore($idx, $targetIdx)) {
+            if(isAcceptedOrDeletedBefore($targetIdx, $idx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 460;
                 $res->message = "이미 친구 요청을 거절한 친구 입니다";
