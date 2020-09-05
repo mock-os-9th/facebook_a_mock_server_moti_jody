@@ -200,6 +200,14 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
+            if($page < 1){
+                $res->isSuccess = FALSE;
+                $res->code = 430;
+                $res->message = "page는 1부터 시작입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
             $res->page = $page;
             $res->limit = $limit;
             $res->result = getMainFeed($page, $limit, $userIdx);
@@ -758,6 +766,14 @@ try {
                     addErrorLogs($errorLogs, $res, $req);
                     return;
                 }
+            }
+            if($page < 1){
+                $res->isSuccess = FALSE;
+                $res->code = 433;
+                $res->message = "page는 1부터 시작입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
             }
 
             $res->page = $page;
