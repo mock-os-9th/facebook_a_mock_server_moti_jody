@@ -225,7 +225,8 @@ where ProfileUserFriend.isDeleted = 'N'
   and ProfileUserFriend.friendIdx not in (select blockedUserIdx
                                           from Blocked
                                           where Blocked.userIdx = $profileUserIdx and Blocked.userIdx = $userIdx
-                                            and Blocked.isDeleted = 'N')
+                                            and Blocked.isDeleted = 'N')   
+  and not ProfileUserFriend.friendIdx = $userIdx                                        
 group by ProfileUserFriend.userIdx
 limit 0,6) as friendList;";
 
