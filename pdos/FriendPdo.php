@@ -146,6 +146,7 @@ function getUserFriendList($userIdx, $targetIdx)
                     inner join (select userIdx, firstName, secondName, profileImgUrl
                                 from User
                                 where userIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
+                                and isDeleted = 'N'
                                 ) as u on u.userIdx = f.friendIdx
                 where f.userIdx = $targetIdx and f.isDeleted = 'N'
                 order by u.firstName
@@ -311,10 +312,10 @@ function getKnownFriendList($idx, $targetIdx)
     $pdo = pdoSqlConnect();
     $query = "select concat(u.firstName, ' ', u.secondName) as userName,
                    (select count(userIdx) from Friends
-                   where userIdx = $targetIdx and friendIdx != $idx and isDeleted = 'N'
+                   where userIdx = $targetIdx and friendIdx != $idx and Friends.isDeleted = 'N'
                    AND friendIdx in
                        (select friendIdx from Friends
-                       where userIdx = $idx and isDeleted = 'N' AND Friends.friendIdx not in
+                       where userIdx = $idx and Friends.isDeleted = 'N' AND Friends.friendIdx not in
                                               (select blockedUserIdx
                                               from Blocked
                                               where userIdx = $idx and Blocked.isDeleted = 'N'
@@ -327,7 +328,7 @@ function getKnownFriendList($idx, $targetIdx)
                        'friendImgUrl', u.profileImgUrl,
                        'knowingFriendCount', (SELECT count(F.userIdx)
                         from Friends F
-                        WHERE F.friendIdx = f.friendIdx and isDeleted = 'N'
+                        WHERE F.friendIdx = f.friendIdx and F.isDeleted = 'N'
                           AND userIdx not in
                               (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                           AND F.userIdx != $idx)
@@ -421,7 +422,7 @@ function getRequestedFriendList($idx)
                 from FriendRequest as fr
                     inner join (select userIdx, firstName, secondName, profileImgUrl
                                 from User
-                                where userIdx != $idx
+                                where userIdx != $idx and isDeleted = 'N'
                                     AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N')
                                 ) as u on u.userIdx = fr.senderIdx
                 where fr.receiverIdx = $idx and fr.isDeleted = 'N'

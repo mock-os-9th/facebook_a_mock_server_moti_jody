@@ -144,3 +144,84 @@ function isPostCommentExist($postIdx)
 
     return intval($res[0]["exist"]);
 }
+
+function getCommentReply($userIdx, $commentIdx, $page, $limit)
+{
+    $pdo = pdoSqlConnect();
+
+    $page = ($page - 1) * $limit;
+
+    $query = "select pc.commentIdx as replyIdx, u.*, commentContents, commentImgUrl,
+                   case
+                       when (timestampdiff(month, createAt, now()) > 6)
+                           then concat(timestampdiff(year, createAt, now()), '년')
+                       when (timestampdiff(day, createAt, now()) > 30)
+                           then concat(timestampdiff(month, createAt, now()),'달')
+                       when (timestampdiff(hour, createAt, now()) > 24 )
+                           then concat(timestampdiff(day, createAt, now()),'일')
+                       when (timestampdiff(minute , createAt, now()) > 60)
+                           then concat(timestampdiff(hour, createAt, now()),'시간')
+                       when (timestampdiff(second, createAt, now()) > 60)
+                           then concat(timestampdiff(minute , createAt, now()),'분')
+                       else concat(timestampdiff(second, createAt, now()),'초')
+                   end as replyDate,
+                   cl.likeCount,
+                   (select exists(select * from CommentLike
+                    where userIdx = $userIdx and commentIdx = pc.commentIdx and isDeleted = 'N')) as isLiked,
+                   (select exists(select * from UserCommentHide
+                    where userIdx = $userIdx and commentIdx = pc.commentIdx and isDeleted = 'N')) as isHided
+            from PostComment as pc
+                inner join (select userIdx, concat(firstName, ' ', secondName) as userName, profileImgUrl from User
+                    where (userIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N')
+                    or userIdx not in (select userIdx from Blocked where blockedUserIdx = $userIdx and Blocked.isDeleted = 'N'))
+                    and isDeleted = 'N'
+                    ) as u on pc.userIdx = u.userIdx
+                left join (select commentIdx, count(*) as likeCount from CommentLike
+                    where (userIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N')
+                    or userIdx not in (select userIdx from Blocked where blockedUserIdx = $userIdx and Blocked.isDeleted = 'N'))
+                    and isDeleted = 'N'
+                    group by commentIdx) as cl on cl.commentIdx = pc.commentIdx
+            where pc.parentCommentIdx = $commentIdx and pc.parentCommentIdx is not null and pc.isDeleted = 'N'
+            order by createAt desc
+            limit $page, $limit;";
+
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+function isCommentExist($commentIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE commentIdx = ? and isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+function isCommentReplyExist($commentIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE parentCommentIdx = ? and isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
