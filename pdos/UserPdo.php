@@ -194,37 +194,47 @@ function isUserBlocked($userIdx,$profileUserIdx){
 function getProfileFriendInfo($userIdx,$profileUserIdx){
     $pdo = pdoSqlConnect();
 
-    $query = "select concat(u.firstName, ' ', u.secondName) as userName,
-               (select count(userIdx)
-               from Friends
-               where userIdx = $profileUserIdx and Friends.isDeleted = 'N'
-                 and friendIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N' or userIdx = $profileUserIdx and Blocked.isDeleted = 'N')) as friendCount,
-               (select json_arrayagg(friendobj) from (
-                select json_object('friendIdx', f.friendIdx,
-                        'friendName', concat(u.firstName, ' ', u.secondName),
-                       'friendImgUrl', u.profileImgUrl,
-                       'knowingFriendCount', (SELECT count(F.userIdx)
-                        from Friends F
-                        WHERE F.friendIdx = f.friendIdx and F.isDeleted = 'N' and F.userIdx != $userIdx
-                            AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N' or userIdx = $profileUserIdx and Blocked.isDeleted = 'N')
-                        ),
-                        'isFriend',
-                                    case
-                                       when ((select exists(select * from Friends where userIdx = $userIdx and friendIdx = f.friendIdx and isDeleted = 'N')) = true)
-                                           then 1
-                                       when ((select exists(select * from Friends where userIdx = $userIdx and friendIdx = f.friendIdx and isDeleted = 'N')) = false and f.friendIdx = $userIdx)
-                                           then 2
-                                       else 0
-                                    end
-                    ) as friendobj
-                from Friends as f
-                    inner join (select userIdx, firstName, secondName, profileImgUrl
-                                from User
-                                where userIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N' or userIdx = $profileUserIdx and Blocked.isDeleted = 'N')
-                                ) as u on u.userIdx = f.friendIdx
-                where f.userIdx = $profileUserIdx and f.isDeleted = 'N'
-                order by u.firstName
-                ) as friendArray) as friendList
-        from User as u
-        where u.userIdx = $profileUserIdx;";
+    $query = "select (select count(userIdx)
+        from Friends
+        where Friends.userIdx = $profileUserIdx
+          and Friends.isDeleted = 'N'
+          and friendIdx not in (select blockedUserIdx
+                                from Blocked
+                                where (Blocked.userIdx = $userIdx and Blocked.isDeleted = 'N')
+                                   or (Blocked.userIdx = $profileUserIdx and Blocked.isDeleted = 'N'))) as friendCount,
+       (select count(*)
+        from (select * from Friends where userIdx = $userIdx and isDeleted = 'N') as UserFriend
+                 inner join (select * from Friends where userIdx = $profileUserIdx and isDeleted = 'N') as ProfileUserFriend
+                            on UserFriend.friendIdx = ProfileUserFriend.friendIdx
+        where ProfileUserFriend.friendIdx not in
+              (select blockedUserIdx from Blocked where Blocked.userIdx = $userIdx))            as totalKnowingFriendCount,
+       (select json_arrayagg(json_object('friendImg', User.profileImgUrl, 'friendName',
+                                 concat(User.firstName, User.secondName), 'knowingFriendCount',
+                                 if(isnull(KnowingCount.count),0,KnowingCount.count),'idx',ProfileUserFriend.friendIdx
+    ))
+from (select * from Friends where userIdx = $userIdx) as ProfileUserFriend
+         left outer join User on ProfileUserFriend.friendIdx = User.userIdx
+         left outer join (select count(Friends.friendIdx) as count, UserFriend.friendIdx
+                          from (select * from Friends where userIdx = $userIdx and isDeleted = 'N') as UserFriend
+                                   left outer join Friends on UserFriend.friendIdx = Friends.userIdx
+                          where Friends.friendIdx in
+                                (select friendIdx from Friends where userIdx = $profileUserIdx and isDeleted = 'N')
+                          group by UserFriend.friendIdx) as KnowingCount on KnowingCount.friendIdx = ProfileUserFriend.friendIdx
+where ProfileUserFriend.isDeleted = 'N'
+  and User.isDeleted = 'N'
+  and ProfileUserFriend.friendIdx not in (select blockedUserIdx
+                                          from Blocked
+                                          where Blocked.userIdx = $userIdx and Blocked.userIdx = $profileUserIdx
+                                            and Blocked.isDeleted = 'N')
+group by ProfileUserFriend.userIdx) as friendList;";
+
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
 }
