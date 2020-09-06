@@ -212,19 +212,19 @@ function getProfileFriendInfo($userIdx,$profileUserIdx){
                                  concat(User.firstName, User.secondName), 'knowingFriendCount',
                                  if(isnull(KnowingCount.count),0,KnowingCount.count),'idx',ProfileUserFriend.friendIdx
     ))
-from (select * from Friends where userIdx = $userIdx) as ProfileUserFriend
+from (select * from Friends where userIdx = $profileUserIdx) as ProfileUserFriend
          left outer join User on ProfileUserFriend.friendIdx = User.userIdx
          left outer join (select count(Friends.friendIdx) as count, UserFriend.friendIdx
-                          from (select * from Friends where userIdx = $userIdx and isDeleted = 'N') as UserFriend
+                          from (select * from Friends where userIdx = $profileUserIdx and isDeleted = 'N') as UserFriend
                                    left outer join Friends on UserFriend.friendIdx = Friends.userIdx
                           where Friends.friendIdx in
-                                (select friendIdx from Friends where userIdx = $profileUserIdx and isDeleted = 'N')
+                                (select friendIdx from Friends where userIdx = $userIdx and isDeleted = 'N')
                           group by UserFriend.friendIdx) as KnowingCount on KnowingCount.friendIdx = ProfileUserFriend.friendIdx
 where ProfileUserFriend.isDeleted = 'N'
   and User.isDeleted = 'N'
   and ProfileUserFriend.friendIdx not in (select blockedUserIdx
                                           from Blocked
-                                          where Blocked.userIdx = $userIdx and Blocked.userIdx = $profileUserIdx
+                                          where Blocked.userIdx = $profileUserIdx and Blocked.userIdx = $userIdx
                                             and Blocked.isDeleted = 'N')
 group by ProfileUserFriend.userIdx) as friendList;";
 
