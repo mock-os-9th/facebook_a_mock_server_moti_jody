@@ -218,6 +218,22 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
+            if(!isPostExist($postIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 게시물 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!isPostCommentExist($postIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "조회 할 댓글이 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
 
             $res->page = $page;
             $res->limit = $limit;

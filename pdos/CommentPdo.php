@@ -114,3 +114,33 @@ function getComment($userIdx, $postIdx, $page, $limit)
 
     return $res;
 }
+function isPostExist($postIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM Posts WHERE postIdx = ? and isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+function isPostCommentExist($postIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE commentIdx = ? and isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
