@@ -132,7 +132,7 @@ function isPostExist($postIdx)
 function isPostCommentExist($postIdx)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE commentIdx = ? and isDeleted = 'N') AS exist;";
+    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE postIdx = ? and isDeleted = 'N') AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$postIdx]);
