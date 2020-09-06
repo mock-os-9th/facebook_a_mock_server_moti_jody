@@ -146,11 +146,6 @@ try {
         case "getComment":
             http_response_code(200);
 
-            $page = $_GET["page"];
-            $page = isset($page) ? intval($page) : null;
-            $limit = $_GET["limit"];
-            $limit = isset($limit) ? intval($limit) : null;
-
             $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
 
             if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
@@ -162,10 +157,16 @@ try {
                 return;
             }
 
-            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $userIdx = getUserIdxFromId($data->id);
 
             $postIdx = $vars["idx"];
             $postIdx = isset($postIdx) ? intval($postIdx) : null;
+
+            $page = $_GET["page"];
+            $page = isset($page) ? intval($page) : null;
+            $limit = $_GET["limit"];
+            $limit = isset($limit) ? intval($limit) : null;
 
             if (is_null($page)) {
                 $res->isSuccess = FALSE;
@@ -213,6 +214,22 @@ try {
                 $res->isSuccess = FALSE;
                 $res->code = 412;
                 $res->message = "게시물 idx 타입이 잘못되었습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!isPostExist($postIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 게시물 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!isPostCommentExist($postIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "조회 할 댓글이 없습니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
