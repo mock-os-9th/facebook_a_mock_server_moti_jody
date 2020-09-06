@@ -241,7 +241,7 @@ function createComment($userIdx, $postIdx, $commentContent, $commentImgUrl)
 
     return $recruitId;
 }
-function createReply($userIdx, $postIdx, $commentIdx, $commentContent, $commentImgUrl)
+function createCommentReply($userIdx, $postIdx, $commentIdx, $commentContent, $commentImgUrl)
 {
     $pdo = pdoSqlConnect();
 
@@ -257,18 +257,19 @@ function createReply($userIdx, $postIdx, $commentIdx, $commentContent, $commentI
     return $recruitId;
 }
 
-function isCommentExistOnPost($postIdx, $commentIdx)
+function getPostIdxByCommentIdx($commentIdx)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE postIdx = ? and commentIdx = ? and isDeleted = 'N') AS exist;";
+
+    $query = "select postIdx from PostComment where commentIdx = ? and isDeleted = 'N'";
 
     $st = $pdo->prepare($query);
-    $st->execute([$postIdx, $commentIdx]);
+    $st->execute([$commentIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
     $st = null;
     $pdo = null;
 
-    return intval($res[0]["exist"]);
+    return $res[0];
 }
