@@ -100,7 +100,8 @@ function getComment($userIdx, $postIdx, $page, $limit)
                         where userIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N')
                         or userIdx not in (select userIdx from Blocked where blockedUserIdx = $userIdx and Blocked.isDeleted = 'N')
                         group by commentIdx) as cl on cl.commentIdx = pc.commentIdx
-                where pc.postIdx = $postIdx and pc.parentCommentIdx is null order by createAt desc
+                where pc.postIdx = $postIdx and pc.parentCommentIdx is null 
+                order by createAt desc
                 limit $page, $limit;";
 
     $st = $pdo->prepare($query);

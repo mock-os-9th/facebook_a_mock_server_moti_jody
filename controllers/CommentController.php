@@ -164,7 +164,7 @@ try {
 
             $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
 
-            $postIdx = $vars['idx'];
+            $postIdx = $vars["idx"];
             $postIdx = isset($postIdx) ? intval($postIdx) : null;
 
             if (is_null($page)) {
