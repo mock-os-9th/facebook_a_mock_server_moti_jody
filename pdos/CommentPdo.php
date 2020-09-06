@@ -271,5 +271,5 @@ function getPostIdxByCommentIdx($commentIdx)
     $st = null;
     $pdo = null;
 
-    return $res[0];
+    return intval($res[0]["postIdx"]);
 }
