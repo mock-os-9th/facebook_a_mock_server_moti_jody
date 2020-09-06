@@ -657,6 +657,14 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
+            if(isDeleted($commentIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 460;
+                $res->message = "이미 삭제 된 댓글 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
 
             deleteComment($commentIdx);
             $res->isSuccess = TRUE;
