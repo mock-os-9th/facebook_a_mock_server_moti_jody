@@ -52,6 +52,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST','/hide/posts/{idx}',['PostController','hidePost']);
 
     $r->addRoute('PATCH','/comment/{idx}/like',['CommentController','commentLikePush']);
+    $r->addRoute('GET','/post/{idx}/comment',['CommentController','getComment']);
+
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
