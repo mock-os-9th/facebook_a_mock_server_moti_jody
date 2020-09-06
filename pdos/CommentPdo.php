@@ -277,7 +277,7 @@ function editComment($commentIdx, $commentContent)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "UPDATE PostComment SET commentContent = ? WHERE $commentIdx = ?;";
+    $query = "UPDATE PostComment SET commentContents = ? WHERE $commentIdx = ?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$commentIdx, $commentContent]);
