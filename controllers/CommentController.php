@@ -292,7 +292,7 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if ($postIdx == null) {
+            if ($commentIdx == null) {
                 $res->isSuccess = FALSE;
                 $res->code = 442;
                 $res->message = "댓글 idx가 null 입니다";
@@ -318,7 +318,7 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (!is_integer($postIdx)) {
+            if (!is_integer($commentIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 412;
                 $res->message = "댓글 idx는 Int 이여야 합니다";
