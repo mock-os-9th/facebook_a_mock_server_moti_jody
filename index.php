@@ -51,6 +51,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET','/posts/{idx}/like',['PostController','getPostLikeList']);
     $r->addRoute('POST','/hide/posts/{idx}',['PostController','hidePost']);
     $r->addRoute('POST','/posts/{idx}/share',['PostController','sharePost']);
+    $r->addRoute('POST','/posts/{idx}/notification',['PostController','postNotification']);
 
     $r->addRoute('PATCH','/comment/{idx}/like',['CommentController','commentLikePush']);
 

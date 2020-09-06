@@ -1674,6 +1674,60 @@ try {
             $res->message = "게시글 공유 완료";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        case "postNotification":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+            $postIdx = $vars["idx"];
+            $postIdx = isset($postIdx)?intval($postIdx):null;
+
+            if($postIdx == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "게시글 인덱스 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(isValidPostIdx($postIdx) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 게시글 인덱스 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $isNotificated = null;
+
+            if(isNotificatedPostNow($userIdx,$postIdx) == 0){
+                makePostNotificated($userIdx,$postIdx);
+            }else{
+                $isNotificated = getPostNotificated($userIdx,$postIdx);
+                modifyPostNotification($userIdx,$postIdx,$isNotificated);
+            }
+
+            $res->isNotificated = $isNotificated == 'N' ? 'Y' : 'N';
+            $res->isSuccess = true;
+            $res->code = 200;
+            $res->message = "게시글 공유 완료";
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

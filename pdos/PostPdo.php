@@ -37,10 +37,10 @@ function getMainFeed($page, $limit, $userIdx)
        likeImgList,
        commentCount,
        sharedCount,
-       if(UserPostHide.userIdx = $userIdx, 'Y', 'N')                        as isHided,
-       if(PostLike.userIdx = $userIdx, 'Y', 'N')                            as isLiked,
+       if(UserPostHide.userIdx = $userIdx and UserPostHide.isDeleted = 'N', 'Y', 'N')                        as isHided,
+       if(PostLike.userIdx = $userIdx and PostLike.isDeleted = 'N', 'Y', 'N')                            as isLiked,
        if(UserPostSaved.userIdx = $userIdx, 'Y', 'N')                       as isSaved,
-       if(SettingPostNotification.userIdx = $userIdx, 'Y', 'N')             as isNotificated
+       if(SettingPostNotification.userIdx = $userIdx and SettingPostNotification.isDeleted = 'Y', 'Y', 'N')             as isNotificated
 
 from Posts
          left outer join
@@ -106,10 +106,10 @@ from Posts
                           from Posts
                                    left outer join PostShared on Posts.postIdx = PostShared.postIdx
                           group by Posts.postIdx) as PostSharedCount on PostSharedCount.postIdx = Posts.postIdx
-         left outer join UserPostHide on UserPostHide.postIdx = Posts.postIdx
-         left outer join PostLike on PostLike.postIdx = Posts.postIdx
-         left outer join UserPostSaved on UserPostSaved.postIdx = Posts.postIdx
-         left outer join SettingPostNotification on SettingPostNotification.postIdx = Posts.postIdx
+         left outer join UserPostHide on (UserPostHide.postIdx = Posts.postIdx and UserPostHide.userIdx = $userIdx)
+         left outer join PostLike on (PostLike.postIdx = Posts.postIdx and PostLike.userIdx = $userIdx)
+         left outer join UserPostSaved on (UserPostSaved.postIdx = Posts.postIdx and UserPostSaved.userIdx = $userIdx)
+         left outer join SettingPostNotification on (SettingPostNotification.postIdx = Posts.postIdx and SettingPostNotification.userIdx = $userIdx)
 where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.userIdx = $userIdx,false,true))
                                            from PrivacyBoundExcept
                                            where Posts.postIdx = PrivacyBoundExcept.idx
@@ -212,6 +212,11 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
         $st->execute([$activityIdx, $mainPostIdx, $activityContents]);
     }
 
+    $query = "select friendIdx from Friends where userIdx = ?";
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $myFriendList = $st->fetchAll();
 
     if ($postPrivacyBound == 'E') {
         foreach ($friendExcept as $key => $item) {
@@ -219,6 +224,13 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
 
             $st = $pdo->prepare($query);
             $st->execute([$mainPostIdx, $item, 'P']);
+        }
+        $myFriendList = array_diff($myFriendList,$friendExcept);
+
+        foreach($myFriendList as $key => $item){
+            $query = "insert into SettingPostNotification(userIdx,postIdx) valuse (?,?)";
+            $st = $pdo -> prepare($query);
+            $st -> execute([$item,$mainPostIdx]);
         }
     }
     if ($postPrivacyBound == 'S') {
@@ -228,7 +240,19 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
             $st = $pdo->prepare($query);
             $st->execute([$mainPostIdx, $item, 'P']);
         }
+        foreach($friendShow as $key => $item){
+            $query = "insert into SettingPostNotification(userIdx,postIdx) valuse (?,?)";
+            $st = $pdo -> prepare($query);
+            $st -> execute([$item,$mainPostIdx]);
+        }
     }
+
+    foreach($myFriendList as $key => $item){
+        $query = "insert into SettingPostNotification(userIdx,postIdx) valuse (?,?)";
+        $st = $pdo -> prepare($query);
+        $st -> execute([$item,$mainPostIdx]);
+    }
+
     if (count($imgVodList) > 1) {
         foreach ($imgVodList as $key => $item) {
             $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType) values ('I',?,?,?,?,?,?)";
@@ -244,6 +268,8 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
             $st->execute([$mainPostIdx, $imgPostIdx]);
         }
     }
+
+
 }
 
 function getPersonalFeed($page, $limit, $isFilter, $date, $writerType, $userIdx, $searchIdx)
@@ -283,10 +309,10 @@ function getPersonalFeed($page, $limit, $isFilter, $date, $writerType, $userIdx,
        likeImgList,
        commentCount,
        sharedCount,
-       if(UserPostHide.userIdx = $userIdx, 'Y', 'N')                        as isHided,
-       if(PostLike.userIdx = $userIdx, 'Y', 'N')                            as isLiked,
+       if(UserPostHide.userIdx = $userIdx and UserPostHide.isDeleted = 'N', 'Y', 'N')                        as isHided,
+       if(PostLike.userIdx = $userIdx and PostLike.isDeleted = 'N', 'Y', 'N')                            as isLiked,
        if(UserPostSaved.userIdx = $userIdx, 'Y', 'N')                       as isSaved,
-       if(SettingPostNotification.userIdx = $userIdx, 'Y', 'N')             as isNotificated
+       if(SettingPostNotification.userIdx = $userIdx and SettingPostNotification.isDeleted = 'Y', 'Y', 'N')             as isNotificated
 
 from Posts
          left outer join
@@ -352,10 +378,10 @@ from Posts
                           from Posts
                                    left outer join PostShared on Posts.postIdx = PostShared.postIdx
                           group by Posts.postIdx) as PostSharedCount on PostSharedCount.postIdx = Posts.postIdx
-         left outer join UserPostHide on UserPostHide.postIdx = Posts.postIdx
-         left outer join PostLike on PostLike.postIdx = Posts.postIdx
-         left outer join UserPostSaved on UserPostSaved.postIdx = Posts.postIdx
-         left outer join SettingPostNotification on SettingPostNotification.postIdx = Posts.postIdx
+         left outer join UserPostHide on (UserPostHide.postIdx = Posts.postIdx and UserPostHide.userIdx = $userIdx)
+         left outer join PostLike on (PostLike.postIdx = Posts.postIdx and PostLike.userIdx = $userIdx)
+         left outer join UserPostSaved on (UserPostSaved.postIdx = Posts.postIdx and UserPostSaved.userIdx = $userIdx)
+         left outer join SettingPostNotification on (SettingPostNotification.postIdx = Posts.postIdx and SettingPostNotification.userIdx = $userIdx)
 where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.userIdx = $userIdx,false,true))
                                            from PrivacyBoundExcept
                                            where Posts.postIdx = PrivacyBoundExcept.idx
@@ -374,7 +400,7 @@ order by Posts.createAt desc
 limit $page,$limit;";
 
     $st = $pdo->prepare($query);
-    $st->execute([$isFilter,$date,$date,$writerType,$writerType,$writerType]);
+    $st->execute([$isFilter, $date, $date, $writerType, $writerType, $writerType]);
 
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
@@ -390,7 +416,8 @@ limit $page,$limit;";
     return $res;
 }
 
-function isValidPostIdx($idx){
+function isValidPostIdx($idx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "select exists(select * from Posts where postIdx = ? and isDeleted = 'N') as exist";
@@ -407,7 +434,8 @@ function isValidPostIdx($idx){
     return intval($res[0]['exist']);
 }
 
-function getOnePost($postIdx,$userIdx){
+function getOnePost($postIdx, $userIdx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "select Posts.postType,
@@ -441,10 +469,10 @@ function getOnePost($postIdx,$userIdx){
        likeImgList,
        commentCount,
        sharedCount,
-       if(UserPostHide.userIdx = $userIdx, 'Y', 'N')                        as isHided,
-       if(PostLike.userIdx = $userIdx, 'Y', 'N')                            as isLiked,
+       if(UserPostHide.userIdx = $userIdx and UserPostHide.isDeleted = 'N', 'Y', 'N')                        as isHided,
+       if(PostLike.userIdx = $userIdx and PostLike.isDeleted = 'N', 'Y', 'N')                            as isLiked,
        if(UserPostSaved.userIdx = $userIdx, 'Y', 'N')                       as isSaved,
-       if(SettingPostNotification.userIdx = $userIdx, 'Y', 'N')             as isNotificated
+       if(SettingPostNotification.userIdx = $userIdx and SettingPostNotification.isDeleted = 'Y', 'Y', 'N')             as isNotificated
 
 from Posts
          left outer join
@@ -510,10 +538,10 @@ from Posts
                           from Posts
                                    left outer join PostShared on Posts.postIdx = PostShared.postIdx
                           group by Posts.postIdx) as PostSharedCount on PostSharedCount.postIdx = Posts.postIdx
-         left outer join UserPostHide on UserPostHide.postIdx = Posts.postIdx
-         left outer join PostLike on PostLike.postIdx = Posts.postIdx
-         left outer join UserPostSaved on UserPostSaved.postIdx = Posts.postIdx
-         left outer join SettingPostNotification on SettingPostNotification.postIdx = Posts.postIdx
+         left outer join UserPostHide on (UserPostHide.postIdx = Posts.postIdx and UserPostHide.userIdx = $userIdx)
+         left outer join PostLike on (PostLike.postIdx = Posts.postIdx and PostLike.userIdx = $userIdx)
+         left outer join UserPostSaved on (UserPostSaved.postIdx = Posts.postIdx and UserPostSaved.userIdx = $userIdx)
+         left outer join SettingPostNotification on (SettingPostNotification.postIdx = Posts.postIdx and SettingPostNotification.userIdx = $userIdx)
 where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.userIdx = $userIdx,false,true))
                                            from PrivacyBoundExcept
                                            where Posts.postIdx = PrivacyBoundExcept.idx
@@ -545,20 +573,21 @@ order by Posts.createAt desc";
     return $res[0];
 }
 
-function editPost($postIdx,$feedUserIdx,$userIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow){
+function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow)
+{
     $pdo = pdoSqlConnect();
     if (count($imgVodList) > 1) {
         $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx = ?;";
         $st = $pdo->prepare($query);
-        $st->execute([$postPrivacyBound, $postContents, $moodActivity,$postIdx]);
+        $st->execute([$postPrivacyBound, $postContents, $moodActivity, $postIdx]);
     } else if (count($imgVodList) == 1) {
         $query = "update Posts set postPrivacyBounds=?,postContents=?,postImgVideoUrl=?,postImgVideoType=?,moodActivity=? where postIdx = ?;";
         $st = $pdo->prepare($query);
-        $st->execute([$postPrivacyBound, $postContents, $imgVodList[0]->imgVodUrl, $imgVodList[0]->imgVodType, $moodActivity,$postIdx]);
+        $st->execute([$postPrivacyBound, $postContents, $imgVodList[0]->imgVodUrl, $imgVodList[0]->imgVodType, $moodActivity, $postIdx]);
     } else {
         $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx=?;";
         $st = $pdo->prepare($query);
-        $st->execute([$postPrivacyBound, $postContents, $moodActivity,$postIdx]);
+        $st->execute([$postPrivacyBound, $postContents, $moodActivity, $postIdx]);
     }
 
 
@@ -600,7 +629,7 @@ function editPost($postIdx,$feedUserIdx,$userIdx, $postPrivacyBound, $postConten
             $st->execute([$postIdx, $item]);
         }
     }
-    if(count($imgVodList) > 1) {
+    if (count($imgVodList) > 1) {
         $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.postIdx = ?;";
 
         $st = $pdo->prepare($query);
@@ -610,7 +639,7 @@ function editPost($postIdx,$feedUserIdx,$userIdx, $postPrivacyBound, $postConten
             $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType) values ('I',?,?,?,?,?,?)";
 
             $st = $pdo->prepare($query);
-            $st->execute([$feedUserIdx ,$userIdx,$postPrivacyBound, $item->imgVodContents, $item->imgVodUrl, $item->imgVodType]);
+            $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $item->imgVodContents, $item->imgVodUrl, $item->imgVodType]);
 
             $imgPostIdx = $pdo->lastInsertId();
 
@@ -622,13 +651,14 @@ function editPost($postIdx,$feedUserIdx,$userIdx, $postPrivacyBound, $postConten
     }
 }
 
-function isEditablePost($userIdx,$postIdx){
+function isEditablePost($userIdx, $postIdx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "select exists(select * from Posts where postIdx = ? and writerIdx = ? and isDeleted = 'N' and (postType = 'P' or postType = 'A')) as exist";
 
     $st = $pdo->prepare($query);
-    $st->execute([$postIdx,$userIdx]);
+    $st->execute([$postIdx, $userIdx]);
 
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
@@ -639,7 +669,8 @@ function isEditablePost($userIdx,$postIdx){
     return intval($res[0]['exist']);
 }
 
-function deletePost($postIdx){
+function deletePost($postIdx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.postIdx = ?;";
@@ -744,7 +775,8 @@ function makePostLike($postIdx, $userIdx, $likeIdx)
     $pdo = null;
 }
 
-function getPostLikeStatus($postIdx,$userIdx){
+function getPostLikeStatus($postIdx, $userIdx)
+{
     $pdo = pdoSqlConnect();
     $query = "SELECT isDeleted from PostLike where userIdx = ? and postIdx = ?";
 
@@ -756,14 +788,15 @@ function getPostLikeStatus($postIdx,$userIdx){
     $st = null;
     $pdo = null;
 
-    if($res[0]['isDeleted'] == 'N'){
+    if ($res[0]['isDeleted'] == 'N') {
         return 'Y';
-    }else{
+    } else {
         return 'N';
     }
 }
 
-function getPostLikeList($postIdx){
+function getPostLikeList($postIdx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "select likeIdx,count(*) as likeCount from PostLike left outer join LikeCategory on postLikeIdx = likeIdx where postIdx = ? and isDeleted = 'N' group by likeIdx;";
@@ -779,12 +812,13 @@ function getPostLikeList($postIdx){
     return $res;
 }
 
-function getPostLikeUserList($postIdx,$userIdx,$page,$limit,$likeFilter){
+function getPostLikeUserList($postIdx, $userIdx, $page, $limit, $likeFilter)
+{
     $pdo = pdoSqlConnect();
 
     $page = ($page - 1) * $limit;
 
-    if($likeFilter == 1){
+    if ($likeFilter == 1) {
         $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = 1,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
 from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = 1) as isKnowingFriend
 from PostLike
@@ -796,7 +830,7 @@ where postIdx = $postIdx
   and PostLike.isDeleted = 'N') as F
 group by userIdx
 limit $page, $limit;";
-    }else{
+    } else {
         $likeFilter = $likeFilter - 1;
         $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = 1,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
 from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = 1) as isKnowingFriend
@@ -822,13 +856,14 @@ limit $page, $limit;";
     return $res;
 }
 
-function isPostHided($postIdx,$userIdx){
+function isPostHided($postIdx, $userIdx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "select exists(select * from UserPostHide where postIdx = ? and userIdx = ?) as exist";
 
     $st = $pdo->prepare($query);
-    $st->execute([$postIdx,$userIdx]);
+    $st->execute([$postIdx, $userIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
@@ -839,13 +874,14 @@ function isPostHided($postIdx,$userIdx){
 
 }
 
-function getPostHided($postIdx,$userIdx){
+function getPostHided($postIdx, $userIdx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "select isDeleted from UserPostHide where postIdx = ? and userIdx = ?";
 
     $st = $pdo->prepare($query);
-    $st->execute([$postIdx,$userIdx]);
+    $st->execute([$postIdx, $userIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
@@ -855,30 +891,33 @@ function getPostHided($postIdx,$userIdx){
     return $res[0]['isDeleted'] == 'N' ? 'Y' : 'N';
 }
 
-function makePostHide($postIdx,$userIdx){
+function makePostHide($postIdx, $userIdx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "insert into UserPostHide(postIdx,userIdx) values (?,?)";
 
     $st = $pdo->prepare($query);
-    $st->execute([$postIdx,$userIdx]);
+    $st->execute([$postIdx, $userIdx]);
 }
 
-function modifyPostHide($postIdx,$userIdx,$isHided){
+function modifyPostHide($postIdx, $userIdx, $isHided)
+{
     $pdo = pdoSqlConnect();
 
-    if($isHided == 'N'){
+    if ($isHided == 'N') {
         $query = "update UserPostHide set isDeleted = 'N' where userIdx = ? and postIdx = ?";
         $st = $pdo->prepare($query);
-        $st->execute([$userIdx,$postIdx]);
-    }else{
+        $st->execute([$userIdx, $postIdx]);
+    } else {
         $query = "update UserPostHide set isDeleted = 'Y' where userIdx = ? and postIdx = ?";
         $st = $pdo->prepare($query);
-        $st->execute([$userIdx,$postIdx]);
+        $st->execute([$userIdx, $postIdx]);
     }
 }
 
-function getPostType($postIdx){
+function getPostType($postIdx)
+{
     $pdo = pdoSqlConnect();
 
     $query = "select postType from Posts where postIdx = ?";
@@ -894,9 +933,63 @@ function getPostType($postIdx){
     return $res[0]['postType'];
 }
 
-function sharePost($postIdx,$postType,$userIdx,$friendIdx,$privacyBound,$contents){
+function sharePost($postIdx, $postType, $userIdx, $friendIdx, $privacyBound, $contents)
+{
     $pdo = pdoSqlConnect();
     $query = "insert into Posts(postType,postSharedIdx,postSharedType,writerIdx,userIdx,postPrivacyBounds,postContents) values ('P',?,?,?,?,?,?)";
     $st = $pdo->prepare($query);
-    $st->execute([$postIdx,$postType,$userIdx,$friendIdx,$privacyBound,$contents]);
+    $st->execute([$postIdx, $postType, $userIdx, $friendIdx, $privacyBound, $contents]);
+}
+
+function isNotificatedPostNow($userIdx,$postIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "select exists(select * from SettingPostNotification where userIdx = ? and postIdx = ?) as exist";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx,$postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['exist'];
+}
+
+function makePostNotificated($userIdx,$postIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "insert into SettingPostNotification(userIdx,postIdx) values (?,?)";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx,$postIdx]);
+}
+
+function getPostNotificated($userIdx,$postIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "select isDeleted from SettingPostNotification where userIdx = ? and postIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx,$postIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0]['isDeleted'] == 'N' ? 'Y' : 'N';
+}
+
+function modifyPostNotification($userIdx,$postIdx,$isNotificated){
+    $pdo = pdoSqlConnect();
+
+    if($isNotificated == 'Y'){
+        $query = "update SettingPostNotification set isDeleted = 'Y' where userIdx = ? and postIdx = ?";
+    }else{
+        $query = "update SettingPostNotification set isDeleted = 'N' where userIdx = ? and postIdx = ?";
+    }
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx,$postIdx]);
 }
