@@ -459,15 +459,17 @@ try {
 
             if(is_null($commentIdx)) {
                 $res->commentIdx = createComment($userIdx, $postIdx, $commentContent, $commentImgUrl);
+                $res->isSuccess = TRUE;
+                $res->code = 200;
+                $res->message = "댓글 등록 완료";
             }
             else {
                 $res->commentIdx = createReply($userIdx, $postIdx, $commentIdx, $commentContent, $commentImgUrl);
+                $res->isSuccess = TRUE;
+                $res->code = 200;
+                $res->message = "답글 등록 완료";
             }
 
-
-            $res->isSuccess = TRUE;
-            $res->code = 200;
-            $res->message = "댓글 등록 완료";
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
