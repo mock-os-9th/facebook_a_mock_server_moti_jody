@@ -954,7 +954,7 @@ function isNotificatedPostNow($userIdx,$postIdx){
     $st = null;
     $pdo = null;
 
-    return $res[0]['exist'];
+    return intval($res[0]['exist']);
 }
 
 function makePostNotificated($userIdx,$postIdx){
