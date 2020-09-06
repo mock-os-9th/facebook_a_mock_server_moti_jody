@@ -281,8 +281,6 @@ function editComment($commentIdx, $commentContent)
 
     $st = $pdo->prepare($query);
     $st->execute([$commentIdx, $commentContent]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
 
     $st = null;
     $pdo = null;
