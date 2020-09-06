@@ -49,7 +49,6 @@ function modifyCommentLike($commentIdx, $userIdx, $likeIdx, $isLike)
     $st = null;
     $pdo = null;
 }
-
 function makeCommentLike($commentIdx, $userIdx, $likeIdx)
 {
     $pdo = pdoSqlConnect();
