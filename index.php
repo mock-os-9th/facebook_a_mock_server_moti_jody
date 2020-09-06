@@ -26,6 +26,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/user/{idx}/profile/info', ['UserController', 'getProfileInfo']);
     $r->addRoute('GET', '/user/{idx}/profile/friend', ['UserController', 'getProfileFriend']);
     $r->addRoute('GET', '/user/{idx}/profile/img', ['UserController', 'getProfileImg']);
+    $r->addRoute('GET', '/user/{idx}/profile/background', ['UserController', 'getProfileBackgroundImg']);
 
 
     $r->addRoute('POST', '/friendRequest/{idx}', ['FriendController', 'requestFriend']);

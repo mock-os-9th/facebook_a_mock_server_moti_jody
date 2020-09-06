@@ -272,3 +272,32 @@ group by Posts.postIdx";
 
     return $res;
 }
+
+function getProfileBackgroundImg($profileUserIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "select Posts.postImgVideoUrl,
+       concat(firstName, secondName) as userName,
+       date(Posts.createAt)          as createAt,
+       Likes.likeCount,
+       CommentCount.commentCount,
+       Likes.isLiked
+from Posts
+         left outer join User on Posts.writerIdx = User.userIdx
+         left outer join (select postIdx, concat(firstName,secondName) as likedPerson, bit_or(if($profileUserIdx = PostLike.userIdx,true,false)) as isLiked, count(*) as likeCount  from PostLike left outer join User on PostLike.userIdx = User.userIdx where PostLike.isDeleted = 'N' group by postIdx) as Likes on Posts.postIdx = Likes.postIdx
+         left outer join (select postIdx, count(*) as commentCount from PostComment where isDeleted = 'N' group by postIdx) as CommentCount on CommentCount.postIdx = Posts.postIdx
+where Posts.postType = 'B'
+  and Posts.isDeleted = 'N'
+  and Posts.writerIdx = $profileUserIdx
+group by Posts.postIdx";
+
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}

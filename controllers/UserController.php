@@ -385,6 +385,70 @@ try {
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        case "getProfileBackgroundImg":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+
+            $profileUserIdx = $vars["idx"];
+            $profileUserIdx = isset($profileUserIdx)?intval($profileUserIdx):null;
+
+            if(is_null($profileUserIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "idx is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(isValidUserIdx($profileUserIdx) == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 타겟 idx입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if($profileUserIdx == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "idx 타입 오류";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(isUserBlocked($userIdx,$profileUserIdx) == 1){
+                $res->isSuccess = FALSE;
+                $res->code = 470;
+                $res->message = "접근 권한이 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $res->result = getProfileBackgroundImg($profileUserIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "프로필 사진 조회 성공";
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);
