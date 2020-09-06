@@ -209,6 +209,12 @@ function isValidDate($bday) {
     }
     return 0;
 }
+function isValidGender($gender){
+    if($gender == 'F' || $gender  == 'M'){
+        return 1;
+    }
+    return 0;
+}
 function isValidBound($bound) {
     if(preg_match("/^[GFESML]+$/", $bound)) {
         return 1;

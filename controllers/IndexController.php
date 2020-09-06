@@ -164,6 +164,13 @@ try {
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
+            if (!isValidGender($gender)) {
+                $res->isSuccess = FALSE;
+                $res->code = 434;
+                $res->message = "gender는 F 또는 M 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
 
             if ($email != null) {
                 if (isEmailDuplicated($email)) {
