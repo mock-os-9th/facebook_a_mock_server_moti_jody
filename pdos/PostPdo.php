@@ -212,7 +212,7 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
         $st->execute([$activityIdx, $mainPostIdx, $activityContents]);
     }
 
-    $query = "select friendIdx from Friends where userIdx = ?";
+    $query = "select friendIdx from Friends where userIdx = ? and isDeleted = 'N'";
     $st = $pdo->prepare($query);
     $st->execute([$userIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
@@ -247,7 +247,7 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
         }
     }
 
-    foreach($myFriendList as $key => $item){
+    foreach($myFriendList[0] as $key => $item){
         $query = "insert into SettingPostNotification(userIdx,postIdx) values (?,?)";
         $st = $pdo -> prepare($query);
         $st -> execute([$item,$mainPostIdx]);
