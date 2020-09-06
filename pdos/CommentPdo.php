@@ -300,3 +300,31 @@ function isCommentOrReplyExist($commentIdx)
 
     return intval($res[0]["exist"]);
 }
+
+function deleteComment($commentIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE PostComment SET isDeleted = 'N' WHERE commentIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx]);
+
+    $st = null;
+    $pdo = null;
+}
+function getCommentUserIdx($commentIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT userIdx FROM PostComment WHERE commentIdx = ? and isDeleted = 'N';";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["userIdx"]);
+}
