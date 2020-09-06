@@ -230,7 +230,7 @@ function createComment($userIdx, $postIdx, $commentContent, $commentImgUrl)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "INSERT INTO User (userIdx, postIdx, commentContent, commentImgUrl) VALUES (?, ?, ?, ?);";
+    $query = "INSERT INTO PostComment (userIdx, postIdx, commentContent, commentImgUrl) VALUES (?, ?, ?, ?);";
 
     $st = $pdo->prepare($query);
     $st->execute([$userIdx, $postIdx, $commentContent, $commentImgUrl]);
@@ -245,7 +245,7 @@ function createReply($userIdx, $postIdx, $commentIdx, $commentContent, $commentI
 {
     $pdo = pdoSqlConnect();
 
-    $query = "INSERT INTO User (userIdx, postIdx, parentCommentIdx commentContent, commentImgUrl) VALUES (?, ?, ?, ?, ?);";
+    $query = "INSERT INTO PostComment (userIdx, postIdx, parentCommentIdx commentContent, commentImgUrl) VALUES (?, ?, ?, ?, ?);";
 
     $st = $pdo->prepare($query);
     $st->execute([$userIdx, $postIdx, $commentIdx, $commentContent, $commentImgUrl]);
