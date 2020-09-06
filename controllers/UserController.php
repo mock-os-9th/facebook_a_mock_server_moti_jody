@@ -240,6 +240,15 @@ try {
             $profileUserIdx = $vars["idx"];
             $profileUserIdx = isset($profileUserIdx)?intval($profileUserIdx):null;
 
+            if(is_null($profileUserIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "idx is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
             if(isValidUserIdx($profileUserIdx) == 0){
                 $res->isSuccess = FALSE;
                 $res->code = 451;
@@ -258,16 +267,7 @@ try {
                 return;
             }
 
-            if(is_null($profileUserIdx)){
-                $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "idx is null";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-
-            //$res->result = getUserInfo($userIdx,$profileUserIdx);
+            $res->result = getUserInfo($userIdx,$profileUserIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "프로필 정보 조회 성공";
