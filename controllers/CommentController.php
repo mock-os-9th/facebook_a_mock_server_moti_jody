@@ -153,7 +153,7 @@ try {
 
             $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
 
-            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
                 $res->isSuccess = FALSE;
                 $res->code = 450;
                 $res->message = "존재하지 않는 유저입니다";
