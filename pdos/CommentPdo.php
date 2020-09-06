@@ -60,11 +60,9 @@ function makeCommentLike($commentIdx, $userIdx, $likeIdx)
     $pdo = null;
 }
 
-function getComment($userIdx, $postIdx, $page, $limit)
+function getComment($userIdx, $postIdx)
 {
     $pdo = pdoSqlConnect();
-
-    $page = ($page - 1) * $limit;
 
     $query = "select pc.commentIdx, u.*, commentContents, commentImgUrl,
                        pcc.replyCount,
@@ -100,11 +98,10 @@ function getComment($userIdx, $postIdx, $page, $limit)
                         where userIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N')
                         or userIdx not in (select userIdx from Blocked where blockedUserIdx = $userIdx and Blocked.isDeleted = 'N')
                         group by commentIdx) as cl on cl.commentIdx = pc.commentIdx
-                where pc.postIdx = $postIdx and pc.parentCommentIdx is null order by createAt desc
-                limit $page, $limit";
+                where pc.postIdx = $postIdx and pc.parentCommentIdx is null order by createAt desc;";
 
     $st = $pdo->prepare($query);
-    $st->execute([$userIdx, $postIdx, $page, $limit]);
+    $st->execute([$userIdx, $postIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 

@@ -161,27 +161,7 @@ try {
 
             $postIdx = $vars['idx'];
             $postIdx = isset($postIdx) ? intval($postIdx) : null;
-            $page = $_GET["page"];
-            $page = isset($page) ? intval($page) : null;
-            $limit = $_GET["limit"];
-            $limit = isset($limit) ? intval($limit) : null;
 
-            if (is_null($page)) {
-                $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "page가 null 입니다";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-            if (is_null($limit)) {
-                $res->isSuccess = FALSE;
-                $res->code = 441;
-                $res->message = "limit가 null 입니다";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
             if ($postIdx == null) {
                 $res->isSuccess = FALSE;
                 $res->code = 442;
@@ -200,14 +180,6 @@ try {
                 return;
             }
 
-            if (gettype($limit) != 'integer') {
-                $res->isSuccess = FALSE;
-                $res->code = 411;
-                $res->message = "limit는 Int 이여야 합니다";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
             if (!is_integer($postIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 412;
@@ -217,18 +189,7 @@ try {
                 return;
             }
 
-            if($page < 1){
-                $res->isSuccess = FALSE;
-                $res->code = 430;
-                $res->message = "page는 1부터 시작입니다";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-
-            $res->page = $page;
-            $res->limit = $limit;
-            $res->result = getComment($userIdx, $postIdx, $page, $limit);
+            $res->result = getComment($userIdx, $postIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "댓글 조회 완료";
