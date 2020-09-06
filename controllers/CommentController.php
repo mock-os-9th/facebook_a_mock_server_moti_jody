@@ -447,7 +447,7 @@ try {
                 return;
             }
             if(!is_null($commentIdx)) {
-                if (!isCommentExist($commentIdx)) {
+                if (!isCommentReplyExistOnPost($postIdx, $commentIdx)) {
                     $res->isSuccess = FALSE;
                     $res->code = 452;
                     $res->message = "존재하지 않는 댓글 idx 입니다";
