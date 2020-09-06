@@ -210,7 +210,7 @@ function isCommentExist($commentIdx)
 
     return intval($res[0]["exist"]);
 }
-function isCommentReplyExist($commentIdx)
+function isCommentReplyExistOnComment($commentIdx)
 {
     $pdo = pdoSqlConnect();
     $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE parentCommentIdx = ? and isDeleted = 'N') AS exist;";
@@ -272,4 +272,33 @@ function getPostIdxByCommentIdx($commentIdx)
     $pdo = null;
 
     return intval($res[0]["postIdx"]);
+}
+function editComment($commentIdx, $commentContent)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE PostComment SET commentContent = ? WHERE $commentIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx, $commentContent]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+}
+function isCommentOrReplyExist($commentIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE commentIdx = ? and isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
 }
