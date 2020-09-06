@@ -104,12 +104,12 @@ function getComment($userIdx, $postIdx, $page, $limit)
                 limit $page, $limit;";
 
     $st = $pdo->prepare($query);
-    $st->execute();
+    $st->execute([$userIdx, $postIdx, $page, $limit]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
     $st = null;
     $pdo = null;
 
-    return $res[0];
+    return $res;
 }
