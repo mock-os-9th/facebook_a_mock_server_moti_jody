@@ -29,29 +29,6 @@ try {
          * API Name : 프로필 정보 가져오기 API
          * 마지막 수정 날짜 : 19.04.29
          */
-        case "getUserInfo":
-            http_response_code(200);
-
-            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
-
-            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
-                $res->isSuccess = FALSE;
-                $res->code = 450;
-                $res->message = "해당유저가 존재하지 않습니다";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-
-            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
-            $idx = getUserIdxFromId($data->id);
-
-            $res->result = getUserInfo($idx);
-            $res->isSuccess = TRUE;
-            $res->code = 100;
-            $res->message = "테스트 성공";
-            echo json_encode($res, JSON_NUMERIC_CHECK);
-            break;
 
         case "getUserFriend":
             http_response_code(200);
@@ -240,6 +217,15 @@ try {
             $profileUserIdx = $vars["idx"];
             $profileUserIdx = isset($profileUserIdx)?intval($profileUserIdx):null;
 
+            if(is_null($profileUserIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "idx is null";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
             if(isValidUserIdx($profileUserIdx) == 0){
                 $res->isSuccess = FALSE;
                 $res->code = 451;
@@ -258,15 +244,10 @@ try {
                 return;
             }
 
-            if(is_null($profileUserIdx)){
-                $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "idx is null";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-
+            $res->result = getUserProfileInfo($userIdx,$profileUserIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "프로필 정보 조회 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
     }

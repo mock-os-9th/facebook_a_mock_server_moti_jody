@@ -88,3 +88,88 @@ function getUserIdxFromId($id)
 
     return intval($res[0]["userIdx"]);
 }
+
+function getUserProfileInfo($userIdx,$profileUserIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "select profileImgUrl,
+       backImgUrl,
+       concat(firstName, secondName) as userName,
+       UserCareerList.careerList,
+       UserUnivList.univList,
+       UserHighList.highschoolList,
+       ResidencePlace.residenceName,
+       OriginPlace.originPlaceName,
+       SocialLink.snsList,
+       Website.websiteList
+from User
+         left outer join (select userIdx, json_arrayagg(json_object('careerName', careerName)) as careerList
+                          from UserCareer
+                          where case
+                                    when UserCareer.careerPrivacyBounds = 'F' then true =
+                                                                                   (select bit_or(if($userIdx = Friends.friendIdx, true, false))
+                                                                                    from Friends
+                                                                                    where Friends.userIdx = $profileUserIdx
+                                                                                    group by Friends.userIdx) or $profileUserIdx = $userIdx
+                                    when UserCareer.careerPrivacyBounds = 'M' then $userIdx = $profileUserIdx
+                                    else true
+                                    end
+                          group by userIdx) as UserCareerList on User.userIdx = UserCareerList.userIdx
+         left outer join (select userIdx, json_arrayagg(json_object('univName', universityName)) as univList
+                          from UserUniversity
+                          where case
+                                    when UserUniversity.universityPrivacyBounds = 'F' then true =
+                                                                                   (select bit_or(if($userIdx = Friends.friendIdx, true, false))
+                                                                                    from Friends
+                                                                                    where Friends.userIdx = $profileUserIdx
+                                                                                    group by Friends.userIdx) or $profileUserIdx = $userIdx
+                                    when UserUniversity.universityPrivacyBounds = 'M' then $userIdx = $profileUserIdx
+                                    else true
+                                    end
+                          group by userIdx) as UserUnivList on User.userIdx = UserUnivList.userIdx
+         left outer join (select userIdx,
+                                 json_arrayagg(json_object('highschooolName', highschoolName)) as highschoolList
+                          from UserHighschool
+                          where case
+                                    when UserHighschool.highschoolPrivacyBounds = 'F' then true =
+                                                                                   (select bit_or(if($userIdx = Friends.friendIdx, true, false))
+                                                                                    from Friends
+                                                                                    where Friends.userIdx = $profileUserIdx
+                                                                                    group by Friends.userIdx) or $profileUserIdx = $userIdx
+                                    when UserHighschool.highschoolPrivacyBounds = 'M' then $userIdx = $profileUserIdx
+                                    else true
+                                    end
+                          group by userIdx) as UserHighList on User.userIdx = UserHighList.userIdx
+         left outer join (select * from UserResidencePlace where case when UserResidencePlace.residencePrivacyBounds = 'F' then true = (select bit_or(if($userIdx = Friends.friendIdx, true, false)) or $profileUserIdx = $userIdx from Friends where Friends.userIdx = $profileUserIdx group by Friends.userIdx)
+                                     when UserResidencePlace.residencePrivacyBounds = 'M' then $userIdx = $profileUserIdx
+                                     else true
+                                end) as ResidencePlace on ResidencePlace.userIdx = User.userIdx
+         left outer join (select * from UserOriginPlace where case when originPlacePrivacyBounds = 'F' then true = (select bit_or(if($userIdx = Friends.friendIdx, true, false)) or $profileUserIdx = $userIdx from Friends where Friends.userIdx = $profileUserIdx group by Friends.userIdx)
+                                     when originPlacePrivacyBounds = 'M' then $userIdx = $profileUserIdx
+                                     else true
+                                end) as OriginPlace on OriginPlace.userIdx = User.userIdx
+         left outer join (select userIdx, json_arrayagg(json_object('snsIdx',snsCategoryIdx,'snsIdName',socialLinkName)) as snsList from UserSocialLink where case when UserSocialLink.socialLinkPrivacyBounds = 'F' then true = (select bit_or(if($userIdx = Friends.friendIdx, true, false)) or $profileUserIdx = $userIdx from Friends where Friends.userIdx = $profileUserIdx group by Friends.userIdx)
+                                     when UserSocialLink.socialLinkPrivacyBounds = 'M' then $userIdx = $profileUserIdx
+                                     else true
+                                end) as SocialLink on SocialLink.userIdx = User.userIdx
+         left outer join (select userIdx, json_arrayagg(json_object('websiteUrl',websiteUrl)) as websiteList from UserWebsite where case when UserWebsite.websitePrivacyBounds = 'F' then true = (select bit_or(if($userIdx = Friends.friendIdx, true, false)) or $profileUserIdx = $userIdx from Friends where Friends.userIdx = $profileUserIdx group by Friends.userIdx)
+                                     when UserWebsite.websitePrivacyBounds = 'M' then $userIdx = $profileUserIdx
+                                     else true
+                                end) as Website on Website.userIdx = User.userIdx";
+
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $res[0]['careerList'] = json_decode($res[0]['careerList']);
+    $res[0]['univList'] = json_decode($res[0]['univList']);
+    $res[0]['highschoolList'] = json_decode($res[0]['highschoolList']);
+    $res[0]['snsList'] = json_decode($res[0]['snsList']);
+    $res[0]['websiteList'] = json_decode($res[0]['websiteList']);
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
