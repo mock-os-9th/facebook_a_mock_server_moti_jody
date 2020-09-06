@@ -233,6 +233,8 @@ group by ProfileUserFriend.userIdx) as friendList;";
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
+    $res[0]['friendList'] = json_decode($res[0]['friendList']);
+
     $st = null;
     $pdo = null;
 
