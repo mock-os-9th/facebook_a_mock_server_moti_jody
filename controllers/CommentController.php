@@ -146,11 +146,6 @@ try {
         case "getComment":
             http_response_code(200);
 
-            $page = $_GET["page"];
-            $page = isset($page) ? intval($page) : null;
-            $limit = $_GET["limit"];
-            $limit = isset($limit) ? intval($limit) : null;
-
             $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
 
             if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
@@ -167,6 +162,11 @@ try {
 
             $postIdx = $vars["idx"];
             $postIdx = isset($postIdx) ? intval($postIdx) : null;
+
+            $page = $_GET["page"];
+            $page = isset($page) ? intval($page) : null;
+            $limit = $_GET["limit"];
+            $limit = isset($limit) ? intval($limit) : null;
 
             if (is_null($page)) {
                 $res->isSuccess = FALSE;
