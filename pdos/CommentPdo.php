@@ -305,7 +305,7 @@ function deleteComment($commentIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "UPDATE PostComment SET isDeleted = 'N' WHERE commentIdx = ?;";
+    $query = "UPDATE PostComment SET isDeleted = 'Y' WHERE commentIdx = ?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$commentIdx]);
