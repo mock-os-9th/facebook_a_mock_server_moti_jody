@@ -226,7 +226,8 @@ where ProfileUserFriend.isDeleted = 'N'
                                           from Blocked
                                           where Blocked.userIdx = $profileUserIdx and Blocked.userIdx = $userIdx
                                             and Blocked.isDeleted = 'N')
-group by ProfileUserFriend.userIdx) as friendList;";
+group by ProfileUserFriend.userIdx
+limit 0,6) as friendList;";
 
     $st = $pdo->prepare($query);
     $st->execute();
