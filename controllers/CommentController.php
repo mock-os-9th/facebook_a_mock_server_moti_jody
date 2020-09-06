@@ -419,7 +419,7 @@ try {
                     return;
                 }
             }
-            if (!is_integer($commentContent)) {
+            if (!is_string($commentContent)) {
                 $res->isSuccess = FALSE;
                 $res->code = 412;
                 $res->message = "commentContent는 String 이여야 합니다";
@@ -428,7 +428,7 @@ try {
                 return;
             }
             if(!is_null($commentImgUrl)) {
-                if (!is_integer($commentImgUrl)) {
+                if (!is_string($commentImgUrl)) {
                     $res->isSuccess = FALSE;
                     $res->code = 413;
                     $res->message = "commentImgUrl은 String 이여야 합니다";
