@@ -351,7 +351,7 @@ try {
                 return;
             }
 
-            $res->result = getCommentReply($userIdx, $postIdx, $page, $limit);
+            $res->result = getCommentReply($userIdx, $commentIdx, $page, $limit);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "답글 조회 완료";
