@@ -594,7 +594,7 @@ try {
                 return;
             }
 
-            editComment($commentIdx, $commentContent);
+            editComment($commentContent, $commentIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "댓글 수정 완료";

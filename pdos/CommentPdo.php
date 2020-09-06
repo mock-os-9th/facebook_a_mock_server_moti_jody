@@ -273,14 +273,14 @@ function getPostIdxByCommentIdx($commentIdx)
 
     return intval($res[0]["postIdx"]);
 }
-function editComment($commentIdx, $commentContent)
+function editComment($commentContent, $commentIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "UPDATE PostComment SET commentContents = $commentContent WHERE commentIdx = $commentIdx;";
+    $query = "UPDATE PostComment SET commentContents = ? WHERE commentIdx = ?;";
 
     $st = $pdo->prepare($query);
-    $st->execute();
+    $st->execute([$commentContent, $commentIdx]);
 
     $st = null;
     $pdo = null;
