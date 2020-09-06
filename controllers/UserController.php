@@ -267,6 +267,10 @@ try {
                 return;
             }
 
+            $res->result = getUserInfo($userIdx,$profileUserIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "프로필 정보 조회 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
     }

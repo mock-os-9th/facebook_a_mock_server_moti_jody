@@ -113,13 +113,13 @@ from Posts
 where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.userIdx = $userIdx,false,true))
                                            from PrivacyBoundExcept
                                            where Posts.postIdx = PrivacyBoundExcept.idx
-                                             and PrivacyBoundExcept.exceptApplyType = 'P'group by PrivacyBoundExcept.idx), true)
+                                             and PrivacyBoundExcept.exceptApplyType = 'P'group by PrivacyBoundExcept.idx) or Posts.writerIdx = $userIdx, true)
   and if(postPrivacyBounds = 'S', true = (select bit_or(if(PrivacyBoundShow.userIdx = $userIdx,true,false))
                                            from PrivacyBoundShow
                                            where Posts.postIdx = PrivacyBoundShow.idx
-                                             and PrivacyBoundShow.showApplyType = 'P'), true)
+                                             and PrivacyBoundShow.showApplyType = 'P') or Posts.writerIdx = $userIdx, true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
-  and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = $userIdx group by Friends.userIdx),true)
+  and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = $userIdx group by Friends.userIdx) or Posts.writerIdx = $userIdx,true)
   and Posts.postType = 'P'
   and Posts.isDeleted = 'N'
 order by Posts.createAt desc
@@ -228,7 +228,7 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
         $myFriendList = array_diff($myFriendList,$friendExcept);
 
         foreach($myFriendList as $key => $item){
-            $query = "insert into SettingPostNotification(userIdx,postIdx) valuse (?,?)";
+            $query = "insert into SettingPostNotification(userIdx,postIdx) values (?,?)";
             $st = $pdo -> prepare($query);
             $st -> execute([$item,$mainPostIdx]);
         }
@@ -241,14 +241,14 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
             $st->execute([$mainPostIdx, $item, 'P']);
         }
         foreach($friendShow as $key => $item){
-            $query = "insert into SettingPostNotification(userIdx,postIdx) valuse (?,?)";
+            $query = "insert into SettingPostNotification(userIdx,postIdx) values (?,?)";
             $st = $pdo -> prepare($query);
             $st -> execute([$item,$mainPostIdx]);
         }
     }
 
     foreach($myFriendList as $key => $item){
-        $query = "insert into SettingPostNotification(userIdx,postIdx) valuse (?,?)";
+        $query = "insert into SettingPostNotification(userIdx,postIdx) values (?,?)";
         $st = $pdo -> prepare($query);
         $st -> execute([$item,$mainPostIdx]);
     }
@@ -385,13 +385,13 @@ from Posts
 where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.userIdx = $userIdx,false,true))
                                            from PrivacyBoundExcept
                                            where Posts.postIdx = PrivacyBoundExcept.idx
-                                             and PrivacyBoundExcept.exceptApplyType = 'P'group by PrivacyBoundExcept.idx), true)
+                                             and PrivacyBoundExcept.exceptApplyType = 'P'group by PrivacyBoundExcept.idx) or Posts.writerIdx = $userIdx, true)
   and if(postPrivacyBounds = 'S', true = (select bit_or(if(PrivacyBoundShow.userIdx = $userIdx,true,false))
                                            from PrivacyBoundShow
                                            where Posts.postIdx = PrivacyBoundShow.idx
-                                             and PrivacyBoundShow.showApplyType = 'P'), true)
+                                             and PrivacyBoundShow.showApplyType = 'P') or Posts.writerIdx = $userIdx, true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
-  and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = $userIdx group by Friends.userIdx),true)
+  and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = $userIdx group by Friends.userIdx) or Posts.writerIdx = $userIdx,true)
   and if(? = 'Y', if(isnull(?),true, date(Posts.createAt) = ?) and if(isnull(?),true,(case when ? = 'G' then true when ? = 'M' then $userIdx = Posts.writerIdx else not $userIdx = Posts.writerIdx end)) ,true)
   and Posts.postType = 'P'
   and if($searchIdx = 0,Posts.userIdx = $userIdx or Posts.writerIdx = $userIdx,Posts.writerIdx = $searchIdx or Posts.userIdx = $searchIdx)
@@ -545,13 +545,13 @@ from Posts
 where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.userIdx = $userIdx,false,true))
                                            from PrivacyBoundExcept
                                            where Posts.postIdx = PrivacyBoundExcept.idx
-                                             and PrivacyBoundExcept.exceptApplyType = 'P'group by PrivacyBoundExcept.idx), true)
+                                             and PrivacyBoundExcept.exceptApplyType = 'P'group by PrivacyBoundExcept.idx) or Posts.writerIdx = $userIdx, true)
   and if(postPrivacyBounds = 'S', true = (select bit_or(if(PrivacyBoundShow.userIdx = $userIdx,true,false))
                                            from PrivacyBoundShow
                                            where Posts.postIdx = PrivacyBoundShow.idx
-                                             and PrivacyBoundShow.showApplyType = 'P'), true)
+                                             and PrivacyBoundShow.showApplyType = 'P') or Posts.writerIdx = $userIdx, true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
-  and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = $userIdx group by Friends.userIdx),true)
+  and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = $userIdx group by Friends.userIdx) or Posts.writerIdx = $userIdx,true)
   and Posts.postType = 'P'
   and Posts.postIdx = $postIdx
   and Posts.isDeleted = 'N'
