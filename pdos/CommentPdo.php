@@ -257,10 +257,10 @@ function createReply($userIdx, $postIdx, $commentIdx, $commentContent, $commentI
     return $recruitId;
 }
 
-function isCommentReplyExistOnPost($postIdx, $commentIdx)
+function isCommentExistOnPost($postIdx, $commentIdx)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE postIdx = ? and parentCommentIdx = ? and isDeleted = 'N') AS exist;";
+    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE postIdx = ? and commentIdx = ? and isDeleted = 'N') AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$postIdx, $commentIdx]);
