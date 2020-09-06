@@ -213,7 +213,7 @@ function isCommentExist($commentIdx)
 function isCommentReplyExist($commentIdx)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE postCommentIdx = ? and isDeleted = 'N') AS exist;";
+    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE parentCommentIdx = ? and isDeleted = 'N') AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$commentIdx]);
