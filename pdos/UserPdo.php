@@ -89,7 +89,7 @@ function getUserIdxFromId($id)
     return intval($res[0]["userIdx"]);
 }
 
-function getUserInfo($userIdx,$profileUserIdx){
+function getUserProfileInfo($userIdx,$profileUserIdx){
     $pdo = pdoSqlConnect();
 
     $query = "select profileImgUrl,
