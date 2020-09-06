@@ -162,6 +162,12 @@ from User
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
+    $res[0]['careerList'] = json_decode($res[0]['careerList']);
+    $res[0]['univList'] = json_decode($res[0]['univList']);
+    $res[0]['highschoolList'] = json_decode($res[0]['highschoolList']);
+    $res[0]['snsList'] = json_decode($res[0]['snsList']);
+    $res[0]['websiteList'] = json_decode($res[0]['websiteList']);
+
     $st = null;
     $pdo = null;
 
