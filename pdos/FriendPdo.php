@@ -146,7 +146,7 @@ function getUserFriendList($userIdx, $targetIdx)
                     inner join (select userIdx, firstName, secondName, profileImgUrl
                                 from User
                                 where userIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
-                                isDeleted = 'N'
+                                and isDeleted = 'N'
                                 ) as u on u.userIdx = f.friendIdx
                 where f.userIdx = $targetIdx and f.isDeleted = 'N'
                 order by u.firstName
