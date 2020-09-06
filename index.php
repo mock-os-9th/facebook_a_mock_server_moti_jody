@@ -19,7 +19,7 @@ ini_set('default_charset', 'utf8mb4');
 //Main Server API
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     /* ******************   Test   ****************** */
-    $r->addRoute('GET', '/', ['IndexController', 'index']);
+    $r->addRoute('GET', '/', ['CommentController', 'index']);
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']);
     $r->addRoute('DELETE', '/user', ['IndexController', 'deleteUser']);
 
