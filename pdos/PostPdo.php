@@ -819,8 +819,8 @@ function getPostLikeUserList($postIdx, $userIdx, $page, $limit, $likeFilter)
     $page = ($page - 1) * $limit;
 
     if ($likeFilter == 1) {
-        $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = 1,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
-from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = 1) as isKnowingFriend
+        $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = $userIdx,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
+from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = $userIdx) as isKnowingFriend
 from PostLike
          left outer join LikeCategory on postLikeIdx = likeIdx
          left outer join User on User.userIdx = PostLike.userIdx
@@ -832,8 +832,8 @@ group by userIdx
 limit $page, $limit;";
     } else {
         $likeFilter = $likeFilter - 1;
-        $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = 1,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
-from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = 1) as isKnowingFriend
+        $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = 4userIdx,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
+from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = $userIdx) as isKnowingFriend
 from PostLike
          left outer join LikeCategory on postLikeIdx = likeIdx
          left outer join User on User.userIdx = PostLike.userIdx
