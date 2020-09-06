@@ -267,8 +267,6 @@ try {
                 return;
             }
 
-            if()
-
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
     }
