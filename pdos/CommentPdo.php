@@ -198,7 +198,7 @@ function getCommentReply($userIdx, $commentIdx, $page, $limit)
 function isCommentExist($commentIdx)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE commentIdx = ? and isDeleted = 'N') AS exist;";
+    $query = "SELECT EXISTS(SELECT * FROM PostComment WHERE commentIdx = ? and parentCommentIdx is null and isDeleted = 'N') AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$commentIdx]);
@@ -261,7 +261,7 @@ function getPostIdxByCommentIdx($commentIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "select postIdx from PostComment where commentIdx = ? and isDeleted = 'N'";
+    $query = "select postIdx from PostComment where commentIdx = ? and parentCommentIdx is null and isDeleted = 'N'";
 
     $st = $pdo->prepare($query);
     $st->execute([$commentIdx]);
