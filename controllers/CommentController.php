@@ -163,7 +163,7 @@ try {
             }
 
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
-            $idx = getUserIdxFromId($data->id);
+            $userIdx = getUserIdxFromId($data->id);
 
             $postIdx = $vars["idx"];
             $postIdx = isset($postIdx) ? intval($postIdx) : null;
