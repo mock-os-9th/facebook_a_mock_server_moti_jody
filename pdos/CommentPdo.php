@@ -225,3 +225,34 @@ function isCommentReplyExist($commentIdx)
 
     return intval($res[0]["exist"]);
 }
+
+function createComment($userIdx, $postIdx, $commentContent, $commentImgUrl)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "INSERT INTO User (userIdx, postIdx, commentContent, commentImgUrl) VALUES (?, ?, ?, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx, $postIdx, $commentContent, $commentImgUrl]);
+
+    $recruitId = $pdo->lastInsertId();
+    $st = null;
+    $pdo = null;
+
+    return $recruitId;
+}
+function createReply($userIdx, $postIdx, $commentIdx, $commentContent, $commentImgUrl)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "INSERT INTO User (userIdx, postIdx, parentCommentIdx commentContent, commentImgUrl) VALUES (?, ?, ?, ?, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx, $postIdx, $commentIdx, $commentContent, $commentImgUrl]);
+
+    $recruitId = $pdo->lastInsertId();
+    $st = null;
+    $pdo = null;
+
+    return $recruitId;
+}

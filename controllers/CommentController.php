@@ -359,6 +359,119 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
+        case "createComment":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $userIdx = getUserIdxFromId($data->id);
+
+            $postIdx = $vars["postIdx"];
+            $postIdx = isset($postIdx) ? intval($postIdx) : null;
+            $commentIdx = $vars["commentIdx"];
+            $commentIdx = isset($commentIdx) ? intval($commentIdx) : null;
+
+            $commentContent = isset($req->commentContent) ? $req->commentContent : null;
+            $commentImgUrl = isset($req->commentImgUrl) ? $req->commentImgUrl : null;
+
+            if (is_null($postIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "postIdx가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (is_null($commentContent)) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "commentContent가 null 입니다가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (!is_integer($postIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "postIdx는 Int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!is_null($commentIdx)) {
+                if (!is_integer($commentIdx)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 411;
+                    $res->message = "commentIdx가 Int 이여야 입니다가 Int 이여야 입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+            }
+            if (!is_integer($commentContent)) {
+                $res->isSuccess = FALSE;
+                $res->code = 412;
+                $res->message = "commentContent는 String 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!is_null($commentImgUrl)) {
+                if (!is_integer($commentImgUrl)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 413;
+                    $res->message = "commentImgUrl은 String 이여야 합니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+            }
+
+            if(!isPostExist($postIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 게시물 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!is_null($commentIdx)) {
+                if (!isCommentExist($commentIdx)) {
+                    $res->isSuccess = FALSE;
+                    $res->code = 452;
+                    $res->message = "존재하지 않는 댓글 idx 입니다";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    addErrorLogs($errorLogs, $res, $req);
+                    return;
+                }
+            }
+
+            if(is_null($commentIdx)) {
+                $res->commentIdx = createComment($userIdx, $postIdx, $commentContent, $commentImgUrl);
+            }
+            else {
+                $res->commentIdx = createReply($userIdx, $postIdx, $commentIdx, $commentContent, $commentImgUrl);
+            }
+
+
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "댓글 등록 완료";
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);
