@@ -212,7 +212,7 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
         $st->execute([$activityIdx, $mainPostIdx, $activityContents]);
     }
 
-    $query = "select friendIdx from Friends where userIdx = ?";
+    $query = "select friendIdx from Friends where userIdx = ? and isDeleted = 'N'";
     $st = $pdo->prepare($query);
     $st->execute([$userIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
@@ -247,7 +247,7 @@ function createPost($userIdx, $feedUserIdx, $postPrivacyBound, $postContents, $m
         }
     }
 
-    foreach($myFriendList as $key => $item){
+    foreach($myFriendList[0] as $key => $item){
         $query = "insert into SettingPostNotification(userIdx,postIdx) values (?,?)";
         $st = $pdo -> prepare($query);
         $st -> execute([$item,$mainPostIdx]);
@@ -819,8 +819,8 @@ function getPostLikeUserList($postIdx, $userIdx, $page, $limit, $likeFilter)
     $page = ($page - 1) * $limit;
 
     if ($likeFilter == 1) {
-        $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = 1,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
-from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = 1) as isKnowingFriend
+        $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = $userIdx,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
+from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = $userIdx) as isKnowingFriend
 from PostLike
          left outer join LikeCategory on postLikeIdx = likeIdx
          left outer join User on User.userIdx = PostLike.userIdx
@@ -832,8 +832,8 @@ group by userIdx
 limit $page, $limit;";
     } else {
         $likeFilter = $likeFilter - 1;
-        $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = 1,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
-from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = 1) as isKnowingFriend
+        $query = "select userIdx,likeIdx,userProfileImgUrl,userName,count(if(isKnowingFriend = 4userIdx,isKnowingFriend,null)) as knowingFriendCount,bit_or(if(friend = $userIdx,true,false)) as isFriend
+from (select PostLike.userIdx, likeIdx, profileImgUrl as userProfileImgUrl, concat(firstName, secondName) as userName, f1.friendIdx as friend, (select bit_or(friendIdx = f2.friendIdx) from Friends where Friends.userIdx = $userIdx) as isKnowingFriend
 from PostLike
          left outer join LikeCategory on postLikeIdx = likeIdx
          left outer join User on User.userIdx = PostLike.userIdx
