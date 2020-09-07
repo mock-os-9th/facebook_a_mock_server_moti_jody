@@ -530,17 +530,17 @@ function friendExistWithKeyword($idx, $targetIdx, $keyword) {
     $query = "SELECT EXISTS(
                 (select *
                 from Friends as f
-                    inner join (select *
+                    inner join (select concat(firstName, ' ', secondName) as userName
                                 from User
                                 where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                                 ) as u on u.userIdx = f.friendIdx
                 where f.userIdx = $targetIdx
-                and (u.firstName like concat('%', $keyword, '%') or u.secondName like concat('%', $keyword, '%'))
+                and u.userName like concat('%', ?, '%')
                 order by u.firstName
                 )) AS exist;";
 
     $st = $pdo->prepare($query);
-    $st->execute([$idx, $targetIdx, $keyword]);
+    $st->execute([$keyword]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 

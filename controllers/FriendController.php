@@ -904,7 +904,6 @@ try {
 
             $keyword = $_GET["keyword"];
             $keyword = isset($keyword) ? strval($keyword) : null;
-            $keyword = decodeURI(decodeURIComponent($keyword));
 
             if ($targetIdx == 0) {
                 $targetIdx = $idx;
