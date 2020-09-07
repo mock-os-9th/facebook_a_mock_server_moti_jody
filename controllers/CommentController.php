@@ -91,10 +91,10 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (!is_integer($postIdx)) {
+            if (!is_integer($commentIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 412;
-                $res->message = "게시물 idx는 Int 이여야 합니다";
+                $res->message = "댓글 idx는 Int 이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
