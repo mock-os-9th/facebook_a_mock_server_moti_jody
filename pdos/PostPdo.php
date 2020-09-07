@@ -576,6 +576,19 @@ order by Posts.createAt desc";
 function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postContents, $moodActivity, $moodIdx, $activityIdx, $activityContents, $imgVodList, $friendExcept, $friendShow)
 {
     $pdo = pdoSqlConnect();
+
+    $query = "select imgVideoPostIdx from PostImgVideo left outer join Posts on Posts.postIdx = PostImgVideo.postIdx where PostImgVideo.postIdx = $postIdx;";
+    $st = $pdo->prepare($query);
+    $st->execute();
+
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $postImgVodList = $st->fetchAll();
+
+    foreach ($postImgVodList as $key => $item){
+        echo $item;
+    }
+
+
     if (count($imgVodList) > 1) {
         $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx = ?;";
         $st = $pdo->prepare($query);
@@ -630,12 +643,16 @@ function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postCont
         }
     }
     if (count($imgVodList) > 1) {
+
+
         $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.postIdx = ?;";
 
         $st = $pdo->prepare($query);
         $st->execute([$postIdx]);
 
         foreach ($imgVodList as $key => $item) {
+
+
             $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType) values ('I',?,?,?,?,?,?)";
 
             $st = $pdo->prepare($query);
