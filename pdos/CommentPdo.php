@@ -360,7 +360,7 @@ function modifyCommentHide($userIdx, $commentIdx)
     $st = null;
     $pdo = null;
 }
-function makeCommendHide($userIdx, $commentIdx)
+function makeCommentHide($userIdx, $commentIdx)
 {
     $pdo = pdoSqlConnect();
 
