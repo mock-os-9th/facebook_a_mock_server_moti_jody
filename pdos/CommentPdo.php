@@ -46,6 +46,10 @@ function getCommentLike($userIdx, $commentIdx, $page, $limit)
     $st = null;
     $pdo = null;
 
+    foreach ($res as $key => $row) {
+        $res[$key]['commentLikedList'] = json_decode($row['commentLikedList']);
+    }
+
     return $res;
 }
 
