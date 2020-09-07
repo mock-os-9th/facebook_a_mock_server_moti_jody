@@ -594,6 +594,15 @@ try {
                 return;
             }
 
+            if($userIdx != getCommentUserIdx($commentIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 470;
+                $res->message = "수정할 권한이 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
             editComment($commentContent, $commentIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
@@ -666,6 +675,72 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
+        case "hideComment":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $userIdx = getUserIdxFromId($data->id);
+
+            $commentIdx = $vars["idx"];
+            $commentIdx = isset($commentIdx) ? intval($commentIdx) : null;
+
+            if (is_null($commentIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "댓글 idx가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (!is_integer($commentIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "댓글 idx는 Int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(!isCommentOrReplyExist($commentIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 댓글 idx 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if(isCommentHided($commentIdx)){ //숨김 되어 있을 떄
+                showComment($commentIdx);
+                $res->isHided = 'N';
+            }else{ //볼 수 있게 되어 있을 때
+                if(isCommentHideEixst($commentIdx)) {
+                    modifyCommentHide($commentIdx);
+                }
+                else {
+                    makeCommendHide($userIdx, $commentIdx);
+                }
+                $res->isHided = 'Y';
+            }
+
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "댓글 숨김/숨김 해제 완료";
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

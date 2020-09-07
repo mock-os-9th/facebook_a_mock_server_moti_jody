@@ -328,3 +328,70 @@ function getCommentUserIdx($commentIdx)
 
     return intval($res[0]["userIdx"]);
 }
+
+function showComment($commentIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE UserCommentHide SET isDeleted = 'Y' WHERE commentIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx]);
+
+    $st = null;
+    $pdo = null;
+}
+function modifyCommentHide($commentIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE UserCommentHide SET isDeleted = 'N' WHERE commentIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx]);
+
+    $st = null;
+    $pdo = null;
+}
+function makeCommendHide($userIdx, $commentIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "insert into UserCommentHide (userIdx, commentIdx) values (?,?)";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx, $commentIdx]);
+    $st = null;
+    $pdo = null;
+}
+
+function isCommentHided($commentIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM UserCommentHide WHERE commentIdx = ? and isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
+function isCommentHideEixst($commentIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM UserCommentHide WHERE commentIdx = ?) AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
