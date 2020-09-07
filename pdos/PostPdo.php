@@ -584,7 +584,7 @@ function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postCont
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $postImgVodList = $st->fetchAll();
 
-    echo $postImgVodList[0]['imgVideoPostIdx'][0];
+    echo json_decode($postImgVodList[0]['imgVideoPostIdx']);
 
 
     if (count($imgVodList) > 1) {
