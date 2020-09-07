@@ -1203,6 +1203,7 @@ try {
                         return;
                     }
                     if(isValidPostIdx($item->imgVodIdx) == 0){
+                        echo $item->imgVodIdx;
                         $res->isSuccess = FALSE;
                         $res->code = 459;
                         $res->message = "존재하지 않는 imgVodIdx입니다";
