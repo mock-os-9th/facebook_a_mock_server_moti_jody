@@ -56,7 +56,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST','/posts/{idx}/share',['PostController','sharePost']);
     $r->addRoute('POST','/posts/{idx}/notification',['PostController','postNotification']);
 
-    $r->addRoute('PATCH','/comment/{idx}/like',['CommentController','commentLikePush']);
+    $r->addRoute('PATCH','/comment/{idx}/like',['CommentController','likeComment']);
     $r->addRoute('GET','/post/{idx}/comment',['CommentController','getComment']);
     $r->addRoute('GET','/comment/{idx}',['CommentController','getCommentReply']);
     $r->addRoute('POST','/post/{postIdx}/comment',['CommentController','createComment']);

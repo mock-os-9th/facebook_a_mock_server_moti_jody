@@ -24,13 +24,12 @@ try {
             getLogs("./logs/errors.log");
             break;
 
-        case "commentLikePush":
+        case "likeComment":
             http_response_code(200);
 
             $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
 
-
-            if (isValidHeader($jwt, JWT_SECRET_KEY) == 0) {
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
                 $res->isSuccess = FALSE;
                 $res->code = 450;
                 $res->message = "존재하지 않는 유저입니다";
@@ -39,106 +38,55 @@ try {
                 return;
             }
 
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $userIdx = getUserIdxFromId($data->id);
 
-            $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
+            $commentIdx = $vars["idx"];
+            $commentIdx = isset($commentIdx) ? intval($commentIdx) : null;
 
-
-            if ($userIdx == 0) {
-                $res->isSuccess = FALSE;
-                $res->code = 450;
-                $res->message = "존재하지 않는 유저입니다";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-
-            $commentIdx = intval($vars["idx"]);
-            $isLike = $req->isLike;
-            $likeIdx = $req->likeIdx;
-
-            if (gettype($commentIdx) != 'integer') {
-                $res->isSuccess = FALSE;
-                $res->code = 410;
-                $res->message = "댓글 인덱스 타입 오류";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-            if (gettype($isLike) != 'string') {
-                $res->isSuccess = FALSE;
-                $res->code = 411;
-                $res->message = "댓글 인덱스 타입 오류";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-
-            if (gettype($likeIdx) != 'integer') {
-                $res->isSuccess = FALSE;
-                $res->code = 412;
-                $res->message = "댓글 인덱스 타입 오류";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-            if (strlen($isLike) != 1) {
-                $res->isSuccess = FALSE;
-                $res->code = 420;
-                $res->message = "좋아요 여부 길이 오류";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-            if ($isLike != 'N' && $isLike != 'Y') {
-                $res->isSuccess = FALSE;
-                $res->code = 430;
-                $res->message = "좋아요 여부 타입 오류";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
             if (is_null($commentIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 440;
-                $res->message = "댓글 인덱스가 null입니다";
+                $res->message = "댓글 idx가 null 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (is_null($isLike)) {
+
+            if (!is_integer($commentIdx)) {
                 $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "좋아요 여부가 null입니다";
+                $res->code = 410;
+                $res->message = "댓글 idx는 Int 이여야 합니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (is_null($likeIdx)) {
-                $res->isSuccess = FALSE;
-                $res->code = 440;
-                $res->message = "좋아요 인덱스가 null입니다";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
-            if (!isValidCommentIdx($commentIdx)) {
+
+            if(!isCommentOrReplyExist($commentIdx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 451;
-                $res->message = "존재하지 않는 댓글입니다";
+                $res->message = "존재하지 않는 댓글 idx 입니다";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
 
-            if (isUserLikedComment($userIdx, $commentIdx)) {
-                modifyCommentLike($commentIdx, $userIdx, $likeIdx, $isLike);
-            } else {
-                makeCommentLike($commentIdx, $userIdx, $likeIdx);
+            if(isUserLikedComment($userIdx, $commentIdx)){ //좋아요 되어 있을 때
+                likeComment($userIdx, $commentIdx);
+                $res->isLiked = 'N';
+            }else{ //좋아요 안되어 있을 때
+                if(isCommentLikeExist($userIdx, $commentIdx)) {
+                    modifyCommentLike($userIdx, $commentIdx);
+                }
+                else {
+                    makeCommentLike($userIdx, $commentIdx);
+                }
+                $res->isLiked = 'Y';
             }
 
-            $res->isSuccess = true;
+            $res->isSuccess = TRUE;
             $res->code = 200;
-            $res->message = "좋아요 변경 완료";
+            $res->message = "댓글 좋아요/좋아요 취소 완료";
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
@@ -722,15 +670,16 @@ try {
                 return;
             }
 
-            if(isCommentHided($commentIdx)){ //숨김 되어 있을 떄
-                showComment($commentIdx);
+            if(isUserHidedComment($userIdx, $commentIdx)){ //숨김 되어 있을 떄
+                showComment($userIdx, $commentIdx);
                 $res->isHided = 'N';
-            }else{ //볼 수 있게 되어 있을 때
-                if(isCommentHideEixst($commentIdx)) {
-                    modifyCommentHide($commentIdx);
+            }
+            else{ //볼 수 있게 되어 있을 때
+                if(isCommentHideExist($userIdx, $commentIdx)) {
+                    modifyCommentHide($userIdx, $commentIdx);
                 }
                 else {
-                    makeCommendHide($userIdx, $commentIdx);
+                    makeCommentHide($userIdx, $commentIdx);
                 }
                 $res->isHided = 'Y';
             }
