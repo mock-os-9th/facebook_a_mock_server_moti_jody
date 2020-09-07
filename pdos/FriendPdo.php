@@ -530,7 +530,7 @@ function friendExistWithKeyword($idx, $targetIdx, $keyword) {
     $query = "SELECT EXISTS(
                 (select *
                 from Friends as f
-                    inner join (select concat(firstName, ' ', secondName) as userName
+                    inner join (select concat(firstName, ' ', secondName) as userName, userIdx
                                 from User
                                 where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                                 ) as u on u.userIdx = f.friendIdx
