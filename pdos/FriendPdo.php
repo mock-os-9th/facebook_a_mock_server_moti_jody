@@ -535,12 +535,12 @@ function friendExistWithKeyword($idx, $targetIdx, $keyword) {
                                 where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                                 ) as u on u.userIdx = f.friendIdx
                 where f.userIdx = $targetIdx
-                and u.userName like concat('%', ?, '%')
+                and u.userName like concat('%', '$keyword', '%')
                 order by u.userName
                 )) AS exist;";
 
     $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
+    $st->execute();
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
