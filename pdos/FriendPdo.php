@@ -468,49 +468,42 @@ function searchFriend($idx, $targetIdx, $keyword)
 {
     $pdo = pdoSqlConnect();
     $query = "select concat(u.firstName, ' ', u.secondName) as userName,
+               (select count(userIdx)
+               from Friends
+               where userIdx = $targetIdx and Friends.isDeleted = 'N'
+                 and friendIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')) as friendCount,
                (select json_arrayagg(friendobj) from (
                 select json_object('friendIdx', f.friendIdx,
-                        'friendName', concat(u.firstName, ' ', u.secondName),
+                        'friendName', userName,
                        'friendImgUrl', u.profileImgUrl,
                        'knowingFriendCount', (SELECT count(F.userIdx)
                         from Friends F
-                        WHERE F.userIdx IN (SELECT userIdx
-                        FROM Friends
-                        WHERE Friends.friendIdx = f.friendIdx
-                            AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N'))
-                        AND F.friendIdx = f.friendIdx AND F.userIdx != $idx),
-                        'isFriend', (
-                                       case
-                                           when ((select exists(select *
-                                                                from Friends
-                                                                where userIdx = $idx
-                                                                  and friendIdx = f.friendIdx
-                                                                  and isDeleted = 'N')) = true)
-                                               then 1
-                                           when ((select exists(select *
-                                                                from Friends
-                                                                where userIdx = $idx
-                                                                  and friendIdx = f.friendIdx
-                                                                  and isDeleted = 'N')) = false and f.friendIdx = $idx)
-                                               then 2
-                                           else 0
-                                           end
-                                       )
+                        WHERE F.friendIdx = f.friendIdx and F.isDeleted = 'N' and F.userIdx != $idx
+                            AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
+                        ),
+                        'isFriend',
+                                    case
+                                       when ((select exists(select * from Friends where userIdx = $idx and friendIdx = f.friendIdx and isDeleted = 'N')) = true)
+                                           then 1
+                                       when ((select exists(select * from Friends where userIdx = $idx and friendIdx = f.friendIdx and isDeleted = 'N')) = false and f.friendIdx = $idx)
+                                           then 2
+                                       else 0
+                                    end
                     ) as friendobj
                 from Friends as f
-                    inner join (select userIdx, firstName, secondName, profileImgUrl
+                    inner join (select userIdx, concat(firstName, ' ', secondName) as userName, profileImgUrl
                                 from User
                                 where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                                 ) as u on u.userIdx = f.friendIdx
-                where f.userIdx = $targetIdx
-                and (u.firstName like concat('%', $keyword, '%') or u.secondName like concat('%', $keyword, '%'))
-                order by u.firstName
+                where f.userIdx = $targetIdx and f.isDeleted = 'N'
+                and u.userName like concat('%', ?, '%')
+                order by u.userName
                 ) as friendArray) as friendList
         from User as u
         where u.userIdx = $targetIdx;";
 
     $st = $pdo->prepare($query);
-    $st->execute([$idx, $targetIdx, $keyword]);
+    $st->execute([$keyword]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
@@ -528,17 +521,17 @@ function friendExistWithKeyword($idx, $targetIdx, $keyword) {
     $query = "SELECT EXISTS(
                 (select *
                 from Friends as f
-                    inner join (select *
+                    inner join (select concat(firstName, ' ', secondName) as userName, userIdx
                                 from User
                                 where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                                 ) as u on u.userIdx = f.friendIdx
                 where f.userIdx = $targetIdx
-                and (u.firstName like concat('%', $keyword, '%') or u.secondName like concat('%', $keyword, '%'))
-                order by u.firstName
+                and u.userName like concat('%', ?, '%')
+                order by u.userName
                 )) AS exist;";
 
     $st = $pdo->prepare($query);
-    $st->execute([$idx, $targetIdx, $keyword]);
+    $st->execute([$keyword]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
