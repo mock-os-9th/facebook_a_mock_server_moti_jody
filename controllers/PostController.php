@@ -1159,7 +1159,7 @@ try {
                         addErrorLogs($errorLogs, $res, $req);
                         return;
                     }
-                    if (!is_null($item->imgVodIdx) && gettype($item->imgVodIdx) != 'integer') {
+                    if (is_null($item->imgVodIdx) == false && gettype($item->imgVodIdx) != 'integer') {
                         $res->isSuccess = FALSE;
                         $res->code = 495;
                         $res->message = "imgVodIdx의 타입 오류";
