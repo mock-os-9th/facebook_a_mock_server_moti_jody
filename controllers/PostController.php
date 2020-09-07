@@ -1202,7 +1202,7 @@ try {
                         addErrorLogs($errorLogs, $res, $req);
                         return;
                     }
-                    if(isValidPostIdx($item->imgVodIdx)){
+                    if(isValidPostIdx($item->imgVodIdx) == 0){
                         $res->isSuccess = FALSE;
                         $res->code = 459;
                         $res->message = "존재하지 않는 imgVodIdx입니다";
