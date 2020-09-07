@@ -525,6 +525,8 @@ function searchFriend($idx, $targetIdx, $keyword)
 function friendExistWithKeyword($idx, $targetIdx, $keyword) {
     $pdo = pdoSqlConnect();
 
+    echo $keyword;
+
     $query = "SELECT EXISTS(
                 (select *
                 from Friends as f
