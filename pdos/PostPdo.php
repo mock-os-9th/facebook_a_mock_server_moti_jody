@@ -584,23 +584,88 @@ function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postCont
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $postImgVodList = $st->fetchAll();
 
-    echo json_decode($postImgVodList[0]['imgVideoPostIdx']);
-
+    $postImgVodList = json_decode($postImgVodList[0]['imgVideoPostIdx']);
 
     if (count($imgVodList) > 1) {
-        $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx = ?;";
-        $st = $pdo->prepare($query);
-        $st->execute([$postPrivacyBound, $postContents, $moodActivity, $postIdx]);
+        if(count($postImgVodList) > 1){
+            $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx = ?;";
+            $st = $pdo->prepare($query);
+            $st->execute([$postPrivacyBound, $postContents, $moodActivity, $postIdx]);
+
+            foreach ($imgVodList as $key => $item) {
+                if(in_array($item->imgVodIdx,$postImgVodList)){
+                    $query = "update Posts set postPrivacyBounds=?,postContents=?,postImgVideoUrl=?,postImgVideoType=? where postIdx = ?";
+
+                    $st = $pdo->prepare($query);
+                    $st->execute([$postPrivacyBound, $item->imgVodContents, $item->imgVodUrl, $item->imgVodType,$item->imgVodIdx]);
+
+                    $sameIdx = array();
+                    array_push($sameIdx,$item->imgVodIdx);
+                }else{
+                    $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType) values ('I',?,?,?,?,?,?)";
+
+                    $st = $pdo->prepare($query);
+                    $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $item->imgVodContents, $item->imgVodUrl, $item->imgVodType]);
+
+                    $imgPostIdx = $pdo->lastInsertId();
+
+                    $query = "insert into PostImgVideo(postIdx,imgVideoPostIdx) values (?,?)";
+
+                    $st = $pdo->prepare($query);
+                    $st->execute([$postIdx, $imgPostIdx]);
+                }
+            }
+            if(!is_null($sameIdx)){
+                $postImgVodList = array_diff($postImgVodList,$sameIdx);
+                foreach ($postImgVodList as $key => $item){
+                    $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.postIdx = ?;";
+
+                    $st = $pdo->prepare($query);
+                    $st->execute([$item]);
+                }
+            }
+        }else{
+            $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx = ?;";
+            $st = $pdo->prepare($query);
+            $st->execute([$postPrivacyBound, $postContents, $moodActivity, $postIdx]);
+
+            foreach ($imgVodList as $key => $item) {
+                $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType) values ('I',?,?,?,?,?,?)";
+
+                $st = $pdo->prepare($query);
+                $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $item->imgVodContents, $item->imgVodUrl, $item->imgVodType]);
+
+                $imgPostIdx = $pdo->lastInsertId();
+
+                $query = "insert into PostImgVideo(postIdx,imgVideoPostIdx) values (?,?)";
+
+                $st = $pdo->prepare($query);
+                $st->execute([$postIdx, $imgPostIdx]);
+            }
+        }
     } else if (count($imgVodList) == 1) {
         $query = "update Posts set postPrivacyBounds=?,postContents=?,postImgVideoUrl=?,postImgVideoType=?,moodActivity=? where postIdx = ?;";
         $st = $pdo->prepare($query);
         $st->execute([$postPrivacyBound, $postContents, $imgVodList[0]->imgVodUrl, $imgVodList[0]->imgVodType, $moodActivity, $postIdx]);
+
+        if(count($postImgVodList) > 1){
+            $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.postIdx = ?;";
+
+            $st = $pdo->prepare($query);
+            $st->execute([$postIdx]);
+        }
     } else {
         $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx=?;";
         $st = $pdo->prepare($query);
         $st->execute([$postPrivacyBound, $postContents, $moodActivity, $postIdx]);
-    }
 
+        if(count($postImgVodList) > 1){
+            $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.postIdx = ?;";
+
+            $st = $pdo->prepare($query);
+            $st->execute([$postIdx]);
+        }
+    }
 
     if ($moodActivity == 'M') {
         $query = "update PostMood set moodIdx=? where postIdx = ? ";
@@ -638,30 +703,6 @@ function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postCont
 
             $st = $pdo->prepare($query);
             $st->execute([$postIdx, $item]);
-        }
-    }
-    if (count($imgVodList) > 1) {
-
-
-        $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.postIdx = ?;";
-
-        $st = $pdo->prepare($query);
-        $st->execute([$postIdx]);
-
-        foreach ($imgVodList as $key => $item) {
-
-
-            $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType) values ('I',?,?,?,?,?,?)";
-
-            $st = $pdo->prepare($query);
-            $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $item->imgVodContents, $item->imgVodUrl, $item->imgVodType]);
-
-            $imgPostIdx = $pdo->lastInsertId();
-
-            $query = "insert into PostImgVideo(postIdx,imgVideoPostIdx) values (?,?)";
-
-            $st = $pdo->prepare($query);
-            $st->execute([$postIdx, $imgPostIdx]);
         }
     }
 }
