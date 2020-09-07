@@ -29,9 +29,9 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/user/{idx}/profile/background', ['UserController', 'getProfileBackgroundImg']);
 
 
-    $r->addRoute('POST', '/friendRequest/{idx}', ['FriendController', 'requestFriend']);
+    $r->addRoute('POST', '/friend/{idx}/request', ['FriendController', 'requestFriend']);
     $r->addRoute('POST', '/friend/{idx}', ['FriendController', 'acceptFriendRequest']);
-    $r->addRoute('DELETE', '/friendReject/{idx}', ['FriendController', 'rejectFriendRequest']);
+    $r->addRoute('DELETE', '/friendR/{idx}/reject', ['FriendController', 'rejectFriendRequest']);
     $r->addRoute('GET', '/user/{idx}/friend', ['FriendController', 'getUserFriendList']);
     $r->addRoute('PATCH', '/friend/{idx}/block', ['FriendController', 'blockUser']);
     $r->addRoute('PATCH', '/friend/{idx}/follow', ['FriendController', 'followUser']);
@@ -57,7 +57,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST','/posts/{idx}/notification',['PostController','postNotification']);
 
     $r->addRoute('GET','/comment/{idx}/like',['CommentController','getLikeComment']);
-    $r->addRoute('PATCH','/comment/{idx}/like',['CommentController','likeComment']);
+    $r->addRoute('POST','/comment/{idx}/like',['CommentController','likeComment']);
     $r->addRoute('GET','/post/{idx}/comment',['CommentController','getComment']);
     $r->addRoute('GET','/comment/{idx}',['CommentController','getCommentReply']);
     $r->addRoute('POST','/post/{postIdx}/comment',['CommentController','createComment']);
