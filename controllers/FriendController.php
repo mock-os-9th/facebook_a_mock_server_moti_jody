@@ -951,14 +951,14 @@ try {
                 addErrorLogs($errorLogs, $res, $req);
                 return;
             }
-            if (!friendExistWithKeyword($idx, $targetIdx, $keyword)) {
-                $res->isSuccess = FALSE;
-                $res->code = 452;
-                $res->message = "친구 검색 결과가 없습니다";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                addErrorLogs($errorLogs, $res, $req);
-                return;
-            }
+//            if (!friendExistWithKeyword($idx, $targetIdx, $keyword)) {
+//                $res->isSuccess = FALSE;
+//                $res->code = 452;
+//                $res->message = "친구 검색 결과가 없습니다";
+//                echo json_encode($res, JSON_NUMERIC_CHECK);
+//                addErrorLogs($errorLogs, $res, $req);
+//                return;
+//            }
             if (isBlockedFriend($idx, $targetIdx) || isBlockedFriend($targetIdx, $idx)) {
                 $res->isSuccess = FALSE;
                 $res->code = 470;
