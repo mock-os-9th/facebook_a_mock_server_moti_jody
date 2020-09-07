@@ -618,7 +618,7 @@ function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postCont
             if(!is_null($sameIdx)){
                 $postImgVodList = array_diff($postImgVodList,$sameIdx);
                 foreach ($postImgVodList as $key => $item){
-                    $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.postIdx = ?;";
+                    $query = "update PostImgVideo left join Posts on Posts.postIdx=PostImgVideo.imgVideoPostIdx set PostImgVideo.isDeleted = 'Y',Posts.isDeleted = 'Y' where PostImgVideo.imgVideoPostIdx = ?;";
 
                     $st = $pdo->prepare($query);
                     $st->execute([$item]);
