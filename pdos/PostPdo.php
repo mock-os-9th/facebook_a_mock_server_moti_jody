@@ -622,7 +622,6 @@ function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postCont
 
                     $st = $pdo->prepare($query);
                     $st->execute([$item]);
-                    echo $item;
                 }
             }
         }else{
