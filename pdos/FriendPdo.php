@@ -498,19 +498,19 @@ function searchFriend($idx, $targetIdx, $keyword)
                                        )
                     ) as friendobj
                 from Friends as f
-                    inner join (select userIdx, firstName, secondName, profileImgUrl
+                    inner join (select concat(firstName, ' ', secondName) as userName, userIdx, profileImgUrl
                                 from User
                                 where userIdx not in (select blockedUserIdx from Blocked where userIdx = $idx and Blocked.isDeleted = 'N' or userIdx = $targetIdx and Blocked.isDeleted = 'N')
                                 ) as u on u.userIdx = f.friendIdx
                 where f.userIdx = $targetIdx
-                and (u.firstName like concat('%', $keyword, '%') or u.secondName like concat('%', $keyword, '%'))
-                order by u.firstName
+                and u.userName like concat('%', ?, '%')
+                order by u.userName
                 ) as friendArray) as friendList
         from User as u
         where u.userIdx = $targetIdx;";
 
     $st = $pdo->prepare($query);
-    $st->execute([$idx, $targetIdx, $keyword]);
+    $st->execute([$keyword]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
@@ -524,8 +524,6 @@ function searchFriend($idx, $targetIdx, $keyword)
 }
 function friendExistWithKeyword($idx, $targetIdx, $keyword) {
     $pdo = pdoSqlConnect();
-
-    echo $keyword;
 
     $query = "SELECT EXISTS(
                 (select *
