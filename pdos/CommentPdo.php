@@ -33,8 +33,8 @@ function getCommentLike($userIdx, $commentIdx, $page, $limit)
                 
                         where cl.commentIdx = $commentIdx and isDeleted = 'N'
                         order by cl.createAt desc
-                        limit $page, $limit
-                        ) as list ) as commentLikedList
+                        ) as list 
+                        limit $page, $limit) as commentLikedList
                 from CommentLike
                 where commentIdx = $commentIdx and isDeleted = 'N';";
 
