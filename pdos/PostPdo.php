@@ -577,16 +577,14 @@ function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postCont
 {
     $pdo = pdoSqlConnect();
 
-    $query = "select imgVideoPostIdx from PostImgVideo left outer join Posts on Posts.postIdx = PostImgVideo.postIdx where PostImgVideo.postIdx = $postIdx;";
+    $query = "select json_arrayagg(imgVideoPostIdx) from PostImgVideo left outer join Posts on Posts.postIdx = PostImgVideo.postIdx where PostImgVideo.postIdx = $postIdx;";
     $st = $pdo->prepare($query);
     $st->execute();
 
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $postImgVodList = $st->fetchAll();
 
-    foreach ($postImgVodList as $key => $item){
-        echo $item;
-    }
+    echo $postImgVodList[0];
 
 
     if (count($imgVodList) > 1) {
