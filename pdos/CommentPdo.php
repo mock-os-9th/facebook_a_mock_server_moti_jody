@@ -1,5 +1,69 @@
 <?php
+function getCommentLike($userIdx, $commentIdx, $page, $limit)
+{
+    $pdo = pdoSqlConnect();
 
+    $page = ($page - 1) * $limit;
+
+    $query = "select count(*),
+                       (select json_arrayagg(commentObj) from (
+                        select json_object('userIdx', u.userIdx,
+                            'userName', u.userName,
+                            'userProfileImg', u.profileImgUrl,
+                            'knowingFriendCount', (select (SELECT count(F.userIdx)
+                                from Friends F
+                                WHERE F.friendIdx = f.friendIdx and F.isDeleted = 'N' and F.userIdx != $userIdx
+                                    AND userIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N' or userIdx = 42 and Blocked.isDeleted = 'N'))
+                            from Friends as f where isDeleted = 'N'
+                                 AND friendIdx not in (select blockedUserIdx from Blocked where userIdx = $userIdx and Blocked.isDeleted = 'N')
+                                 and userIdx = $userIdx and f.friendIdx = cl.userIdx),
+                            'isFriend',
+                                        case
+                                           when ((select exists(select * from Friends where userIdx = $userIdx and friendIdx = cl.userIdx and isDeleted = 'N')) = true)
+                                               then 1
+                                           when ((select exists(select * from Friends where userIdx = $userIdx and friendIdx = cl.userIdx and isDeleted = 'N')) = false and cl.userIdx = $userIdx)
+                                               then 2
+                                           else 0
+                                        end
+                            ) as commentObj
+                        from CommentLike as cl
+                            inner join (select userIdx, concat(firstName, ' ', secondName) as userName, profileImgUrl
+                                        from User
+                                        ) as u on u.userIdx = cl.userIdx
+                
+                        where cl.commentIdx = $commentIdx and isDeleted = 'N'
+                        order by cl.createAt desc
+                        ) as list ) as commentLikedList
+                from CommentLike
+                where commentIdx = $commentIdx and isDeleted = 'N'
+                limit $page, $limit;";
+
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+
+function isCommentLikeExist($commentIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS(SELECT * FROM CommentLike WHERE commentIdx = ? and isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$commentIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["exist"]);
+}
 function likeComment($userIdx, $commentIdx)
 {
     $pdo = pdoSqlConnect();
@@ -51,7 +115,7 @@ function isUserLikedComment($userIdx, $commentIdx)
 
     return intval($res[0]["exist"]);
 }
-function isCommentLikeExist($userIdx, $commentIdx)
+function isCommentLikeExistOnUser($userIdx, $commentIdx)
 {
     $pdo = pdoSqlConnect();
     $query = "SELECT EXISTS(SELECT * FROM CommentLike WHERE userIdx = ? and commentIdx = ?) AS exist;";
@@ -387,7 +451,7 @@ function isUserHidedComment($userIdx, $commentIdx)
 
     return intval($res[0]["exist"]);
 }
-function isCommentHideExist($userIdx, $commentIdx)
+function isCommentHideExistOnUser($userIdx, $commentIdx)
 {
     $pdo = pdoSqlConnect();
     $query = "SELECT EXISTS(SELECT * FROM UserCommentHide WHERE userIdx = ? and commentIdx = ?) AS exist;";

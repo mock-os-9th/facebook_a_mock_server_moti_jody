@@ -24,6 +24,114 @@ try {
             getLogs("./logs/errors.log");
             break;
 
+        case "getLikeComment":
+            http_response_code(200);
+
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 450;
+                $res->message = "존재하지 않는 유저입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $userIdx = getUserIdxFromId($data->id);
+
+            $commentIdx = $vars["idx"];
+            $commentIdx = isset($commentIdx) ? intval($commentIdx) : null;
+
+            $page = $_GET["page"];
+            $page = isset($page) ? intval($page) : null;
+            $limit = $_GET["limit"];
+            $limit = isset($limit) ? intval($limit) : null;
+
+            if (is_null($page)) {
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "page가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (is_null($limit)) {
+                $res->isSuccess = FALSE;
+                $res->code = 441;
+                $res->message = "limit가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if ($commentIdx == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 442;
+                $res->message = "댓글 idx가 null 입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (gettype($page) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 410;
+                $res->message = "page는 Int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            if (gettype($limit) != 'integer') {
+                $res->isSuccess = FALSE;
+                $res->code = 411;
+                $res->message = "limit는 Int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if (!is_integer($postIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 412;
+                $res->message = "게시물 idx는 Int 이여야 합니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if($page < 1){
+                $res->isSuccess = FALSE;
+                $res->code = 430;
+                $res->message = "page는 1부터 시작입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!isCommentOrReplyExist($commentIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 451;
+                $res->message = "존재하지 않는 댓글 idx 입니다	";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            if(!isCommentLikeExist($commentIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 452;
+                $res->message = "조회 할 좋아요가 없습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+
+            $res->result = getCommentLike($userIdx, $commentIdx, $page, $limit);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "댓글 좋아요 리스트 조회 성공";
+
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
         case "likeComment":
             http_response_code(200);
 
@@ -75,7 +183,7 @@ try {
                 likeComment($userIdx, $commentIdx);
                 $res->isLiked = 'N';
             }else{ //좋아요 안되어 있을 때
-                if(isCommentLikeExist($userIdx, $commentIdx)) {
+                if(isCommentLikeExistOnUser($userIdx, $commentIdx)) {
                     modifyCommentLike($userIdx, $commentIdx);
                 }
                 else {
@@ -675,7 +783,7 @@ try {
                 $res->isHided = 'N';
             }
             else{ //볼 수 있게 되어 있을 때
-                if(isCommentHideExist($userIdx, $commentIdx)) {
+                if(isCommentHideExistOnUser($userIdx, $commentIdx)) {
                     modifyCommentHide($userIdx, $commentIdx);
                 }
                 else {
