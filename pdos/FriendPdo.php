@@ -536,7 +536,7 @@ function friendExistWithKeyword($idx, $targetIdx, $keyword) {
                                 ) as u on u.userIdx = f.friendIdx
                 where f.userIdx = $targetIdx
                 and u.userName like concat('%', ?, '%')
-                order by u.firstName
+                order by u.userName
                 )) AS exist;";
 
     $st = $pdo->prepare($query);
