@@ -496,10 +496,10 @@ function send_notification($tokens, $message)
         'data'             => $message
     );
 
-    $headers = array(
-        'Authorization:key =' . self::GOOGLE_FCM_API_KEY,
-        'Content-Type: application/json'
-    );
+//    $headers = array(
+//        'Authorization:key =' . self::GOOGLE_FCM_API_KEY,
+//        'Content-Type: application/json'
+//    );
     /*
     print_r($fields);
     print_r($headers);
@@ -509,7 +509,7 @@ function send_notification($tokens, $message)
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
