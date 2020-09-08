@@ -1159,6 +1159,14 @@ try {
                         addErrorLogs($errorLogs, $res, $req);
                         return;
                     }
+                    if (is_null($item->imgVodIdx) == false && gettype($item->imgVodIdx) != 'integer') {
+                        $res->isSuccess = FALSE;
+                        $res->code = 495;
+                        $res->message = "imgVodIdx의 타입 오류";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
                 }
 
                 foreach ($imgVodList as $key => $item) {
@@ -1182,6 +1190,14 @@ try {
                         $res->isSuccess = FALSE;
                         $res->code = 446;
                         $res->message = "imgVodUrl이 들어가면 imgVodType은 필수입니다";
+                        echo json_encode($res, JSON_NUMERIC_CHECK);
+                        addErrorLogs($errorLogs, $res, $req);
+                        return;
+                    }
+                    if(is_null($item->imgVodIdx) == false && isValidPostIdx($item->imgVodIdx) == 0){
+                        $res->isSuccess = FALSE;
+                        $res->code = 459;
+                        $res->message = "존재하지 않는 imgVodIdx입니다";
                         echo json_encode($res, JSON_NUMERIC_CHECK);
                         addErrorLogs($errorLogs, $res, $req);
                         return;
