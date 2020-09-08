@@ -470,3 +470,19 @@ function isCommentHideExistOnUser($userIdx, $commentIdx)
 
     return intval($res[0]["exist"]);
 }
+
+function getNameFromIdx($userIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT concat(firstName, ' ', secondName) as userName FROM User WHERE userIdx = ? and isDeleted = 'N';";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["userName"]);
+}
