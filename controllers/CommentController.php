@@ -511,7 +511,7 @@ try {
                 //"link"      => URL . "/index.php?v=board_view&idx=" . $last_idx
             );
             //print_r($message);exit;
-            $this->send_notification($token, $message);
+            send_notification($token, $message);
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
