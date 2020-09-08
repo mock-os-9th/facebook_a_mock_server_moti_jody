@@ -49,7 +49,7 @@ from Posts
       from Posts
                left outer join User on User.userIdx = Posts.userIdx) as UserName on Posts.postIdx = UserName.postIdx
          left outer join
-     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx, User.profileImgUrl
+     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx, Posts.profileImgUrl
       from Posts
                left outer join User on User.userIdx = Posts.writerIdx) as WriterName
      on Posts.postIdx = WriterName.postIdx
@@ -322,7 +322,7 @@ from Posts
       from Posts
                left outer join User on User.userIdx = Posts.userIdx) as UserName on Posts.postIdx = UserName.postIdx
          left outer join
-     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx, User.profileImgUrl
+     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx, Posts.profileImgUrl
       from Posts
                left outer join User on User.userIdx = Posts.writerIdx) as WriterName
      on Posts.postIdx = WriterName.postIdx
@@ -483,7 +483,7 @@ from Posts
       from Posts
                left outer join User on User.userIdx = Posts.userIdx) as UserName on Posts.postIdx = UserName.postIdx
          left outer join
-     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx, User.profileImgUrl
+     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx, Posts.profileImgUrl
       from Posts
                left outer join User on User.userIdx = Posts.writerIdx) as WriterName
      on Posts.postIdx = WriterName.postIdx

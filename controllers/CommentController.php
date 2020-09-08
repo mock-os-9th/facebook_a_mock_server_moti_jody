@@ -496,22 +496,22 @@ try {
             $res->code = 200;
             $res->message = "댓글 등록 완료";
 
-            $tokens = array();
-            $token = "d-hxtJCJWgc:APA91bGgccEfMCDkhqSvVI5GV6Y-wimekDIb2kFPgutl6X-xUJK0tcCzr0ALr11pmgHfd3s_8OMVlessSQ7Ng2HVR5VcnBwMTk3s08nt7gEGP69zTz5KaUmzyaVdwnrZ7fVsL2MUOk7R";
-            $userName = getNameFromIdx($userIdx);
-//            $result = $this->lib['db']->query($sql);
-//            while($row = $this->lib['db']->result_assoc($result))
-//            {
-//                $tokens[] = $row['token'];
-//            }
-
-            $message = array(
-                "title"     => $userName + "이 댓글을 남겻습니다",
-                "message"   => $commentContent,
-                //"link"      => URL . "/index.php?v=board_view&idx=" . $last_idx
-            );
-            //print_r($message);exit;
-            $this->send_notification($token, $message);
+////            $tokens = array();
+//            $token = "d-hxtJCJWgc:APA91bGgccEfMCDkhqSvVI5GV6Y-wimekDIb2kFPgutl6X-xUJK0tcCzr0ALr11pmgHfd3s_8OMVlessSQ7Ng2HVR5VcnBwMTk3s08nt7gEGP69zTz5KaUmzyaVdwnrZ7fVsL2MUOk7R";
+//            $userName = getNameFromIdx($userIdx);
+////            $result = $this->lib['db']->query($sql);
+////            while($row = $this->lib['db']->result_assoc($result))
+////            {
+////                $tokens[] = $row['token'];
+////            }
+//
+//            $message = array(
+//                "title"     => $userName + "이 댓글을 남겻습니다",
+//                "message"   => $commentContent,
+//                //"link"      => URL . "/index.php?v=board_view&idx=" . $last_idx
+//            );
+//            //print_r($message);exit;
+//            send_notification($token, $message);
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
