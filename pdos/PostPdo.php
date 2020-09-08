@@ -11,6 +11,7 @@ function getMainFeed($page, $limit, $userIdx)
        UserName.name                                                 as userName,
        WriterName.writerIdx                                            as writerIdx,
        WriterName.name                                               as writerName,
+       WriterName.profileImgUrl as profileImgUrl,
        case
             when timestampdiff(month , Posts.createAt, now()) > 6 then concat(year(Posts.createAt),'년',month(Posts.createAt),'달',day(Posts.createAt),'일')
            when timestampdiff(day , Posts.createAt, now()) > 30 then concat(timestampdiff(month , Posts.createAt, now()),'달 전')
@@ -48,7 +49,7 @@ from Posts
       from Posts
                left outer join User on User.userIdx = Posts.userIdx) as UserName on Posts.postIdx = UserName.postIdx
          left outer join
-     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx
+     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx, Posts.profileImgUrl
       from Posts
                left outer join User on User.userIdx = Posts.writerIdx) as WriterName
      on Posts.postIdx = WriterName.postIdx
@@ -283,6 +284,7 @@ function getPersonalFeed($page, $limit, $isFilter, $date, $writerType, $userIdx,
        UserName.name                                                 as userName,
        WriterName.writerIdx                                            as writerIdx,
        WriterName.name                                               as writerName,
+       WriterName.profileImgUrl as profileImgUrl,
        case
             when timestampdiff(month , Posts.createAt, now()) > 6 then concat(year(Posts.createAt),'년',month(Posts.createAt),'달',day(Posts.createAt),'일')
            when timestampdiff(day , Posts.createAt, now()) > 30 then concat(timestampdiff(month , Posts.createAt, now()),'달 전')
@@ -320,7 +322,7 @@ from Posts
       from Posts
                left outer join User on User.userIdx = Posts.userIdx) as UserName on Posts.postIdx = UserName.postIdx
          left outer join
-     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx
+     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx, Posts.profileImgUrl
       from Posts
                left outer join User on User.userIdx = Posts.writerIdx) as WriterName
      on Posts.postIdx = WriterName.postIdx
@@ -443,6 +445,7 @@ function getOnePost($postIdx, $userIdx)
        UserName.name                                                 as userName,
        WriterName.writerIdx                                            as writerIdx,
        WriterName.name                                               as writerName,
+       WriterName.profileImgUrl as profileImgUrl,
        case
             when timestampdiff(month , Posts.createAt, now()) > 6 then concat(year(Posts.createAt),'년',month(Posts.createAt),'달',day(Posts.createAt),'일')
            when timestampdiff(day , Posts.createAt, now()) > 30 then concat(timestampdiff(month , Posts.createAt, now()),'달 전')
@@ -480,7 +483,7 @@ from Posts
       from Posts
                left outer join User on User.userIdx = Posts.userIdx) as UserName on Posts.postIdx = UserName.postIdx
          left outer join
-     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx
+     (select postIdx, concat(User.firstName, User.secondName) as name, Posts.writerIdx, Posts.profileImgUrl
       from Posts
                left outer join User on User.userIdx = Posts.writerIdx) as WriterName
      on Posts.postIdx = WriterName.postIdx
