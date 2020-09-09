@@ -3,7 +3,7 @@ $id = $_POST['id'];
 $pw = $_POST['pw'];
 $token = $_POST['token'];
 
-$url='http://15.164.195.62/login';
+$url='http://54.180.68.232/login';
 $fields = array('id',$id,'pw',$pw);
 
 $headers = array('Content-Type:application/json');
@@ -24,6 +24,7 @@ if($result === false){
 curl_close($ch);
 
 $jwt = json_decode($result,true);
+echo $id,$pw;
 echo print_r($jwt);
 $jwt = $jwt[0]['result']['jwt'];
 echo $jwt;
