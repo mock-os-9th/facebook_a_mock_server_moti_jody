@@ -1,6 +1,6 @@
 <?php
-require '/home/ubuntu/api-server/pdos/DatabasePdo.php';
-require '/home/ubuntu/api-server/pdos/FriendPdo.php';
+require '../pdos/DatabasePdo.php';
+require '../pdos/FriendPdo.php';
 
 $pdo = pdoSqlConnect();
 
