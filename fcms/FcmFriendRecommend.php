@@ -38,5 +38,5 @@ foreach ($res as $key => $item){
 //        die('Curl failed:'.curl_error($ch));
 //    }
 //    curl_close($ch);
-    echo $item.recommendUserIdx[0];
+    echo $item->recommendUserIdx[0];
 }
