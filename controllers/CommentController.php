@@ -491,7 +491,7 @@ try {
                 return;
             }
 
-            //$res->commentIdx = createComment($userIdx, $postIdx, $commentContent, $commentImgUrl);
+            $res->commentIdx = createComment($userIdx, $postIdx, $commentContent, $commentImgUrl);
             send_comment_noti($userIdx, $postIdx, $commentContent);
             $res->isSuccess = TRUE;
             $res->code = 200;
