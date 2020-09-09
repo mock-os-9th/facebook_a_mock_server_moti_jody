@@ -23,7 +23,7 @@ if($result === false){
 }
 curl_close($ch);
 
-$jwt = json_decode($result);
+$jwt = json_decode($result,true);
 echo $jwt;
 $jwt = $jwt->result->jwt;
 echo $jwt;
