@@ -16,8 +16,8 @@ if(sizeof($res) > 0){
     foreach($res as $users) {
             $bdayUserIdx = intval($users['userIdx']);
             $bdayUserName = strval($users['userName']);
-            print_r("usrIdx--------------".$bdayUserIdx);
-            print_r("userName--------------".$bdayUserName);
+            //print_r("usrIdx--------------".$bdayUserIdx);
+            //print_r("userName--------------".$bdayUserName);
 
             $query = "select token
             from Friends as f
@@ -39,11 +39,11 @@ if(sizeof($res) > 0){
               //  "link"      => $link
             );
 
-            print_r("user token cehck +==================". sizeof($res));
+            //print_r("user token cehck +==================". sizeof($res));
             if(sizeof($res) > 0){
                 foreach($res as $tokens) {
                     foreach($tokens as $token) {
-                        print_r("token chekc ---------------------".strval($token));
+                        //rint_r("token chekc ---------------------".strval($token));
                         $notiUserIdx = getUserIdxByToken(strval($token));
                         if(!is_null($token)) { //토큰 없는 기기에는 아예 알림 안가도록...)
                             send_friend_bday_notification(strval($token), $message);
