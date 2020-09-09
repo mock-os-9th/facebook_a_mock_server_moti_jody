@@ -3,6 +3,7 @@ $id = $_POST['id'];
 $pw = $_POST['pw'];
 $token = $_POST['token'];
 
+echo $token;
 echo ("<script language=javascript> console.log($token);</script>");
 //$url='http://15.164.195.62/login';
 //$fields = array('id',$id,'pw',$pw);
