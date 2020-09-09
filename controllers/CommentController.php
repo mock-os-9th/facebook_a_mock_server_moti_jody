@@ -492,7 +492,7 @@ try {
             }
 
             //$res->commentIdx = createComment($userIdx, $postIdx, $commentContent, $commentImgUrl);
-            send_comment_noti($userIdx, $postIdx, $commentContent);
+            //send_comment_noti($userIdx, $postIdx, $commentContent);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "댓글 등록 완료";
