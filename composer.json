@@ -5,6 +5,7 @@
         "phpmailer/phpmailer": "^6.0",
         "google/apiclient": "^2.0",
         "monolog/monolog": "~1.12",
+        "ext-curl": "*",
         "ext-json": "*"
     }
 }
