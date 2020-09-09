@@ -496,14 +496,7 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
             from User as u
                 inner join (select userIdx from SettingPostNotification where postIdx = 816) as pc on pc.userIdx = u.userIdx;";
 
-    $st = $pdo->prepare($query);
-    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-    echo $res;
-
-    $st = null;
-    $pdo = null;
+    $res = mysqli_query($pdo, $query);
 
     $userName = getNameFromIdx($userIdx);
 
