@@ -507,8 +507,8 @@ try {
 
             $message = array(
                 "title"     => $userName."이 댓글을 남겻습니다",
-                "message"   => $commentContent
-                //"link"      => URL . "/index.php?v=board_view&idx=" . $last_idx
+                "body"   => $commentContent
+                //"link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
             );
             //print_r($message);exit;
             send_notification($token, $message);

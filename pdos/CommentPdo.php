@@ -490,10 +490,12 @@ function getNameFromIdx($userIdx)
 
 function send_notification($tokens, $message)
 {
+    $GOOGLE_API_KEY = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
     $url = 'https://fcm.googleapis.com/fcm/send';
+
     $fields = array(
-        'registration_ids' => $tokens,
-        'data'             => $message
+        'to' => $tokens,
+        'notification'             => $message
     );
 
 //    $headers = array(
@@ -505,8 +507,6 @@ function send_notification($tokens, $message)
     print_r($headers);
     exit;
     */
-
-    echo array_values($message);
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
