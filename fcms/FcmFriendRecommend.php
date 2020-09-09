@@ -4,7 +4,7 @@ require '/home/ubuntu/api-server/pdos/FriendPdo.php';
 
 $pdo = pdoSqlConnect();
 
-$query = "select userIdx,bit_and(isDeleted='Y') as isNeedReset from FriendRecommend group by userIdx having isNeedReset = 1;";
+$query = "select userIdx,bit_and(isDeleted='Y') as isNeedReset from FriendRecommend group by userIdx having isNeedReset = 1";
 $st = $pdo->prepare($query);
 $st->execute();
 
@@ -18,7 +18,6 @@ if(!is_null($reset)){
         $st->execute([$item['userIdx']]);
     }
 }
-
 
 $query = "select UserToken.token,
        UserToken.userIdx,
