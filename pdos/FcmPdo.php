@@ -28,7 +28,7 @@ function getUserFcmToken($userIdx){
 
 function getRecommendFriends($userIdx){
     $pdo = pdoSqlConnect();
-    $query = "select recommendUserIdx from FriendRecommend where userIdx = ? limit 0,2";
+    $query = "select recommendUserIdx from FriendRecommend where userIdx = ? and isDeleted = 'N' limit 0,2";
     $st = $pdo->prepare($query);
     $st->execute([$userIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
