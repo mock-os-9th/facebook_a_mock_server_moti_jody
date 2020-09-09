@@ -6,7 +6,7 @@
     <title>Document</title>
   </head>
   <body>
-    <form action="" class="login">
+    <form method="POST action="" class="login">
       <p class="id">
         <strong>아이디 입력</strong>
         <input type="text" name="id" id="id" />
@@ -16,12 +16,7 @@
         <input type="password" name="pwd" id="pwd" />
       </p>
       <p class="login-btn">
-        <input
-          type="submit"
-          value="login"
-          id="login-btn"
-          onclick="loaction.href='notification.html'"
-        />
+        <input type="submit" value="login" id="login-btn" />
       </p>
     </form>
     <!-- The core Firebase JS SDK is always required and must be listed first -->
@@ -58,7 +53,12 @@
         }
       });
       messaging.getToken().then((token) => {
-        console.log(token);
+        var form = document.getElementsByClassName("login");
+        var input = document.createElement("input");
+        input.setAttribute('name','token');
+        input.setAttribute('value',token);
+        input.style.display = none;
+        form[0].appendChild(input);
       });
 
       messaging.onMessage((notification) => {
