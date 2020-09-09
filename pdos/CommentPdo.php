@@ -499,7 +499,6 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $st = $pdo->prepare($query);
     $st->execute();
     $st->setFetchMode(PDO::FETCH_ASSOC);
-    echo $st;
     $res = $st->fetchAll();
     echo $res;
 
