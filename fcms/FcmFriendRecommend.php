@@ -14,7 +14,8 @@ $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
 
-$res['recommendUserIdx'] = json_decode($res['recommendUserIdx']);
+$res[0]['recommendUserIdx'] = json_decode($res[0]['recommendUserIdx']);
+$res[1]['recommendUserIdx'] = json_decode($res1['recommendUserIdx']);
 
 
 foreach ($res as $key => $item){
