@@ -1,4 +1,21 @@
 <?php
+function pdoSqlConnect()
+{
+    try {
+        $DB_HOST = "facebookdev.cevu32mso1il.ap-northeast-2.rds.amazonaws.com";
+        $DB_NAME = "facebookDev";
+        $DB_USER = "facebookDev";
+        $DB_PW = "lyunj2020!";
+
+        $GOOGLE_API_KEY = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
+
+        $pdo = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME", $DB_USER, $DB_PW);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $pdo;
+    } catch (\Exception $e) {
+        echo $e->getMessage();
+    }
+}
 
 $pdo = pdoSqlConnect();
 $query = "select UserFriends.userIdx,UserFriends.friendIdx, FriendFriend.friendIdx, count(FriendFriend.friendIdx) as count
@@ -9,13 +26,13 @@ from (select Friends.userIdx, Friends.friendIdx
          where not UserFriends.userIdx = FriendFriend.friendIdx and not (UserFriends.userIdx,FriendFriend.friendIdx) in (select UserFriends.userIdx,friendIdx from Friends where UserFriends.userIdx = Friends.userIdx)
 group by UserFriends.userIdx,FriendFriend.friendIdx
 order by count desc";
-echo 'hello1';
+
 
 $st = $pdo->prepare($query);
 $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $friendList = $st->fetchAll();
-echo 'hello2';
+
 
 foreach ($friendList as $key => $item) {
     $userIdx = $item['userIdx'];
@@ -30,8 +47,6 @@ foreach ($friendList as $key => $item) {
     $isDuplication = $st->fetchAll();
     $isDuplication = intval($isDuplication[0]['exist']);
 
-    echo "hello3";
-
 
     $query = "select exists (select * from FriendRecommend where userIdx = $userIdx and recommendUserIdx = $recommendUserIdx and isDeleted = 'Y') as exist";
     $st = $pdo->prepare($query);
@@ -39,8 +54,6 @@ foreach ($friendList as $key => $item) {
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $isDuplication = $st->fetchAll();
     $wasExist = intval($isDuplication[0]['exist']);
-
-    echo "hell4";
 
     if ($isDuplication == 0 && $wasExist == 0) {
         $query = "insert into FriendRecommend (userIdx,recommendUserIdx) values ($userIdx,$recommendUserIdx)";
