@@ -17,7 +17,7 @@ $res = $st->fetchAll();
 
 foreach ($res as $key => $item){
     $url='https://fcm.googleapis.com/fcm/send';
-    $notification = array('body'=>intval($item['recommendUserIdx']),'title'=>'친구추천알림');
+    $notification = array('body'=>intval($item['recommendUserIdx'][0]),'title'=>'친구추천알림');
     $to = $item['token'];
     $fields = array('notification'=>$notification,'to'=>$to);
 
