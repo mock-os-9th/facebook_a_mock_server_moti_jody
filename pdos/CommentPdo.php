@@ -492,7 +492,7 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $pdo = pdoSqlConnect();
 
     $tokens = array();
-    $query = "select u.token
+    $query = "select u.token as token
             from User as u
                 inner join (select userIdx from SettingPostNotification where postIdx = 816) as pc on pc.userIdx = u.userIdx;";
 
@@ -502,10 +502,10 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
 
     if(mysqli_num_rows($res) > 0 ){
         while ($row = mysqli_fetch_assoc($res)) {
-            $tokens[] = $row['tokenID'];
+            $tokens[] = $row['token'];
         }
     } else {
-        echo 'There are no Transfer Datas';
+        echo 'There are no Transfer Data';
         exit;
     }
 
