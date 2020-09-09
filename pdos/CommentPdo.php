@@ -535,14 +535,14 @@ function getNameFromIdx($userIdx)
 //
 //    send_notification($token, $message);
 //}
-function send_comment_noti($userIdx, $postIdx, $commentContent)
+function send_comment_notification($userIdx, $postIdx, $commentContent)
 {
     $pdo = pdoSqlConnect();
 
     //   $tokens = array();
     $query = "select u.token as token
             from User as u
-                inner join (select userIdx from SettingPostNotification where postIdx = $postIdx) as pc on pc.userIdx = u.userIdx;";
+                inner join (select userIdx from SettingPostNotification where postIdx = $postIdx and isDeleted = 'N') as pc on pc.userIdx = u.userIdx;";
 
     $st = $pdo->prepare($query);
     $st->execute();
@@ -558,11 +558,9 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
         "body"   => $commentContent
     );
 
-    echo sizeof($res);
     if(sizeof($res) > 0 ){
         foreach($res as $tokens) {
             foreach($tokens as $token) {
-                echo strval($token);
                 send_notification(strval($token), $message);
             }
         }
