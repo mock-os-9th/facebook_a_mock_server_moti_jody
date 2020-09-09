@@ -21,7 +21,7 @@ foreach ($res as $key => $item){
     $to = $item['token'];
     $fields = array('notification'=>$notification,'to'=>$to);
 
-    $key = "Bearer AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
+    $key = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
     $headers = array('Authorization:key = '.$key,'Content-Type:application/json');
 
     $ch = curl_init();
