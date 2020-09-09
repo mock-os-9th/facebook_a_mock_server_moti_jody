@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form action="" class="login">
+      <p class="id">
+        <strong>아이디 입력</strong>
+        <input type="text" name="id" id="id" />
+      </p>
+      <p class="pwd">
+        <strong> 비밀번호 입력 </strong>
+        <input type="password" name="pwd" id="pwd" />
+      </p>
+      <p class="login-btn">
+        <input
+          type="submit"
+          value="login"
+          id="login-btn"
+          onclick="loaction.href='notification.html'"
+        />
+      </p>
+    </form>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-messaging.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyANKyjZ9_8b8MuNFL80P214hk5eokXx3S0",
+        authDomain: "facebookproject-b5360.firebaseapp.com",
+        databaseURL: "https://facebookproject-b5360.firebaseio.com",
+        projectId: "facebookproject-b5360",
+        storageBucket: "facebookproject-b5360.appspot.com",
+        messagingSenderId: "795418711245",
+        appId: "1:795418711245:web:b2ef5efad20f768dac0584",
+        measurementId: "G-D329FDPNKP",
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+      const messaging = firebase.messaging();
+      messaging.usePublicVapidKey(
+        "BDO0wVgcsyzvmCCtg7mO3tnenb-hqgr2NL1bcArHZHK_6pJhPCIWI5I0HU0m1Srzi8Lbx1FcH_lP2ZB7PThBUFE"
+      );
+      Notification.requestPermission().then(function (permission) {
+        if (permission === "granted") {
+          console.log("Notification permission granted.");
+        } else {
+          console.log("Unable to get permission to notify.");
+        }
+      });
+      messaging.getToken().then((token) => {
+        console.log(token);
+      });
+
+      messaging.onMessage((notification) => {
+        console.log(notification.notification.body);
+        var div = document.createElement("div");
+        var text = document.createTextNode(notification.notification.body);
+        div.appendChild(text);
+        document.body.appendChild(div);
+      });
+    </script>
+  </body>
+</html>
