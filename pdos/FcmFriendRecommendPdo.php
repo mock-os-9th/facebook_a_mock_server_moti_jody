@@ -1,5 +1,5 @@
 <?php
-require './DatabasePdo.php';
+require 'DatabasePdo.php';
 
 $pdo = pdoSqlConnect();
 $query = "select UserFriends.userIdx,UserFriends.friendIdx, FriendFriend.friendIdx as recommendUserIdx, count(FriendFriend.friendIdx) as count
