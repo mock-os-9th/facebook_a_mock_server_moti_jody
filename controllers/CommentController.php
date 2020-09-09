@@ -491,27 +491,11 @@ try {
                 return;
             }
 
-            $res->commentIdx = createComment($userIdx, $postIdx, $commentContent, $commentImgUrl);
+            //$res->commentIdx = createComment($userIdx, $postIdx, $commentContent, $commentImgUrl);
+            send_comment_noti($userIdx, $postIdx, $commentContent);
             $res->isSuccess = TRUE;
             $res->code = 200;
             $res->message = "댓글 등록 완료";
-
-//            $tokens = array();
-            $token = "d-hxtJCJWgc:APA91bGgccEfMCDkhqSvVI5GV6Y-wimekDIb2kFPgutl6X-xUJK0tcCzr0ALr11pmgHfd3s_8OMVlessSQ7Ng2HVR5VcnBwMTk3s08nt7gEGP69zTz5KaUmzyaVdwnrZ7fVsL2MUOk7R";
-            $userName = getNameFromIdx($userIdx);
-//            $result = $this->lib['db']->query($sql);
-//            while($row = $this->lib['db']->result_assoc($result))
-//            {
-//                $tokens[] = $row['token'];
-//            }
-
-            $message = array(
-                "title"     => $userName."이 댓글을 남겻습니다",
-                "body"   => $commentContent
-                //"link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
-            );
-            //print_r($message);exit;
-            send_notification($token, $message);
 
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;

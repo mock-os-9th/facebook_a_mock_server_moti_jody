@@ -487,7 +487,48 @@ function getNameFromIdx($userIdx)
     return intval($res[0]["userName"]);
 }
 
+function send_comment_noti($userIdx, $postIdx, $commentContent)
+{
+    $pdo = pdoSqlConnect();
 
+    $tokens = array();
+    $query = "select u.token 
+            from User as u
+                left join (select userIdx from PostComment where postIdx = $postIdx) as pc on pc.userIdx = u.userIdx;";
+
+    $st = $pdo->prepare($query);
+    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    $userName = getNameFromIdx($userIdx);
+
+    if(mysqli_num_rows($res) > 0 ){
+        while ($row = mysqli_fetch_assoc($res)) {
+            $tokens[] = $row['tokenID'];
+        }
+    } else {
+        echo 'There are no Transfer Datas';
+        exit;
+    }
+
+//            $result = $this->lib['db']->query($sql);
+//            while($row = $this->lib['db']->result_assoc($result))
+//            {
+//                $tokens[] = $row['token'];
+//            }
+
+    $message = array(
+        "title"     => $userName."이 댓글을 남겻습니다",
+        "body"   => $commentContent
+        //"link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
+    );
+    //print_r($message);exit;
+    send_notification($tokens, $message);
+}
 function send_notification($tokens, $message)
 {
     $GOOGLE_API_KEY = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
