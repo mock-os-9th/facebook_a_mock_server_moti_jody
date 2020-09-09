@@ -496,18 +496,23 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
             from User as u
                 inner join (select userIdx from SettingPostNotification where postIdx = 816) as pc on pc.userIdx = u.userIdx;";
 
-    $res = mysqli_query($pdo, $query);
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
 
-    echo $res;
+    $st = null;
+    $pdo = null;
 
-    if(mysqli_num_rows($res) > 0 ){
-        while ($row = mysqli_fetch_assoc($res)) {
-            $tokens[] = $row['token'];
-        }
-    } else {
-        echo 'There are no Transfer Data';
-        exit;
-    }
+    $tokens[0] = intval($res[0]["token"]);
+//    if(mysqli_num_rows($res) > 0 ){
+//        while ($row = mysqli_fetch_assoc($res)) {
+//            $tokens[] = $row['token'];
+//        }
+//    } else {
+//        echo 'There are no Transfer Data';
+//        exit;
+//    }
 
 //            $result = $this->lib['db']->query($sql);
 //            while($row = $this->lib['db']->result_assoc($result))
