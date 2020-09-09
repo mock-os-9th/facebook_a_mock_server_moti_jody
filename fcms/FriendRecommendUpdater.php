@@ -13,6 +13,9 @@ group by UserFriends.userIdx,FriendFriend.friendIdx
 order by count desc";
 
 
+echo 'hello';
+
+
 $st = $pdo->prepare($query);
 $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
