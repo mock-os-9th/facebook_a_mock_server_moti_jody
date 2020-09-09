@@ -12,6 +12,7 @@ $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
 
+print_r($res);
 //$st = null; $pdo = null;
 if(sizeof($res) > 0){
     foreach($res as $users) {
