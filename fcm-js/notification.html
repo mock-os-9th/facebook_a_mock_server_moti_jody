@@ -12,7 +12,7 @@
       const URLSearch = new URLSearchParams(location.search);
       var data = URLSearch.get("data");
 
-      var requestURL = "http://54.180.68.232/notification";
+      var requestURL = "https://jody980502/notification";
       var request = new XMLHttpRequest();
       request.open("GET", requestURL);
       request.setRequestHeader("x-access-token", data);
