@@ -508,7 +508,6 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $tokens = array(
         "token"     => strval($res[0]["token"])
     );
-    echo strval($res[0]["token"]);
 
 //    if(mysqli_num_rows($res) > 0 ){
 //        while ($row = mysqli_fetch_assoc($res)) {
@@ -544,6 +543,7 @@ function send_notification($tokens, $message)
         'notification'             => $message
     );
 
+    print_r($fields[0]['to']);
     $headers = array(
         'Authorization:key =' . $GOOGLE_API_KEY,
         'Content-Type: application/json'
