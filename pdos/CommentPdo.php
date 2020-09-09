@@ -543,7 +543,12 @@ function send_notification($tokens, $message)
         'notification'             => $message
     );
 
-    print_r($fields[0]['to']);
+    foreach($fields as $value){
+        foreach ($value as $to) {
+            echo $to. " ";
+        }
+    }
+
     $headers = array(
         'Authorization:key =' . $GOOGLE_API_KEY,
         'Content-Type: application/json'
