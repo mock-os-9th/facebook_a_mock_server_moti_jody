@@ -69,6 +69,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
 
     $r->addRoute('POST','/fcm',['FcmController','setFcmTokenToUser']);
+    $r->addRoute('GET','/fcm/friends-recommend',['FcmController','getRecommendFriendFcm']);
+
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)

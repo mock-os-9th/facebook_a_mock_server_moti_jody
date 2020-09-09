@@ -13,3 +13,26 @@ function setFcmTokenToUser($token,$userIdx)
     $st = $pdo->prepare($query);
     $st->execute([$token, $userIdx]);
 }
+
+function getUserFcmToken($userIdx){
+    $pdo = pdoSqlConnect();
+    $query = "select token from User where userIdx = ?";
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx]);
+
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    return $res[0]["token"];
+}
+
+function getRecommendFriends($userIdx){
+    $pdo = pdoSqlConnect();
+    $query = "select recommendUserIdx from FriendRecommend where userIdx = ? limit 0,2";
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    return $res;
+}

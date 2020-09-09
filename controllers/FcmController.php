@@ -90,9 +90,20 @@ try {
 
             $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
 
+            $token = getUserFcmToken($userIdx);
+            if(is_null($token)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "유저가 로그인되어있지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            $res->token = $token;
+            $res->recommendFriends = getRecommendFriends($userIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
-            $res->message = "토큰 입력 성공";
+            $res->message = "fcm token 조회와 친구 추천 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
     }
