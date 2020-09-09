@@ -492,7 +492,7 @@ try {
             }
 
             //$res->commentIdx = createComment($userIdx, $postIdx, $commentContent, $commentImgUrl);
-            echo getNameFromIdx($userIdx);
+            echo $userIdx;
             send_comment_noti($userIdx, $postIdx, $commentContent);
             $res->isSuccess = TRUE;
             $res->code = 200;
