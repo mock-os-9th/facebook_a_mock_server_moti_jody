@@ -509,7 +509,7 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
 //        "token"     => strval($res[0]["token"])
 //    );
 
-    $tokens [] = strval($res[0]["token"]);
+    $token = strval($res[0]["token"]);
 
 //    if(mysqli_num_rows($res) > 0 ){
 //        while ($row = mysqli_fetch_assoc($res)) {
@@ -533,15 +533,15 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
 //        "link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
     );
 
-    send_notification($tokens, $message);
+    send_notification($token, $message);
 }
-function send_notification($tokens, $message)
+function send_notification($token, $message)
 {
     $GOOGLE_API_KEY = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
     $url = 'https://fcm.googleapis.com/fcm/send';
 
     $fields = array(
-        'to' => "d-hxtJCJWgc:APA91bGgccEfMCDkhqSvVI5GV6Y-wimekDIb2kFPgutl6X-xUJK0tcCzr0ALr11pmgHfd3s_8OMVlessSQ7Ng2HVR5VcnBwMTk3s08nt7gEGP69zTz5KaUmzyaVdwnrZ7fVsL2MUOk7R",
+        'to' => $token,
         'notification'             => $message
     );
 
