@@ -558,6 +558,7 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
         "body"   => $commentContent
     );
 
+    echo sizeof($res);
     if(sizeof($res) > 0 ){
         foreach($res as $tokens) {
             foreach($tokens as $token) {
@@ -584,11 +585,6 @@ function send_notification($token, $message)
         'Authorization:key =' . $GOOGLE_API_KEY,
         'Content-Type: application/json'
     );
-    /*
-    print_r($fields);
-    print_r($headers);
-    exit;
-    */
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
