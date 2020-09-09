@@ -598,6 +598,8 @@ function send_comment_notification($userIdx, $postIdx, $commentContent)
             }
         }
     }
+    //알림을 설정한 모든 사람에게 알림이 가며 알림 테이블에 저장
+    //사용자가 댓글을 달았을 경우 해당 사용자가 알림을 설정해놨어도 알림은 가지 않음
 }
 function send_notification($token, $message)
 {
