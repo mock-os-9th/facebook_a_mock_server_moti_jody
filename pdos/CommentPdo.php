@@ -535,6 +535,17 @@ function getNameFromIdx($userIdx)
 //
 //    send_notification($token, $message);
 //}
+function addUserNotification($userIdx, $alertTitle, $link)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "insert into UserNotification (userIdx, notificationContent, link) values (?,?, ?)";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx, $alertTitle, $link]);
+    $st = null;
+    $pdo = null;
+}
 function send_comment_notification($userIdx, $postIdx, $commentContent)
 {
     $pdo = pdoSqlConnect();
@@ -553,20 +564,21 @@ function send_comment_notification($userIdx, $postIdx, $commentContent)
     $pdo = null;
 
     $userName = getNameFromIdx($userIdx);
+    $alertTitle = $userName."님이 " .$postIdx ."게시물에 댓글을 남겼습니다";
+    $link = "http://54.180.68.232/post/$postIdx/comment?page=1&limit=5";
     $message = array(
-        "title"     => $userName."님이 댓글을 남겻습니다",
-        "body"   => $commentContent
+        "title"     => $alertTitle,
+        "body"   => $commentContent,
+        "link"      => $link
     );
 
     if(sizeof($res) > 0 ){
         foreach($res as $tokens) {
             foreach($tokens as $token) {
                 send_notification(strval($token), $message);
+                addUserNotification($userIdx, $alertTitle, $link);
             }
         }
-    } else {
-        echo 'There are no Transfer Data';
-        exit;
     }
 }
 function send_notification($token, $message)
