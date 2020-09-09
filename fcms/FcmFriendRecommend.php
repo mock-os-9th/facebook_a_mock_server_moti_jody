@@ -1,6 +1,6 @@
 <?php
 require '/home/ubuntu/api-server/pdos/DatabasePdo.php';
-require '/home/ubuntu/api-server/pdos/FriendPdo.php';
+//require '/home/ubuntu/api-server/pdos/FriendPdo.php';
 
 $pdo = pdoSqlConnect();
 
@@ -62,9 +62,9 @@ foreach ($res as $key => $item){
     }
     curl_close($ch);
 
-    addFriendNotification(intval($item['userIdx']),intval($recommendUser[0]['recommendUserIdx']),$message);
-
-    $query = "update FriendRecommend set isDeleted = 'Y' where userIdx = ? and recommendUserIdx = ?";
-    $st = $pdo->prepare($query);
-    $st->execute([intval($item['userIdx']),intval($recommendUser[0]['recommendUserIdx'])]);
+//    addFriendNotification(intval($item['userIdx']),intval($recommendUser[0]['recommendUserIdx']),$message);
+//
+//    $query = "update FriendRecommend set isDeleted = 'Y' where userIdx = ? and recommendUserIdx = ?";
+//    $st = $pdo->prepare($query);
+//    $st->execute([intval($item['userIdx']),intval($recommendUser[0]['recommendUserIdx'])]);
 }
