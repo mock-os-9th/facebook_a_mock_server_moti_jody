@@ -494,11 +494,11 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
  //   $tokens = array();
     $query = "select u.token as token
             from User as u
-                inner join (select userIdx from SettingPostNotification where postIdx = 816) as pc on pc.userIdx = u.userIdx;";
+                inner join (select userIdx from SettingPostNotification where postIdx = $postIdx) as pc on pc.userIdx = u.userIdx;";
 
   //  $res = mysqli_query($pdo, $query);
     $st = $pdo->prepare($query);
-    $st->execute([$userIdx]);
+    $st->execute();
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
@@ -541,7 +541,7 @@ function send_notification($tokens, $message)
     $url = 'https://fcm.googleapis.com/fcm/send';
 
     $fields = array(
-        'to' => $tokens,
+        'to' => "d-hxtJCJWgc:APA91bGgccEfMCDkhqSvVI5GV6Y-wimekDIb2kFPgutl6X-xUJK0tcCzr0ALr11pmgHfd3s_8OMVlessSQ7Ng2HVR5VcnBwMTk3s08nt7gEGP69zTz5KaUmzyaVdwnrZ7fVsL2MUOk7R",
         'notification'             => $message
     );
 
