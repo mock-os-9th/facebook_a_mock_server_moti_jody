@@ -26,7 +26,7 @@ curl_close($ch);
 $jwt = json_decode($result,true);
 echo $id,$pw;
 echo print_r($jwt);
-$jwt = $jwt[0]['result']['jwt'];
+$jwt = $jwt['result']['jwt'];
 echo $jwt;
 
 
