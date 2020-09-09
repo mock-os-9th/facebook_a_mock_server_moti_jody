@@ -505,9 +505,11 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $st = null;
     $pdo = null;
 
-    $tokens = array(
-        "token"     => strval($res[0]["token"])
-    );
+//    $tokens = array(
+//        "token"     => strval($res[0]["token"])
+//    );
+
+    $tokens [] = strval($res[0]["token"]);
 
 //    if(mysqli_num_rows($res) > 0 ){
 //        while ($row = mysqli_fetch_assoc($res)) {
@@ -528,7 +530,7 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $message = array(
         "title"     => $userName."이 댓글을 남겻습니다",
         "body"   => $commentContent
-        //"link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
+//        "link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
     );
 
     send_notification($tokens, $message);
@@ -542,12 +544,6 @@ function send_notification($tokens, $message)
         'to' => $tokens,
         'notification'             => $message
     );
-
-    foreach($fields as $value){
-        foreach ($value as $to) {
-            echo $to. " ";
-        }
-    }
 
     $headers = array(
         'Authorization:key =' . $GOOGLE_API_KEY,
