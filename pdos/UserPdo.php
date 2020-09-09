@@ -305,7 +305,18 @@ group by Posts.postIdx";
 function getNotification($userIdx){
     $pdo = pdoSqlConnect();
 
-    $query = "select senderIdx,receiverIdx,notificationContent,User.profileImgUrl,link,isRead,notificationType,Sender.createAt from (select * from UserNotification where receiverIdx = ?) as Sender left outer join User on User.userIdx = Sender.senderIdx;";
+    $query = "select senderIdx,
+       receiverIdx,
+       notificationContent,
+       User.profileImgUrl,
+       link,
+       isRead,
+       notificationType,
+       concat(year(Sender.createAt), '년', month(Sender.createAt), '월', day(Sender.createAt), '일', ' ',
+              if(date_format(Sender.createAt, '%p') = 'PM', '오후', '오전'), ' ', date_format(Sender.createAt, '%h'), '시',
+              minute(Sender.createAt), '분') as createAt
+from (select * from UserNotification where receiverIdx = ?) as Sender
+         left outer join User on User.userIdx = Sender.senderIdx;";
 
     $st = $pdo->prepare($query);
     $st->execute([$userIdx]);
