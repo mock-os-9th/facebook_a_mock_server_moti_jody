@@ -4,7 +4,7 @@ $pw = $_POST['pw'];
 $token = $_POST['token'];
 
 $url='http://54.180.68.232/login';
-$fields = array('id',$id,'pw',$pw);
+$fields = array("id",$id,"pw",$pw);
 
 $headers = array('Content-Type:application/json');
 
