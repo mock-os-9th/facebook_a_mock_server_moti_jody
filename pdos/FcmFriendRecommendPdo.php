@@ -40,28 +40,28 @@ foreach ($friendList as $key => $item) {
 
     echo $userIdx, $recommendUserIdx;
 
-    $query = "select exists (select * from FriendRecommend where userIdx = $userIdx and recommendUserIdx = $recommendUserIdx and isDeleted = 'N') as exist";
+    $query = "select exists (select * from FriendRecommend where userIdx = ? and recommendUserIdx = ? and isDeleted = 'N') as exist";
     $st = $pdo->prepare($query);
-    $st->execute();
+    $st->execute([$userIdx,$recommendUserIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $isDuplication = $st->fetchAll();
     $isDuplication = intval($isDuplication[0]['exist']);
 
 
-    $query = "select exists (select * from FriendRecommend where userIdx = $userIdx and recommendUserIdx = $recommendUserIdx and isDeleted = 'Y') as exist";
+    $query = "select exists (select * from FriendRecommend where userIdx = ? and recommendUserIdx = ? and isDeleted = 'Y') as exist";
     $st = $pdo->prepare($query);
-    $st->execute();
+    $st->execute([$userIdx,$recommendUserIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $isDuplication = $st->fetchAll();
     $wasExist = intval($isDuplication[0]['exist']);
 
     if ($isDuplication == 0 && $wasExist == 0) {
-        $query = "insert into FriendRecommend (userIdx,recommendUserIdx) values ($userIdx,$recommendUserIdx)";
+        $query = "insert into FriendRecommend (userIdx,recommendUserIdx) values (?,?)";
         $st = $pdo->prepare($query);
-        $st->execute();
+        $st->execute([$userIdx,$recommendUserIdx]);
     } else if ($isDuplication == 0 && $wasExist == 1) {
-        $query = "update FriendRecommend set isDeleted = 'N' where userIdx = $userIdx, recommendUserIdx = $recommendUserIdx";
+        $query = "update FriendRecommend set isDeleted = 'N' where userIdx = ?, recommendUserIdx = ?";
         $st = $pdo->prepare($query);
-        $st->execute();
+        $st->execute([$userIdx,$recommendUserIdx]);
     }
 }
