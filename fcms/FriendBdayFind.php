@@ -3,11 +3,11 @@ require '/home/ubuntu/api-server/pdos/DatabasePdo.php';
 
 $pdo = pdoSqlConnect();
 
-$sql = "select userIdx, concat(firstName, ' ', secondName) as userName
+$query = "select userIdx, concat(firstName, ' ', secondName) as userName
         from User
         where DATE_FORMAT(bday,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d');";
 
-$st = $pdo->prepare($sql);
+$st = $pdo->prepare($query);
 $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
@@ -17,12 +17,12 @@ $st = null; $pdo = null;
 $bdayUserIdx = intval($res[0]['userIdx']);
 $bdayUserName = strval($res[0]['userName']);
 
-$sql = "select token
+$query = "select token
         from Friends as f
             inner join (select token, userIdx from User) as u on u.userIdx = f.userIdx
         where friendIdx = $bdayUserIdx and isDeleted = 'N';";
 
-$st = $pdo->prepare($sql);
+$st = $pdo->prepare($query);
 $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
