@@ -484,7 +484,7 @@ function getNameFromIdx($userIdx)
     $st = null;
     $pdo = null;
 
-    return intval($res[0]["userName"]);
+    return strval($res[0]["userName"]);
 }
 
 function send_comment_noti($userIdx, $postIdx, $commentContent)
