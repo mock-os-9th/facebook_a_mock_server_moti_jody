@@ -55,6 +55,21 @@ $link = "http://54.180.68.232/user/50/profile/info";
         }
     }
 
+function getUserIdxByToken($token)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT userIdx FROM User WHERE token = ? and isDeleted = 'N';";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$token]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["userIdx"]);
+}
 function addUserNotification($senderIdx, $receiverIdx, $alertTitle, $link)
 {
     $pdo = pdoSqlConnect();

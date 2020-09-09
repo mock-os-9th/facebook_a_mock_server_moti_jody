@@ -32,18 +32,3 @@ function send_friend_bday_notification($token, $message)
     return $result;
 }
 
-function getUserIdxByToken($token)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT userIdx FROM User WHERE token = ? and isDeleted = 'N';";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$token]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return intval($res[0]["userIdx"]);
-}
