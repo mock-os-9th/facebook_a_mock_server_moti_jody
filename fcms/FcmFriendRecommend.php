@@ -1,6 +1,6 @@
 <?php
-require '../pdos/DatabasePdo.php';
-require '../pdos/FriendPdo.php';
+require '/var/www/html/api/pdos/DatabasePdo.php';
+require '/var/www/html/api/pdos/FriendPdo.php';
 
 
 $pdo = pdoSqlConnect();
