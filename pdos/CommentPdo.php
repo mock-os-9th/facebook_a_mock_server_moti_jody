@@ -491,11 +491,12 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
 {
     $pdo = pdoSqlConnect();
 
-    $tokens = array();
+ //   $tokens = array();
     $query = "select u.token as token
             from User as u
                 inner join (select userIdx from SettingPostNotification where postIdx = 816) as pc on pc.userIdx = u.userIdx;";
 
+//    $res = mysqli_query($pdo, $query);
     $st = $pdo->prepare($query);
     $st->execute([$userIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
@@ -504,7 +505,9 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $st = null;
     $pdo = null;
 
-    $tokens[0] = intval($res[0]["token"]);
+    $tokens = array(
+        "token"     => intval($res[0]["token"])
+    );
 //    if(mysqli_num_rows($res) > 0 ){
 //        while ($row = mysqli_fetch_assoc($res)) {
 //            $tokens[] = $row['token'];
