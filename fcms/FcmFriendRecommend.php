@@ -24,7 +24,7 @@ $query = "select UserToken.token,
        UserToken.userIdx,
        json_arrayagg(json_object('recommendUserIdx', FriendRecommend.recommendUserIdx, 'recommendUserName',
                                  concat(RecommendUser.firstName, RecommendUser.secondName))) as recommendUserIdxName
-from (select userIdx, profileImgUrl, token from User where not isnull(token) and isDeleted = 'N') as UserToken
+from (select userIdx, profileImgUrl, token from User where not isnull(token) and not token = '' and isDeleted = 'N') as UserToken
          left outer join FriendRecommend on FriendRecommend.userIdx = UserToken.userIdx
          left outer join User as RecommendUser on FriendRecommend.recommendUserIdx = RecommendUser.userIdx
 where FriendRecommend.isDeleted = 'N'
