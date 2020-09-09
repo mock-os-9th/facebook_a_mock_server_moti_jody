@@ -13,10 +13,10 @@ $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
 
 //$st = null; $pdo = null;
-
-echo $res;
-$bdayUserIdx = intval($res[0]['userIdx']);
-$bdayUserName = strval($res[0]['userName']);
+if(!is_null($res)){
+    $bdayUserIdx = intval($res[0]['userIdx']);
+    $bdayUserName = strval($res[0]['userName']);
+}
 
 $query = "select token
         from Friends as f
