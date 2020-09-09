@@ -12,15 +12,10 @@ from (select Friends.userIdx, Friends.friendIdx
 group by UserFriends.userIdx,FriendFriend.friendIdx
 order by count desc";
 
-
-echo 'hello';
-
-
 $st = $pdo->prepare($query);
 $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $friendList = $st->fetchAll();
-
 
 foreach ($friendList as $key => $item) {
     $userIdx = $item['userIdx'];
