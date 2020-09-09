@@ -90,9 +90,12 @@ try {
 
             $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
 
+            $token = getUserFcmToken($userIdx);
+
+            $res->recommendFriends = getRecommendFriends($userIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
-            $res->message = "토큰 입력 성공";
+            $res->message = "fcm token 조회와 친구 추천 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
     }
