@@ -5,7 +5,7 @@ $pdo = pdoSqlConnect();
 
 $sql = "select userIdx, concat(firstName, ' ', secondName) as userName
         from User
-                where DATE_FORMAT(bday,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d');";
+        where DATE_FORMAT(bday,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d');";
 
 $st = $pdo->prepare($sql);
 $st->execute();
