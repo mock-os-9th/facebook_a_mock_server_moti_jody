@@ -24,9 +24,28 @@ if($result === false){
 curl_close($ch);
 
 $jwt = json_decode($result,true);
-echo $id,$pw;
-echo print_r($jwt);
 $jwt = $jwt['result']['jwt'];
-echo $jwt;
 
+$url='http://54.180.68.232/fcm';
+$fields = array("token"=>$token);
+
+$headers = array('Content-Type:application/json','x-access-token:'.$jwt);
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+
+$result = curl_exec($ch);
+if($result === false){
+    die('Curl failed:'.curl_error($ch));
+}
+curl_close($ch);
+
+$fcmResult = json_decode($result,true);
+echo print_r($fcmResult);
 
