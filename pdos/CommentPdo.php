@@ -558,10 +558,9 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
         "body"   => $commentContent
     );
 
-    echo sizeof($res);
-
     if(sizeof($res) > 0 ){
         foreach($res as $token) {
+            echo strval($token);
             send_notification(strval($token), $message);
         }
     } else {
