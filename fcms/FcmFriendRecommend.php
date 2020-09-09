@@ -23,7 +23,7 @@ $res = $st->fetchAll();
 
 foreach ($res as $key => $item){
     $item['recommendUserIdxName'] = json_decode($item['recommendUserIdxName']);
-    echo $item['recommendUserIdxName'][0]['recommendUserIdx'],$item['recommendUserIdxName'][0]['recommendUserName'];
+    echo $item['recommendUserIdxName'][0]->recommentIdx,$item['recommendUserIdxName'][0]->recommandName;
 //    $message = '새로운 친구 추천이 있습니다 : '.$item['recommendUserIdxName']['recommendUserName'].'님';
 //    $url='https://fcm.googleapis.com/fcm/send';
 //    $notification = array('body'=>$message,'title'=>'친구추천알림');
