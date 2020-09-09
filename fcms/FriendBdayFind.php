@@ -4,23 +4,21 @@ require '/var/www/html/api/pdos/DatabasePdo.php';
 $pdo = pdoSqlConnect();
 
 $query = "select userIdx, concat(firstName, ' ', secondName) as userName
-        from User
-        where DATE_FORMAT(bday,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d') and isDeleted = 'N';";
+            from User
+            where DATE_FORMAT(bday,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d') and isDeleted = 'N';";
 
 $st = $pdo->prepare($query);
 $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
 
-//$st = null; $pdo = null;
-print_r(sizeof($res));
 if(sizeof($res) > 0){
     foreach($res as $users) {
         foreach($users as $user) {
             $bdayUserIdx = intval($user['userIdx']);
             $bdayUserName = strval($user['userName']);
-            print_r($bdayUserIdx);
-            print_r($bdayUserName);
+            print_r("usrIdx--------------".$bdayUserIdx);
+            print_r("userName--------------".$bdayUserName);
 
             $query = "select token
             from Friends as f
@@ -42,10 +40,11 @@ if(sizeof($res) > 0){
               //  "link"      => $link
             );
 
+            print_r("user token cehck +==================". sizeof($res));
             if(sizeof($res) > 0){
                 foreach($res as $tokens) {
                     foreach($tokens as $token) {
-                        print_r(strval($token));
+                        print_r("token chekc ---------------------".strval($token));
                         $notiUserIdx = getUserIdxByToken(strval($token));
                         if($notiUserIdx != $bdayUserIdx && !is_null($token)) { //토큰 없는 기기에는 아예 알림 안가도록...)
                             send_friend_bday_notification(strval($token), $message);
