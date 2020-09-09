@@ -12,15 +12,14 @@ $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
 
-print_r($res);
 //$st = null; $pdo = null;
 if(sizeof($res) > 0){
     foreach($res as $users) {
         foreach($users as $user) {
             $bdayUserIdx = intval($user['userIdx']);
             $bdayUserName = strval($user['userName']);
-            echo $bdayUserIdx;
-            echo $bdayUserName;
+            print_r($bdayUserIdx);
+            print_r($bdayUserName);
 
             $query = "select token
             from Friends as f
@@ -45,7 +44,7 @@ if(sizeof($res) > 0){
             if(sizeof($res) > 0){
                 foreach($res as $tokens) {
                     foreach($tokens as $token) {
-                        echo strval($token);
+                        print_r(strval($token));
                         $notiUserIdx = getUserIdxByToken(strval($token));
                         if($notiUserIdx != $bdayUserIdx && !is_null($token)) { //토큰 없는 기기에는 아예 알림 안가도록...)
                             send_friend_bday_notification(strval($token), $message);
