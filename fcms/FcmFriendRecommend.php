@@ -4,8 +4,6 @@ require '/home/ubuntu/api-server/pdos/FriendPdo.php';
 
 $pdo = pdoSqlConnect();
 
-$query = ""
-
 $query = "select UserToken.token,
        UserToken.userIdx,
        json_arrayagg(json_object('recommendUserIdx', FriendRecommend.recommendUserIdx, 'recommendUserName',
