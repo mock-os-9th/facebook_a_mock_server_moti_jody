@@ -508,6 +508,8 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $tokens = array(
         "token"     => intval($res[0]["token"])
     );
+
+    echo intval($res[0]["token"]);
 //    if(mysqli_num_rows($res) > 0 ){
 //        while ($row = mysqli_fetch_assoc($res)) {
 //            $tokens[] = $row['token'];
@@ -542,10 +544,10 @@ function send_notification($tokens, $message)
         'notification'             => $message
     );
 
-    $headers = array(
-        'Authorization:key =' . $GOOGLE_API_KEY,
-        'Content-Type: application/json'
-    );
+//    $headers = array(
+//        'Authorization:key =' . $GOOGLE_API_KEY,
+//        'Content-Type: application/json'
+//    );
     /*
     print_r($fields);
     print_r($headers);
@@ -555,7 +557,7 @@ function send_notification($tokens, $message)
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
