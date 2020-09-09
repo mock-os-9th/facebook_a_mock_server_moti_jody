@@ -546,6 +546,21 @@ function addUserNotification($userIdx, $alertTitle, $link)
     $st = null;
     $pdo = null;
 }
+function getUserIdxByToken($token)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT userIdx FROM User WHERE token = ? and isDeleted = 'N';";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$token]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]["userIdx"]);
+}
 function send_comment_notification($userIdx, $postIdx, $commentContent)
 {
     $pdo = pdoSqlConnect();
@@ -575,8 +590,11 @@ function send_comment_notification($userIdx, $postIdx, $commentContent)
     if(sizeof($res) > 0 ){
         foreach($res as $tokens) {
             foreach($tokens as $token) {
-                send_notification(strval($token), $message);
-                addUserNotification($userIdx, $alertTitle, $link);
+                $notiUserIdx = getUserIdxByToken(strval($token));
+                if($notiUserIdx != $userIdx) {
+                    send_notification(strval($token), $message);
+                    addUserNotification($notiUserIdx, $alertTitle, $link);
+                }
             }
         }
     }
