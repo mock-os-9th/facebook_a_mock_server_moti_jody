@@ -505,9 +505,11 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $st = null;
     $pdo = null;
 
-    $tokens = array(
-        "token"     => strval($res[0]["token"])
-    );
+//    $tokens = array(
+//        "token"     => strval($res[0]["token"])
+//    );
+
+    $tokens [] = strval($res[0]["token"]);
 
 //    if(mysqli_num_rows($res) > 0 ){
 //        while ($row = mysqli_fetch_assoc($res)) {
@@ -535,7 +537,7 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
 }
 function send_notification($tokens, $message)
 {
-    $GOOGLE_API_KEY = "Bearer AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
+    $GOOGLE_API_KEY = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
     $url = 'https://fcm.googleapis.com/fcm/send';
 
     $fields = array(
