@@ -36,10 +36,11 @@ foreach ($friendList as $key => $item) {
     $st = $pdo->prepare($query);
     $st->execute([$userIdx,$recommendUserIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
-    $isDuplication = $st->fetchAll();
-    $wasExist = intval($isDuplication[0]['exist']);
+    $wasExist = $st->fetchAll();
+    $wasExist = intval($wasExist[0]['exist']);
 
     if ($isDuplication == 0 && $wasExist == 0) {
+        echo 'inserted';
         $query = "insert into FriendRecommend (userIdx,recommendUserIdx) values (?,?)";
         $st = $pdo->prepare($query);
         $st->execute([$userIdx,$recommendUserIdx]);
