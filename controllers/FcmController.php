@@ -91,7 +91,15 @@ try {
             $userIdx = getUserIdxFromJwt($jwt, JWT_SECRET_KEY);
 
             $token = getUserFcmToken($userIdx);
-
+            if(is_null($token)){
+                $res->isSuccess = FALSE;
+                $res->code = 440;
+                $res->message = "유저가 로그인되어있지 않습니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            $res->token = $token;
             $res->recommendFriends = getRecommendFriends($userIdx);
             $res->isSuccess = TRUE;
             $res->code = 200;
