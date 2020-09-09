@@ -44,8 +44,6 @@ try {
             // jwt 유효성 검사
             http_response_code(200);
 
-            echo $req->id,$req->pw;
-
             if(!isValidUser($req->id, $req->pw)){
                 $res->isSuccess = FALSE;
                 $res->code = 400;
