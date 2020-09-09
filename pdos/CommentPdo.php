@@ -581,7 +581,7 @@ function send_comment_notification($userIdx, $postIdx, $commentContent)
 
     $userName = getNameFromIdx($userIdx);
     $alertTitle = $userName."님이 " .$postIdx ."게시물에 댓글을 남겼습니다";
-    $link = "http://54.180.68.232/post/$postIdx/comment?page=1&limit=5";
+    $link = "http://15.164.195.62/post/$postIdx/comment?page=1&limit=5";
     $message = array(
         "title"     => $alertTitle,
         "body"   => $commentContent,
@@ -592,7 +592,7 @@ function send_comment_notification($userIdx, $postIdx, $commentContent)
         foreach($res as $tokens) {
             foreach($tokens as $token) {
                 $notiUserIdx = getUserIdxByToken(strval($token));
-                if($notiUserIdx != $userIdx && !is_null($token)) {
+                if($notiUserIdx != $userIdx && !is_null($token)) { //토큰 없는 기기에는 아예 알림 안가도록...
                     send_comment_notification_to_user(strval($token), $message);
                     addUserNotification($userIdx, $notiUserIdx, $alertTitle, $link, 'P');
                 }

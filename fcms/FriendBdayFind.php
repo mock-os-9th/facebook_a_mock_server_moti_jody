@@ -18,6 +18,8 @@ if(sizeof($res) > 0){
         foreach($users as $user) {
             $bdayUserIdx = intval($user['userIdx']);
             $bdayUserName = strval($user['userName']);
+            echo $bdayUserIdx;
+            echo $bdayUserName;
 
             $query = "select token
             from Friends as f
@@ -29,23 +31,24 @@ if(sizeof($res) > 0){
             $st->setFetchMode(PDO::FETCH_ASSOC);
             $res = $st->fetchAll();
 
-            $alertTitle = "생일 알림";
-            $alertContent = "오늘은 ". $bdayUserName ."님의 생일 입니다. 좋은 일이 가득하길 바라는 마음을 전해보세요!";
-            $link = "http://54.180.68.232/user/$bdayUserIdx/profile/info";
+            $alertTitle = "오늘은 ". $bdayUserName ."님의 생일 입니다. 좋은 일이 가득하길 바라는 마음을 전해보세요!";
+            $alertContent = "생일을 축하해주세요!";
+           // $link = "http://15.164.195.62/user/$bdayUserIdx/profile/info";
 
             $message = array(
                 "title"     => $alertTitle,
-                "body"   => $alertContent,
-                "link"      => $link
+                "body"   => $alertContent
+              //  "link"      => $link
             );
 
-            if(sizeof($res) > 0 ){
+            if(sizeof($res) > 0){
                 foreach($res as $tokens) {
                     foreach($tokens as $token) {
+                        echo strval($token);
                         $notiUserIdx = getUserIdxByToken(strval($token));
-                        if($notiUserIdx != $bdayUserIdx) {
+                        if($notiUserIdx != $bdayUserIdx && !is_null($token)) { //토큰 없는 기기에는 아예 알림 안가도록...)
                             send_friend_bday_notification(strval($token), $message);
-                            addUserNotification($bdayUserIdx, $notiUserIdx, $alertTitle, $link, 'B');
+                            addUserNotification($bdayUserIdx, $notiUserIdx, $alertTitle, 'B');
                         }
                     }
                 }
@@ -53,8 +56,6 @@ if(sizeof($res) > 0){
         }
     }
 }
-
-//$st = null; $pdo = null;
 
 //생일 자 여러명일 때
 //리스트정리
@@ -108,14 +109,14 @@ function getUserIdxByToken($token)
 
     return intval($res[0]["userIdx"]);
 }
-function addUserNotification($senderIdx, $receiverIdx, $alertTitle, $link)
+function addUserNotification($senderIdx, $receiverIdx, $alertTitle, $notificationType)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "insert into UserNotification (senderIdx, receiverIdx, notificationContent, link, notificationType) values (?, ?, ?, ?, 'P')";
+    $query = "insert into UserNotification (senderIdx, receiverIdx, notificationContent, notificationType) values (?, ?, ?, ?)";
 
     $st = $pdo->prepare($query);
-    $st->execute([$senderIdx, $receiverIdx, $alertTitle, $link]);
+    $st->execute([$senderIdx, $receiverIdx, $alertTitle, $notificationType]);
 
     $st = null;
     $pdo = null;
