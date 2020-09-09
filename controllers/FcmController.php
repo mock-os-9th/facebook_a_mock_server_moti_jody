@@ -94,7 +94,7 @@ try {
             if(is_null($token)){
                 $res->isSuccess = FALSE;
                 $res->code = 440;
-                $res->message = "유저가 로그인되어있지 않습니다";
+                $res->message = "유저가 로그인되어있지 않습니다 token is null";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 addErrorLogs($errorLogs, $res, $req);
                 return;
