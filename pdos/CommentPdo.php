@@ -506,8 +506,7 @@ function send_notification($tokens, $message)
     exit;
     */
 
-    echo $tokens;
-    echo $message;
+    echo array_values($message);
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);

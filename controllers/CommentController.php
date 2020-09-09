@@ -507,7 +507,7 @@ try {
 
             $message = array(
                 "title"     => $userName."이 댓글을 남겻습니다",
-                "message"   => $commentContent,
+                "message"   => $commentContent
                 //"link"      => URL . "/index.php?v=board_view&idx=" . $last_idx
             );
             //print_r($message);exit;
