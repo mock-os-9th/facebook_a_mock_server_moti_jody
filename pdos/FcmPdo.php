@@ -3,7 +3,7 @@ function setFcmTokenToUser($token,$userIdx)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "update User set token = '' where token = ?";
+    $query = "update User set token = null where token = ?";
 
     $st = $pdo->prepare($query);
     $st->execute([$token]);
