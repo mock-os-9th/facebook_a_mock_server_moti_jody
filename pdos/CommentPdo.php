@@ -559,9 +559,11 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     );
 
     if(sizeof($res) > 0 ){
-        foreach($res as $token) {
-            echo strval($token);
-            send_notification(strval($token), $message);
+        foreach($res as $tokens) {
+            foreach($tokens as $token) {
+                echo strval($token);
+                send_notification(strval($token), $message);
+            }
         }
     } else {
         echo 'There are no Transfer Data';
