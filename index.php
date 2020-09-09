@@ -67,6 +67,9 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('DELETE','/comment/{idx}',['CommentController','deleteComment']);
     $r->addRoute('PATCH','/comment/{idx}/hide',['CommentController','hideComment']);
 
+
+    $r->addRoute('POST','/fcm',['FcmController','setFcmTokenToUser']);
+
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
 //    $r->addRoute('GET', '/user/{id:\d+}', 'get_user_handler');
@@ -142,6 +145,11 @@ switch ($routeInfo[0]) {
                 $handler = $routeInfo[1][1];
                 $vars = $routeInfo[2];
                 require './controllers/UserController.php';
+                break;
+            case 'FcmController':
+                $handler = $routeInfo[1][1];
+                $vars = $routeInfo[2];
+                require './controllers/FcmController.php';
                 break;
         }
 
