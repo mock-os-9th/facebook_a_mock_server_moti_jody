@@ -542,6 +542,7 @@ function send_notification($tokens, $message)
         'notification'             => $message
     );
 
+    echo $fields('to');
 //    $headers = array(
 //        'Authorization:key =' . self::GOOGLE_FCM_API_KEY,
 //        'Content-Type: application/json'
