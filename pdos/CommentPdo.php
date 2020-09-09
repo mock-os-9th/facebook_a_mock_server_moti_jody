@@ -487,16 +487,63 @@ function getNameFromIdx($userIdx)
     return strval($res[0]["userName"]);
 }
 
+//function send_comment_noti($userIdx, $postIdx, $commentContent)
+//{
+//    $pdo = pdoSqlConnect();
+//
+// //   $tokens = array();
+//    $query = "select u.token as token
+//            from User as u
+//                inner join (select userIdx from SettingPostNotification where postIdx = $postIdx) as pc on pc.userIdx = u.userIdx;";
+//
+//  //  $res = mysqli_query($pdo, $query);
+//    $st = $pdo->prepare($query);
+//    $st->execute();
+//    $st->setFetchMode(PDO::FETCH_ASSOC);
+//    $res = $st->fetchAll();
+//
+//    $st = null;
+//    $pdo = null;
+//
+////    $tokens = array(
+////        "token"     => strval($res[0]["token"])
+////    );
+//
+//    $token = strval($res[0]["token"]);
+//
+////    if(mysqli_num_rows($res) > 0 ){
+////        while ($row = mysqli_fetch_assoc($res)) {
+////            $tokens[] = $row['token'];
+////        }
+////    } else {
+////        echo 'There are no Transfer Data';
+////        exit;
+////    }
+//
+////            $result = $this->lib['db']->query($sql);
+////            while($row = $this->lib['db']->result_assoc($result))
+////            {
+////                $tokens[] = $row['token'];
+////            }
+//
+//    $userName = getNameFromIdx($userIdx);
+//    $message = array(
+//        "title"     => $userName."님이 댓글을 남겻습니다",
+//        "body"   => $commentContent
+////        "link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
+//    );
+//
+//    send_notification($token, $message);
+//}
 function send_comment_noti($userIdx, $postIdx, $commentContent)
 {
     $pdo = pdoSqlConnect();
 
- //   $tokens = array();
+    //   $tokens = array();
     $query = "select u.token as token
             from User as u
                 inner join (select userIdx from SettingPostNotification where postIdx = $postIdx) as pc on pc.userIdx = u.userIdx;";
 
-  //  $res = mysqli_query($pdo, $query);
     $st = $pdo->prepare($query);
     $st->execute();
     $st->setFetchMode(PDO::FETCH_ASSOC);
@@ -505,32 +552,23 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $st = null;
     $pdo = null;
 
-//    $tokens = array(
-//        "token"     => strval($res[0]["token"])
-//    );
 
-    $token = strval($res[0]["token"]);
+    echo length($res);
 
-//    if(mysqli_num_rows($res) > 0 ){
-//        while ($row = mysqli_fetch_assoc($res)) {
-//            $tokens[] = $row['token'];
-//        }
-//    } else {
-//        echo 'There are no Transfer Data';
-//        exit;
-//    }
-
-//            $result = $this->lib['db']->query($sql);
-//            while($row = $this->lib['db']->result_assoc($result))
-//            {
-//                $tokens[] = $row['token'];
-//            }
+    if(length($res) > 0 ){
+        while ($row = mysqli_fetch_assoc($res)) {
+            $tokens[] = $row['token'];
+            $token = strval($res[0]["token"]);
+        }
+    } else {
+        echo 'There are no Transfer Data';
+        exit;
+    }
 
     $userName = getNameFromIdx($userIdx);
     $message = array(
-        "title"     => $userName."이 댓글을 남겻습니다",
+        "title"     => $userName."님이 댓글을 남겻습니다",
         "body"   => $commentContent
-//        "link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
     );
 
     send_notification($token, $message);
