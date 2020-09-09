@@ -1,5 +1,5 @@
 <?php
-require '/home/ubuntu/api-server/pdos/DatabasePdo.php';
+require '/var/www/html/api/pdos/DatabasePdo.php';
 
 $pdo = pdoSqlConnect();
 
