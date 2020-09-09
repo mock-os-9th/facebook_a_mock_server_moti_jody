@@ -592,7 +592,7 @@ function send_comment_notification($userIdx, $postIdx, $commentContent)
         foreach($res as $tokens) {
             foreach($tokens as $token) {
                 $notiUserIdx = getUserIdxByToken(strval($token));
-                if($notiUserIdx != $userIdx) {
+                if($notiUserIdx != $userIdx && !is_null($token)) {
                     send_comment_notification_to_user(strval($token), $message);
                     addUserNotification($userIdx, $notiUserIdx, $alertTitle, $link, 'P');
                 }
