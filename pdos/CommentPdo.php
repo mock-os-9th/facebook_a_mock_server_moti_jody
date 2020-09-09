@@ -552,26 +552,22 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $st = null;
     $pdo = null;
 
-
-    echo length($res);
-
-    if(length($res) > 0 ){
-        while ($row = mysqli_fetch_assoc($res)) {
-            $tokens[] = $row['token'];
-            $token = strval($res[0]["token"]);
-        }
-    } else {
-        echo 'There are no Transfer Data';
-        exit;
-    }
-
     $userName = getNameFromIdx($userIdx);
     $message = array(
         "title"     => $userName."님이 댓글을 남겻습니다",
         "body"   => $commentContent
     );
 
-    send_notification($token, $message);
+    echo sizeof($res);
+
+    if(sizeof($res) > 0 ){
+        foreach($res as $token) {
+            send_notification(strval($token), $message);
+        }
+    } else {
+        echo 'There are no Transfer Data';
+        exit;
+    }
 }
 function send_notification($token, $message)
 {
