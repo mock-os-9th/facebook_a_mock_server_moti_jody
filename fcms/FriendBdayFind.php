@@ -14,9 +14,8 @@ $res = $st->fetchAll();
 
 if(sizeof($res) > 0){
     foreach($res as $users) {
-        foreach($users as $user) {
-            $bdayUserIdx = intval($user['userIdx']);
-            $bdayUserName = strval($user['userName']);
+            $bdayUserIdx = intval($users['userIdx']);
+            $bdayUserName = strval($users['userName']);
             print_r("usrIdx--------------".$bdayUserIdx);
             print_r("userName--------------".$bdayUserName);
 
@@ -46,14 +45,13 @@ if(sizeof($res) > 0){
                     foreach($tokens as $token) {
                         print_r("token chekc ---------------------".strval($token));
                         $notiUserIdx = getUserIdxByToken(strval($token));
-                        if($notiUserIdx != $bdayUserIdx && !is_null($token)) { //토큰 없는 기기에는 아예 알림 안가도록...)
+                        if(!is_null($token)) { //토큰 없는 기기에는 아예 알림 안가도록...)
                             send_friend_bday_notification(strval($token), $message);
                             addUserNotification($bdayUserIdx, $notiUserIdx, $alertTitle, 'B');
                         }
                     }
                 }
             }
-        }
     }
 }
 
