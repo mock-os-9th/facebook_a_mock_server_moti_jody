@@ -6,13 +6,6 @@ importScripts(
   "https://www.gstatic.com/firebasejs/7.19.1/firebase-messaging.js"
 );
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker
-    .register("firebase-messaging-sw.js")
-    .catch(function (err) {
-      console.error(err);
-    });
-}
 // Initialize the Firebase app in the service worker by passing in
 // your app's Firebase config object.
 // https://firebase.google.com/docs/web/setup#config-object
