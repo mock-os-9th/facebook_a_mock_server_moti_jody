@@ -5,15 +5,16 @@ $pdo = pdoSqlConnect();
 
 $query = "select userIdx, concat(firstName, ' ', secondName) as userName
         from User
-        where DATE_FORMAT(bday,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d');";
+        where DATE_FORMAT(bday,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d') and isDeleted = 'N';";
 
 $st = $pdo->prepare($query);
 $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
 
-$st = null; $pdo = null;
+//$st = null; $pdo = null;
 
+echo $res;
 $bdayUserIdx = intval($res[0]['userIdx']);
 $bdayUserName = strval($res[0]['userName']);
 
