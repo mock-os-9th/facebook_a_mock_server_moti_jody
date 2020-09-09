@@ -528,26 +528,20 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $message = array(
         "title"     => $userName."이 댓글을 남겻습니다",
         "body"   => $commentContent
-        //"link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
+//        "link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
     );
 
     send_notification($tokens, $message);
 }
 function send_notification($tokens, $message)
 {
-    $GOOGLE_API_KEY = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
+    $GOOGLE_API_KEY = "Bearer AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
     $url = 'https://fcm.googleapis.com/fcm/send';
 
     $fields = array(
         'to' => $tokens,
         'notification'             => $message
     );
-
-    foreach($fields as $value){
-        foreach ($value as $to) {
-            echo $to. " ";
-        }
-    }
 
     $headers = array(
         'Authorization:key =' . $GOOGLE_API_KEY,
