@@ -24,6 +24,7 @@ if($result === false){
 curl_close($ch);
 
 $jwt = json_decode($result);
+echo $jwt;
 $jwt = $jwt->result->jwt;
 echo $jwt;
 
