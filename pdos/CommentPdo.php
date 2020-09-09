@@ -508,6 +508,7 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $tokens = array(
         "token"     => intval($res[0]["token"])
     );
+    echo intval($res[0]["token"]);
 
 //    if(mysqli_num_rows($res) > 0 ){
 //        while ($row = mysqli_fetch_assoc($res)) {
