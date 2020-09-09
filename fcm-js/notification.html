@@ -20,7 +20,7 @@
       request.send();
       request.onload = () => {
         var notification = request.response;
-        var result = jsonObj["result"];
+        var result = notification["result"];
 
         for (var i = 0; i < result.length; i++) {
           var noti = document.createElement("div");
