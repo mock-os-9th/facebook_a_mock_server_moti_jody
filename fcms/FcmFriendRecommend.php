@@ -53,4 +53,4 @@ foreach ($res as $key => $item){
 //    $query = "update FriendRecommend set isDeleted = 'Y' where userIdx = ? and recommendUserIdx = ?";
 //    $st = $pdo->prepare($query);
 //    $st->execute([intval($item['userIdx']),intval($item['recommendUserIdxName']['recommendUserIdx'])]);
-//}
+}
