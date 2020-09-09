@@ -498,7 +498,7 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
 
     $res = mysqli_query($pdo, $query);
 
-    $userName = getNameFromIdx($userIdx);
+    echo $res;
 
     if(mysqli_num_rows($res) > 0 ){
         while ($row = mysqli_fetch_assoc($res)) {
@@ -515,6 +515,7 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
 //                $tokens[] = $row['token'];
 //            }
 
+    $userName = getNameFromIdx($userIdx);
     $message = array(
         "title"     => $userName."이 댓글을 남겻습니다",
         "body"   => $commentContent
