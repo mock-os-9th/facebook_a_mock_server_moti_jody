@@ -11,9 +11,9 @@ $st = $pdo->prepare($query);
 $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
-//
-//$st = null; $pdo = null;
-//
+
+$st = null; $pdo = null;
+
 $bdayUserIdx = intval($res[0]['userIdx']);
 $bdayUserName = strval($res[0]['userName']);
 
