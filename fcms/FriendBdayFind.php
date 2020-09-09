@@ -27,7 +27,7 @@ $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
 
-$st = null; $pdo = null;
+//$st = null; $pdo = null;
 
 //생일 자 여러명일 때
 //리스트정리
