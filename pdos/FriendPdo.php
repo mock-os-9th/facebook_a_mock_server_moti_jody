@@ -540,3 +540,11 @@ function friendExistWithKeyword($idx, $targetIdx, $keyword) {
 
     return intval($res[0]["exist"]);
 }
+
+function addFriendNotification($userIdx,$friendIdx,$contents){
+    $pdo = pdoSqlConnect();
+    $query = "insert into UserNotification (senderIdx,receiverIdx,notificationContent,notificationType) values (?,?,?,'F')";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$friendIdx,$userIdx,$contents]);
+}
