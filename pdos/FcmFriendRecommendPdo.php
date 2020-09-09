@@ -18,7 +18,7 @@ function pdoSqlConnect()
 }
 
 $pdo = pdoSqlConnect();
-$query = "select UserFriends.userIdx,UserFriends.friendIdx, FriendFriend.friendIdx, count(FriendFriend.friendIdx) as count
+$query = "select UserFriends.userIdx,UserFriends.friendIdx, FriendFriend.friendIdx as recommendUserIdx, count(FriendFriend.friendIdx) as count
 from (select Friends.userIdx, Friends.friendIdx
       from User
                left outer join Friends on User.userIdx = Friends.userIdx where User.isDeleted = 'N' or Friends.isDeleted = 'N') as UserFriends
