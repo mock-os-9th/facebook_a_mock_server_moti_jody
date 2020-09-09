@@ -487,28 +487,28 @@ function getNameFromIdx($userIdx)
     return intval($res[0]["userName"]);
 }
 
-//function send_comment_noti($userIdx, $postIdx, $commentContent)
-//{
-//    $pdo = pdoSqlConnect();
-//
-// //   $tokens = array();
-//    $query = "select u.token as token
-//            from User as u
-//                inner join (select userIdx from SettingPostNotification where postIdx = 816) as pc on pc.userIdx = u.userIdx;";
-//
-//    $res = mysqli_query($pdo, $query);
-////    $st = $pdo->prepare($query);
-////    $st->execute([$userIdx]);
-////    $st->setFetchMode(PDO::FETCH_ASSOC);
-////    $res = $st->fetchAll();
-////
-////    $st = null;
-////    $pdo = null;
-////
-////    $tokens = array(
-////        "token"     => intval($res[0]["token"])
-////    );
-//
+function send_comment_noti($userIdx, $postIdx, $commentContent)
+{
+    $pdo = pdoSqlConnect();
+
+ //   $tokens = array();
+    $query = "select u.token as token
+            from User as u
+                inner join (select userIdx from SettingPostNotification where postIdx = 816) as pc on pc.userIdx = u.userIdx;";
+
+  //  $res = mysqli_query($pdo, $query);
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    $tokens = array(
+        "token"     => intval($res[0]["token"])
+    );
+
 //    if(mysqli_num_rows($res) > 0 ){
 //        while ($row = mysqli_fetch_assoc($res)) {
 //            $tokens[] = $row['token'];
@@ -517,54 +517,54 @@ function getNameFromIdx($userIdx)
 //        echo 'There are no Transfer Data';
 //        exit;
 //    }
-//
-////            $result = $this->lib['db']->query($sql);
-////            while($row = $this->lib['db']->result_assoc($result))
-////            {
-////                $tokens[] = $row['token'];
-////            }
-//
-//    $userName = getNameFromIdx($userIdx);
-//    $message = array(
-//        "title"     => $userName."이 댓글을 남겻습니다",
-//        "body"   => $commentContent
-//        //"link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
-//    );
-//
-//    send_notification($tokens, $message);
-//}
-//function send_notification($tokens, $message)
-//{
-//    $GOOGLE_API_KEY = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
-//    $url = 'https://fcm.googleapis.com/fcm/send';
-//
-//    $fields = array(
-//        'to' => $tokens,
-//        'notification'             => $message
-//    );
-//
-////    $headers = array(
-////        'Authorization:key =' . $GOOGLE_API_KEY,
-////        'Content-Type: application/json'
-////    );
-//    /*
-//    print_r($fields);
-//    print_r($headers);
-//    exit;
-//    */
-//
-//    $ch = curl_init();
-//    curl_setopt($ch, CURLOPT_URL, $url);
-//    curl_setopt($ch, CURLOPT_POST, true);
-////    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-//    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//    curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
-//    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-//    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-//    $result = curl_exec($ch);
-//    if ($result === FALSE) {
-//        die('Curl failed: ' . curl_error($ch));
-//    }
-//    curl_close($ch);
-//    return $result;
-//}
+
+//            $result = $this->lib['db']->query($sql);
+//            while($row = $this->lib['db']->result_assoc($result))
+//            {
+//                $tokens[] = $row['token'];
+//            }
+
+    $userName = getNameFromIdx($userIdx);
+    $message = array(
+        "title"     => $userName."이 댓글을 남겻습니다",
+        "body"   => $commentContent
+        //"link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
+    );
+
+    send_notification($tokens, $message);
+}
+function send_notification($tokens, $message)
+{
+    $GOOGLE_API_KEY = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
+    $url = 'https://fcm.googleapis.com/fcm/send';
+
+    $fields = array(
+        'to' => $tokens,
+        'notification'             => $message
+    );
+
+    $headers = array(
+        'Authorization:key =' . $GOOGLE_API_KEY,
+        'Content-Type: application/json'
+    );
+    /*
+    print_r($fields);
+    print_r($headers);
+    exit;
+    */
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+    $result = curl_exec($ch);
+    if ($result === FALSE) {
+        die('Curl failed: ' . curl_error($ch));
+    }
+    curl_close($ch);
+    return $result;
+}
