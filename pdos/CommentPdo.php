@@ -535,14 +535,15 @@ function getNameFromIdx($userIdx)
 //
 //    send_notification($token, $message);
 //}
-function addUserNotification($userIdx, $alertTitle, $link)
+function addUserNotification($senderIdx, $receiverIdx, $alertTitle, $link, $notiType)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "insert into UserNotification (userIdx, notificationContent, link) values (?,?, ?)";
+    $query = "insert into UserNotification (senderIdx, receiverIdx, notificationContent, link, notificationType) values (?, ?, ?, ?, ?)";
 
     $st = $pdo->prepare($query);
-    $st->execute([$userIdx, $alertTitle, $link]);
+    $st->execute([$senderIdx, $receiverIdx, $alertTitle, $link, $notiType]);
+
     $st = null;
     $pdo = null;
 }
@@ -592,8 +593,8 @@ function send_comment_notification($userIdx, $postIdx, $commentContent)
             foreach($tokens as $token) {
                 $notiUserIdx = getUserIdxByToken(strval($token));
                 if($notiUserIdx != $userIdx) {
-                    send_notification(strval($token), $message);
-                    addUserNotification($notiUserIdx, $alertTitle, $link);
+                    send_comment_notification_to_user(strval($token), $message);
+                    addUserNotification($userIdx, $notiUserIdx, $alertTitle, $link, 'P');
                 }
             }
         }
@@ -601,7 +602,7 @@ function send_comment_notification($userIdx, $postIdx, $commentContent)
     //알림을 설정한 모든 사람에게 알림이 가며 알림 테이블에 저장
     //사용자가 댓글을 달았을 경우 해당 사용자가 알림을 설정해놨어도 알림은 가지 않음
 }
-function send_notification($token, $message)
+function send_comment_notification_to_user($token, $message)
 {
     $GOOGLE_API_KEY = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
     $url = 'https://fcm.googleapis.com/fcm/send';
