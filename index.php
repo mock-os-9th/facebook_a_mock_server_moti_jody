@@ -6,7 +6,6 @@ require './pdos/FriendPdo.php';
 require './pdos/PostPdo.php';
 require './pdos/UserPdo.php';
 require './pdos/FcmFriendPdo.php.php';
-require './pdos/FcmFriendRecommendPdo.php';
 require './vendor/autoload.php';
 
 use \Monolog\Logger as Logger;
