@@ -46,6 +46,4 @@ if($result === false){
 }
 curl_close($ch);
 
-$fcmResult = json_decode($result,true);
-echo print_r($fcmResult);
-
+header('Location:https://jody980502.shop/fcm-js/notification.html?data='.$jwt);
