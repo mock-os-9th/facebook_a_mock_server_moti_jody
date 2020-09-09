@@ -484,7 +484,7 @@ function getNameFromIdx($userIdx)
     $st = null;
     $pdo = null;
 
-    return intval($res[0]["userName"]);
+    return strval($res[0]["userName"]);
 }
 
 function send_comment_noti($userIdx, $postIdx, $commentContent)
@@ -494,11 +494,11 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
  //   $tokens = array();
     $query = "select u.token as token
             from User as u
-                inner join (select userIdx from SettingPostNotification where postIdx = 816) as pc on pc.userIdx = u.userIdx;";
+                inner join (select userIdx from SettingPostNotification where postIdx = $postIdx) as pc on pc.userIdx = u.userIdx;";
 
   //  $res = mysqli_query($pdo, $query);
     $st = $pdo->prepare($query);
-    $st->execute([$userIdx]);
+    $st->execute();
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
@@ -509,7 +509,7 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
 //        "token"     => strval($res[0]["token"])
 //    );
 
-    $tokens [] = strval($res[0]["token"]);
+    $token = strval($res[0]["token"]);
 
 //    if(mysqli_num_rows($res) > 0 ){
 //        while ($row = mysqli_fetch_assoc($res)) {
@@ -533,15 +533,15 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
 //        "link"      => URL . "post/816/comment?page=1&limit=5" . $last_idx
     );
 
-    send_notification($tokens, $message);
+    send_notification($token, $message);
 }
-function send_notification($tokens, $message)
+function send_notification($token, $message)
 {
     $GOOGLE_API_KEY = "AAAAuTKmVM0:APA91bHwf4e40fq1oq9nYUoMAGE12AlpZ58WViaQdsEqYqTqHVdV7zimDMTJvp7GjkdhSXI1qp8gH_qhMl8ooyOjsJqf4SDOHbV3avyguHijNat-aG_wsxQKyJP_NBKWcKkYDhgtN4Ob";
     $url = 'https://fcm.googleapis.com/fcm/send';
 
     $fields = array(
-        'to' => $tokens,
+        'to' => $token,
         'notification'             => $message
     );
 
