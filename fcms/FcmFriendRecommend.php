@@ -14,6 +14,8 @@ $st->execute();
 $st->setFetchMode(PDO::FETCH_ASSOC);
 $res = $st->fetchAll();
 
+$res['recommendUserIdx'] = json_decode($res['recommendUserIdx']);
+
 
 foreach ($res as $key => $item){
 //    $url='https://fcm.googleapis.com/fcm/send';
@@ -38,5 +40,5 @@ foreach ($res as $key => $item){
 //        die('Curl failed:'.curl_error($ch));
 //    }
 //    curl_close($ch);
-    echo $item->recommendUserIdx[0];
+    echo $item['recommendUserIdx'][0];
 }
