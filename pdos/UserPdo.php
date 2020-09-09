@@ -301,3 +301,19 @@ group by Posts.postIdx";
 
     return $res;
 }
+
+function getNotification($userIdx){
+    $pdo = pdoSqlConnect();
+
+    $query = "select senderIdx,receiverIdx,notificationContent,User.profileImgUrl,link,isRead,notificationType,Sender.createAt from (select * from UserNotification where receiverIdx = ?) as Sender left outer join User on User.userIdx = Sender.senderIdx;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
