@@ -1,5 +1,6 @@
 <?php
-require 'DatabasePdo.php';
+
+require '../pdos/DatabasePdo.php';
 
 $pdo = pdoSqlConnect();
 $query = "select UserFriends.userIdx,UserFriends.friendIdx, FriendFriend.friendIdx as recommendUserIdx, count(FriendFriend.friendIdx) as count
@@ -22,11 +23,9 @@ foreach ($friendList as $key => $item) {
     $userIdx = $item['userIdx'];
     $recommendUserIdx = $item['recommendUserIdx'];
 
-    echo $userIdx, $recommendUserIdx;
-
     $query = "select exists (select * from FriendRecommend where userIdx = ? and recommendUserIdx = ? and isDeleted = 'N') as exist";
     $st = $pdo->prepare($query);
-    $st->execute([$userIdx,$recommendUserIdx]);
+    $st->execute([$userIdx, $recommendUserIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $isDuplication = $st->fetchAll();
     $isDuplication = intval($isDuplication[0]['exist']);
@@ -34,19 +33,18 @@ foreach ($friendList as $key => $item) {
 
     $query = "select exists (select * from FriendRecommend where userIdx = ? and recommendUserIdx = ? and isDeleted = 'Y') as exist";
     $st = $pdo->prepare($query);
-    $st->execute([$userIdx,$recommendUserIdx]);
+    $st->execute([$userIdx, $recommendUserIdx]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $wasExist = $st->fetchAll();
     $wasExist = intval($wasExist[0]['exist']);
 
     if ($isDuplication == 0 && $wasExist == 0) {
-        echo 'inserted';
         $query = "insert into FriendRecommend (userIdx,recommendUserIdx) values (?,?)";
         $st = $pdo->prepare($query);
-        $st->execute([$userIdx,$recommendUserIdx]);
+        $st->execute([$userIdx, $recommendUserIdx]);
     } else if ($isDuplication == 0 && $wasExist == 1) {
         $query = "update FriendRecommend set isDeleted = 'N' where userIdx = ?, recommendUserIdx = ?";
         $st = $pdo->prepare($query);
-        $st->execute([$userIdx,$recommendUserIdx]);
+        $st->execute([$userIdx, $recommendUserIdx]);
     }
 }
