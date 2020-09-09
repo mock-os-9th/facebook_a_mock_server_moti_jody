@@ -492,9 +492,9 @@ function send_comment_noti($userIdx, $postIdx, $commentContent)
     $pdo = pdoSqlConnect();
 
     $tokens = array();
-    $query = "select u.token 
+    $query = "select u.token
             from User as u
-                left join (select userIdx from PostComment where postIdx = $postIdx) as pc on pc.userIdx = u.userIdx;";
+                inner join (select userIdx from SettingPostNotification where postIdx = 816) as pc on pc.userIdx = u.userIdx;";
 
     $st = $pdo->prepare($query);
     $st->execute();
