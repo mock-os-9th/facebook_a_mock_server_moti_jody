@@ -34,10 +34,10 @@ function getMainFeed($page, $limit, $userIdx)
        Posts.postSharedIdx,
        UserName.postIdx,
        imgVodList,
-       likeCount,
+       if(likeCount = null,0,likeCount) as likeCount,
        likeImgList,
-       commentCount,
-       sharedCount,
+       if(commentCount = null,0,commentCount) as commentCount,
+       if(sharedCount = null,0,sharedCount) as sharedCount,
        if(UserPostHide.userIdx = $userIdx and UserPostHide.isDeleted = 'N', 'Y', 'N')                        as isHided,
        if(PostLike.userIdx = $userIdx and PostLike.isDeleted = 'N', 'Y', 'N')                            as isLiked,
        if(UserPostSaved.userIdx = $userIdx, 'Y', 'N')                       as isSaved,
@@ -311,10 +311,10 @@ function getPersonalFeed($page, $limit, $isFilter, $date, $writerType, $userIdx,
        Posts.postSharedIdx,
        UserName.postIdx,
        imgVodList,
-       likeCount,
+       if(likeCount = null,0,likeCount) as likeCount,
        likeImgList,
-       commentCount,
-       sharedCount,
+       if(commentCount = null,0,commentCount) as commentCount,
+       if(sharedCount = null,0,sharedCount) as sharedCount,
        if(UserPostHide.userIdx = $userIdx and UserPostHide.isDeleted = 'N', 'Y', 'N')                        as isHided,
        if(PostLike.userIdx = $userIdx and PostLike.isDeleted = 'N', 'Y', 'N')                            as isLiked,
        if(UserPostSaved.userIdx = $userIdx, 'Y', 'N')                       as isSaved,
@@ -384,7 +384,7 @@ from Posts
                           group by Posts.postIdx) as PostCommentCount on PostCommentCount.postIdx = Posts.postIdx
          left outer join (select Posts.postIdx, count(*) as sharedCount
                           from Posts
-                                   left outer join PostShared on Posts.postIdx = PostShared.postIdx
+                                   left outer join PostShared on Posts.postIdx = PostShared.postIdx 
                                    where PostShared.isDeleted = 'N'
                           group by Posts.postIdx) as PostSharedCount on PostSharedCount.postIdx = Posts.postIdx
          left outer join UserPostHide on (UserPostHide.postIdx = Posts.postIdx and UserPostHide.userIdx = $userIdx)
@@ -476,10 +476,10 @@ function getOnePost($postIdx, $userIdx)
        Posts.postSharedIdx,
        UserName.postIdx,
        imgVodList,
-       likeCount,
+       if(likeCount = null,0,likeCount) as likeCount,
        likeImgList,
-       commentCount,
-       sharedCount,
+       if(commentCount = null,0,commentCount) as commentCount,
+       if(sharedCount = null,0,sharedCount) as sharedCount,
        if(UserPostHide.userIdx = $userIdx and UserPostHide.isDeleted = 'N', 'Y', 'N')                        as isHided,
        if(PostLike.userIdx = $userIdx and PostLike.isDeleted = 'N', 'Y', 'N')                            as isLiked,
        if(UserPostSaved.userIdx = $userIdx, 'Y', 'N')                       as isSaved,
