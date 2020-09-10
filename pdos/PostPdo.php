@@ -98,14 +98,17 @@ from Posts
                           from Posts
                                    left outer join PostLike on Posts.postIdx = PostLike.postIdx
                                    left outer join LikeCategory on LikeCategory.likeIdx = PostLike.postLikeIdx
+                                   where PostLike.isDeleted = 'N'
                           group by postIdx) as PostLikeCount on PostLikeCount.postIdx = Posts.postIdx
          left outer join (select Posts.postIdx, count(*) as commentCount
                           from Posts
                                    left outer join PostComment on Posts.postIdx = PostComment.postIdx
+                                   where PostComment.isDeleted = 'N'
                           group by Posts.postIdx) as PostCommentCount on PostCommentCount.postIdx = Posts.postIdx
          left outer join (select Posts.postIdx, count(*) as sharedCount
                           from Posts
                                    left outer join PostShared on Posts.postIdx = PostShared.postIdx
+                                   where PostShared.isDeleted='N'
                           group by Posts.postIdx) as PostSharedCount on PostSharedCount.postIdx = Posts.postIdx
          left outer join UserPostHide on (UserPostHide.postIdx = Posts.postIdx and UserPostHide.userIdx = $userIdx)
          left outer join PostLike on (PostLike.postIdx = Posts.postIdx and PostLike.userIdx = $userIdx)
@@ -372,14 +375,17 @@ from Posts
                           from Posts
                                    left outer join PostLike on Posts.postIdx = PostLike.postIdx
                                    left outer join LikeCategory on LikeCategory.likeIdx = PostLike.postLikeIdx
+                                   where PostLike.isDeleted = 'N'
                           group by postIdx) as PostLikeCount on PostLikeCount.postIdx = Posts.postIdx
          left outer join (select Posts.postIdx, count(*) as commentCount
                           from Posts
                                    left outer join PostComment on Posts.postIdx = PostComment.postIdx
+                                   where PostComment.isDeleted = 'N'
                           group by Posts.postIdx) as PostCommentCount on PostCommentCount.postIdx = Posts.postIdx
          left outer join (select Posts.postIdx, count(*) as sharedCount
                           from Posts
                                    left outer join PostShared on Posts.postIdx = PostShared.postIdx
+                                   where PostShared.isDeleted = 'N'
                           group by Posts.postIdx) as PostSharedCount on PostSharedCount.postIdx = Posts.postIdx
          left outer join UserPostHide on (UserPostHide.postIdx = Posts.postIdx and UserPostHide.userIdx = $userIdx)
          left outer join PostLike on (PostLike.postIdx = Posts.postIdx and PostLike.userIdx = $userIdx)
@@ -533,15 +539,19 @@ from Posts
                                  json_arrayagg(LikeCategory.likeIconUrl) as likeImgList
                           from Posts
                                    left outer join PostLike on Posts.postIdx = PostLike.postIdx
-                                   left outer join LikeCategory on LikeCategory.likeIdx = PostLike.postLikeIdx
+                                   left outer join LikeCategory on LikeCategory.likeIdx = PostLike.postLikeIdx      
+                                   where PostLike.isDeleted = 'N'  
+                                   
                           group by postIdx) as PostLikeCount on PostLikeCount.postIdx = Posts.postIdx
          left outer join (select Posts.postIdx, count(*) as commentCount
                           from Posts
                                    left outer join PostComment on Posts.postIdx = PostComment.postIdx
+                                   where PostComment.isDeleted='N'
                           group by Posts.postIdx) as PostCommentCount on PostCommentCount.postIdx = Posts.postIdx
          left outer join (select Posts.postIdx, count(*) as sharedCount
                           from Posts
                                    left outer join PostShared on Posts.postIdx = PostShared.postIdx
+                                   where PostShared.isDeleted = 'N'
                           group by Posts.postIdx) as PostSharedCount on PostSharedCount.postIdx = Posts.postIdx
          left outer join UserPostHide on (UserPostHide.postIdx = Posts.postIdx and UserPostHide.userIdx = $userIdx)
          left outer join PostLike on (PostLike.postIdx = Posts.postIdx and PostLike.userIdx = $userIdx)
