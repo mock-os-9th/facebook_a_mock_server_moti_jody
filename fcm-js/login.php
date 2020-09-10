@@ -3,7 +3,7 @@ $id = $_POST['id'];
 $pw = $_POST['pw'];
 $token = $_POST['token'];
 
-$url='http://54.180.68.232/login';
+$url='https://myphotoexhibition.site/login';
 $fields = array("id"=>$id,"pw"=>$pw);
 
 $headers = array('Content-Type:application/json');
@@ -26,7 +26,7 @@ curl_close($ch);
 $jwt = json_decode($result,true);
 $jwt = $jwt['result']['jwt'];
 
-$url='http://54.180.68.232/fcm';
+$url='https://myphotoexhibition.site/fcm';
 $fields = array("token"=>$token);
 
 $headers = array('Content-Type:application/json','x-access-token:'.$jwt);
@@ -46,4 +46,4 @@ if($result === false){
 }
 curl_close($ch);
 
-header('Location:https://jody980502.shop/fcm-js/notification.html?data='.$jwt);
+header('Location:https://myphotoexhibition.site/fcm-js/notification.html?data='.$jwt);
