@@ -7,6 +7,23 @@
   </head>
   <body>
     <script>
+      function acceptRequest(senderIdx, data) {
+        var requestURL = `https://myphotoexhibition.site/friend/${senderIdx}`;
+        var request = new XMLHttpRequest();
+        request.open("POST", requestURL);
+        request.setRequestHeader("x-access-token", data);
+        request.responseType = "json";
+        request.send();
+      }
+      function rejectRequest(senderIdx, data) {
+        var requestURL = `https://myphotoexhibition.site/friend/${senderIdx}/reject`;
+        var request = new XMLHttpRequest();
+        request.open("DELETE", requestURL);
+        request.setRequestHeader("x-access-token", data);
+        request.responseType = "json";
+        request.send();
+      }
+
       const URLSearch = new URLSearchParams(location.search);
       var data = URLSearch.get("data");
 
@@ -48,11 +65,16 @@
               "onclick",
               acceptRequest(senderIdx, data)
             );
+            acceptButton.style.width = "50px";
+            acceptButton.style.height = "20px";
+
             rejectButton.setAttribute("name", "reject");
             rejectButton.setAttribute(
               "onclick",
               rejectRequest(senderIdx, data)
             );
+            rejectButton.style.width = "50px";
+            rejectButton.style.height = "20px";
 
             noti.appendChild(acceptButton);
             noti.appendChild(rejectButton);
@@ -60,23 +82,6 @@
           document.body.appendChild(noti);
         }
       };
-
-      function acceptRequest(senderIdx, data) {
-        var requestURL = `https://myphotoexhibition.site/friend/${senderIdx}`;
-        var request = new XMLHttpRequest();
-        request.open("POST", requestURL);
-        request.setRequestHeader("x-access-token", data);
-        request.responseType = "json";
-        request.send();
-      }
-      function rejectRequest(senderIdx, data) {
-        var requestURL = `https://myphotoexhibition.site/friend/${senderIdx}/reject`;
-        var request = new XMLHttpRequest();
-        request.open("DELETE", requestURL);
-        request.setRequestHeader("x-access-token", data);
-        request.responseType = "json";
-        request.send();
-      }
     </script>
 
     <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
