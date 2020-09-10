@@ -6,44 +6,7 @@
     <title>Document</title>
   </head>
   <body>
-    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
-
-    <!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-messaging.js"></script>
     <script>
-      // Your web app's Firebase configuration
-      var firebaseConfig = {
-        apiKey: "AIzaSyANKyjZ9_8b8MuNFL80P214hk5eokXx3S0",
-        authDomain: "facebookproject-b5360.firebaseapp.com",
-        databaseURL: "https://facebookproject-b5360.firebaseio.com",
-        projectId: "facebookproject-b5360",
-        storageBucket: "facebookproject-b5360.appspot.com",
-        messagingSenderId: "795418711245",
-        appId: "1:795418711245:web:b2ef5efad20f768dac0584",
-        measurementId: "G-D329FDPNKP",
-      };
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      firebase.analytics();
-      const messaging = firebase.messaging();
-      var storage = firebase.storage();
-      messaging.usePublicVapidKey(
-        "BDO0wVgcsyzvmCCtg7mO3tnenb-hqgr2NL1bcArHZHK_6pJhPCIWI5I0HU0m1Srzi8Lbx1FcH_lP2ZB7PThBUFE"
-      );
-      Notification.requestPermission().then(function (permission) {
-        if (permission === "granted") {
-          console.log("Notification permission granted.");
-        } else {
-          console.log("Unable to get permission to notify.");
-        }
-      });
-
-      messaging.onMessage((notification) => {
-        console.log(notification.notification.body);
-      });
-
       function acceptRequest(senderIdx, data) {
         var requestURL = `https://myphotoexhibition.site/friend/${senderIdx}`;
         var request = new XMLHttpRequest();
@@ -88,22 +51,7 @@
           noti.setAttribute("name", senderIdx);
           var cont = document.createTextNode(contents);
           p.appendChild(cont);
-
-          var gsReference = storage.refFromURL(profileImgUrl);
-          gsReference.getDownloadURL().then(function (url) {
-            // This can be downloaded directly:
-            var xhr = new XMLHttpRequest();
-            xhr.responseType = "blob";
-            xhr.onload = function (event) {
-              var blob = xhr.response;
-            };
-            xhr.open("GET", url);
-            xhr.send();
-
-            // Or inserted into an <img> element:
-
-            img.setAttribute("src", url);
-          });
+          img.setAttribute("src", profileImgUrl);
 
           noti.appendChild(p);
           noti.appendChild(img);
@@ -132,6 +80,44 @@
           document.body.appendChild(noti);
         }
       };
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-messaging.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyANKyjZ9_8b8MuNFL80P214hk5eokXx3S0",
+        authDomain: "facebookproject-b5360.firebaseapp.com",
+        databaseURL: "https://facebookproject-b5360.firebaseio.com",
+        projectId: "facebookproject-b5360",
+        storageBucket: "facebookproject-b5360.appspot.com",
+        messagingSenderId: "795418711245",
+        appId: "1:795418711245:web:b2ef5efad20f768dac0584",
+        measurementId: "G-D329FDPNKP",
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+      const messaging = firebase.messaging();
+      messaging.usePublicVapidKey(
+        "BDO0wVgcsyzvmCCtg7mO3tnenb-hqgr2NL1bcArHZHK_6pJhPCIWI5I0HU0m1Srzi8Lbx1FcH_lP2ZB7PThBUFE"
+      );
+      Notification.requestPermission().then(function (permission) {
+        if (permission === "granted") {
+          console.log("Notification permission granted.");
+        } else {
+          console.log("Unable to get permission to notify.");
+        }
+      });
+
+      messaging.onMessage((notification) => {
+        console.log(notification.notification.body);
+      });
     </script>
   </body>
 </html>
