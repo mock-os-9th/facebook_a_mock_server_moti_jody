@@ -200,8 +200,8 @@ function getProfileFriendInfo($userIdx,$profileUserIdx){
           and Friends.isDeleted = 'N'
           and friendIdx not in (select blockedUserIdx
                                 from Blocked
-                                where (Blocked.userIdx = $userIdx and Blocked.isDeleted = 'N')
-                                   or (Blocked.userIdx = $profileUserIdx and Blocked.isDeleted = 'N'))) as friendCount,
+                                where (Blocked.userIdx = $userIdx
+                                   Blocked.userIdx = $profileUserIdx and Blocked.isDeleted = 'N'))) as friendCount,
        (select count(*)
         from (select * from Friends where userIdx = $userIdx and isDeleted = 'N') as UserFriend
                  inner join (select * from Friends where userIdx = $profileUserIdx and isDeleted = 'N') as ProfileUserFriend
