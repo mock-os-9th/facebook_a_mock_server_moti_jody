@@ -43,10 +43,16 @@
             var acceptButton = document.createElement("button");
             var rejectButton = document.createElement("button");
 
-            acceptButton.setAttribute("value", "accept");
-            // acceptButton.setAttribute('onclick',`location.href = 'http://54.180.68.232/friend/${senderIdx}'`);
-            rejectButton.setAttribute("value", "reject");
-            // rejectButton.setAttribute('onclick',`location.href = 'http://54.180.68.232/friend/${senderIdx}'`);
+            acceptButton.setAttribute("name", "accept");
+            acceptButton.setAttribute(
+              "onclick",
+              acceptRequest(senderIdx, data)
+            );
+            rejectButton.setAttribute("name", "reject");
+            rejectButton.setAttribute(
+              "onclick",
+              rejectRequest(senderIdx, data)
+            );
 
             noti.appendChild(acceptButton);
             noti.appendChild(rejectButton);
@@ -54,6 +60,23 @@
           document.body.appendChild(noti);
         }
       };
+
+      function acceptRequest(senderIdx, data) {
+        var requestURL = `https://myphotoexhibition.site/friend/${senderIdx}`;
+        var request = new XMLHttpRequest();
+        request.open("POST", requestURL);
+        request.setRequestHeader("x-access-token", data);
+        request.responseType = "json";
+        request.send();
+      }
+      function rejectRequest(senderIdx, data) {
+        var requestURL = `https://myphotoexhibition.site/friend/${senderIdx}/reject`;
+        var request = new XMLHttpRequest();
+        request.open("DELETE", requestURL);
+        request.setRequestHeader("x-access-token", data);
+        request.responseType = "json";
+        request.send();
+      }
     </script>
 
     <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
