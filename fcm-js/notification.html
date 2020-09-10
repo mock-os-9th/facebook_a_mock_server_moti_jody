@@ -61,18 +61,16 @@
             var rejectButton = document.createElement("button");
 
             acceptButton.setAttribute("name", "accept");
-            acceptButton.setAttribute(
-              "onclick",
-              acceptRequest(senderIdx, data)
-            );
+            acceptButton.addEventListener("click", function () {
+              acceptRequest(senderIdx, data);
+            });
             acceptButton.style.width = "50px";
             acceptButton.style.height = "20px";
 
             rejectButton.setAttribute("name", "reject");
-            rejectButton.setAttribute(
-              "onclick",
-              rejectRequest(senderIdx, data)
-            );
+            rejectButton.addEventListener("click", function () {
+              rejectRequest(senderIdx, data);
+            });
             rejectButton.style.width = "50px";
             rejectButton.style.height = "20px";
 
