@@ -121,6 +121,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
                                              and PrivacyBoundShow.showApplyType = 'P') or Posts.writerIdx = $userIdx, true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
   and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = $userIdx group by Friends.userIdx) or Posts.writerIdx = $userIdx,true)
+  and not Posts.writerIdx in (select blockedUserIdx from Blocked where userIdx = $userIdx)
   and Posts.postType = 'P'
   and Posts.isDeleted = 'N'
 order by Posts.createAt desc
@@ -396,6 +397,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
   and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = $userIdx group by Friends.userIdx) or Posts.writerIdx = $userIdx,true)
   and if(? = 'Y', if(isnull(?),true, date(Posts.createAt) = ?) and if(isnull(?),true,(case when ? = 'G' then true when ? = 'M' then $userIdx = Posts.writerIdx else not $userIdx = Posts.writerIdx end)) ,true)
   and Posts.postType = 'P'
+  and not Posts.writerIdx in (select blockedUserIdx from Blocked where userIdx = $userIdx)
   and if($searchIdx = 0,Posts.userIdx = $userIdx or Posts.writerIdx = $userIdx,Posts.writerIdx = $searchIdx or Posts.userIdx = $searchIdx)
   and Posts.isDeleted = 'N'
 order by Posts.createAt desc
@@ -555,6 +557,7 @@ where if(postPrivacyBounds = 'E', true = (select bit_and(if(PrivacyBoundExcept.u
                                              and PrivacyBoundShow.showApplyType = 'P') or Posts.writerIdx = $userIdx, true)
   and if(postPrivacyBounds = 'M', $userIdx = Posts.writerIdx,true)
   and if(postPrivacyBounds = 'F', (select bit_or(Posts.writerIdx = friendIdx) from Friends where userIdx = $userIdx group by Friends.userIdx) or Posts.writerIdx = $userIdx,true)
+  and not Posts.writerIdx in (select blockedUserIdx from Blocked where userIdx = $userIdx)
   and Posts.postType = 'P'
   and Posts.postIdx = $postIdx
   and Posts.isDeleted = 'N'
