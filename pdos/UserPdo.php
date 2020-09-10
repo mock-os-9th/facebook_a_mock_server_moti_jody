@@ -229,6 +229,7 @@ where ProfileUserFriend.isDeleted = 'N'
   and not ProfileUserFriend.friendIdx = $userIdx                                        
 group by ProfileUserFriend.userIdx
 limit 0,6) as friendList;";
+    print_r($query);
 
     $st = $pdo->prepare($query);
     $st->execute();

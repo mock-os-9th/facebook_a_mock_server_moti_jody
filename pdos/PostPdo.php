@@ -597,7 +597,7 @@ function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postCont
             $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx = ?;";
             $st = $pdo->prepare($query);
             $st->execute([$postPrivacyBound, $postContents, $moodActivity, $postIdx]);
-
+            $sameIdx = array();
             foreach ($imgVodList as $key => $item) {
                 if(in_array($item->imgVodIdx,$postImgVodList)){
                     $query = "update Posts set postPrivacyBounds=?,postContents=?,postImgVideoUrl=?,postImgVideoType=? where postIdx = ?";
@@ -605,10 +605,10 @@ function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postCont
                     $st = $pdo->prepare($query);
                     $st->execute([$postPrivacyBound, $item->imgVodContents, $item->imgVodUrl, $item->imgVodType,$item->imgVodIdx]);
 
-                    $sameIdx = array();
+
                     array_push($sameIdx,$item->imgVodIdx);
                 }else{
-                    $query = "insert into Posts(postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType) values ('I',?,?,?,?,?,?)";
+                    $query = "insert into Posts (postType,userIdx,writerIdx,postPrivacyBounds,postContents,postImgVideoUrl,postImgVideoType) values ('I',?,?,?,?,?,?)";
 
                     $st = $pdo->prepare($query);
                     $st->execute([$feedUserIdx, $userIdx, $postPrivacyBound, $item->imgVodContents, $item->imgVodUrl, $item->imgVodType]);
