@@ -631,7 +631,7 @@ function editPost($postIdx, $feedUserIdx, $userIdx, $postPrivacyBound, $postCont
                 }
             }
         }else{
-            $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=? where postIdx = ?;";
+            $query = "update Posts set postPrivacyBounds=?,postContents=?,moodActivity=?,postImgVideoUrl=null,postImgVideoType=null where postIdx = ?;";
             $st = $pdo->prepare($query);
             $st->execute([$postPrivacyBound, $postContents, $moodActivity, $postIdx]);
 
