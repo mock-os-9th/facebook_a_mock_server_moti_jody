@@ -68,7 +68,7 @@ function isCommentLikeExist($commentIdx)
 
     return intval($res[0]["exist"]);
 }
-function likeComment($userIdx, $commentIdx)
+function unLikeComment($userIdx, $commentIdx)
 {
     $pdo = pdoSqlConnect();
 

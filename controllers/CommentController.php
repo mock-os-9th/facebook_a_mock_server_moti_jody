@@ -180,7 +180,7 @@ try {
             }
 
             if(isUserLikedComment($userIdx, $commentIdx)){ //좋아요 되어 있을 때
-                likeComment($userIdx, $commentIdx);
+                unLikeComment($userIdx, $commentIdx);
                 $res->isLiked = 'N';
             }else{ //좋아요 안되어 있을 때
                 if(isCommentLikeExistOnUser($userIdx, $commentIdx)) {
